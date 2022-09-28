@@ -1,7 +1,9 @@
+package Projects;
+
 import java.util.*;
 import java.sql.*;
 
-public class SingleTable {
+public class ChemicalDataGateways {
     long id = 0;
     String name = "";
     int atomicNumber = 0;
@@ -10,7 +12,7 @@ public class SingleTable {
     int acidSolute = 0;
     String[] dissolved;
     long dissolvedBy = 0;
-    bool deleted = 0;
+    boolean deleted = false;
 
     public static final String DB_LOCATION = "jdbc:mysql://45.77.144.116/phpmyadmin/index.php";
     public static final String LOGIN_NAME = "brennan";
@@ -33,11 +35,11 @@ public class SingleTable {
      */
     DatabaseMetaData meta = m_dbConn.getMetaData();
 
-    public SingleTable(long identification) throws SQLException {
+    public ChemicalDataGateways(long identification) throws SQLException {
         id = identification;
     }
 
-    public SingleTable(String n, int number, double mass, int bSolute, int aSolute, String[] diss, long dissBy) {
+    public ChemicalDataGateways(String n, int number, double mass, int bSolute, int aSolute, String[] diss, long dissBy) {
         name = n;
         atomicNumber = number;
         atomicMass = mass;
@@ -47,18 +49,24 @@ public class SingleTable {
         dissolvedBy = dissBy;
     }
 
-    public delete() {
+    public void delete() {
         try {
             // code to delete from database
         } catch (Exception e) {
             // throw error about failing to delete
         }
         // does not hit unless sql delete is successful
-        this.deleted = 1;
+        this.deleted = true;
     }
 
-    private verifyExistence() {
-        if (deleted) throw new Exception("This gateway has been deleted.");
+    private void verifyExistence() {
+        if (deleted)
+            try {
+                throw new Exception("This gateway has been deleted.");
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     }
 
     //Getters & Setters ----------------------------------------------------------------------
@@ -166,22 +174,22 @@ public class SingleTable {
     }
 
     public void getAllCompounds() {
-        verifyExistance();
+        verifyExistence();
 
     }
 
     public void getMetalsDissolvedBy(int acidID) {
-        verifyExistance();
+        verifyExistence();
 
     }
 
     public void getNonMetalsDissolvedBy(int acidID) {
-        verifyExistance();
+        verifyExistence();
 
     }
 
     public void persists() {
-        verifyExistance();
+        verifyExistence();
 
     }
 
