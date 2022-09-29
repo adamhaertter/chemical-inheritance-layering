@@ -1,3 +1,9 @@
+import config.ProjectConfig;
+import utils.DatabaseMethods;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -5,23 +11,25 @@ import java.util.*;
  */
 public class BaseDataGateways extends Gateway {
     private String name;
-    private int solute;
+    private long solute;
+    private long id;
+    private DatabaseMethods dbMethods = new DatabaseMethods();
 
     /**
      * Constructor that uses the id only to create a row gateway for an existing base in the DB
      * @param id
      */
     public BaseDataGateways(long id) {
+        this.id = id;
         //query DB for base with the given id
     }
 
     /**
      * Constructor for adding the new base into the DB and creating a row data gateway for it as well
      */
-    public BaseDataGateways(String name, int solute) {
+    public BaseDataGateways(String name, long solute) {
         this.name = name;
         this.solute = solute;
-        // put into DB
     }
 
     public String getName() {
@@ -29,33 +37,43 @@ public class BaseDataGateways extends Gateway {
             return name;
         }
         else {
-            //throw error here instead of returning null
+            System.out.println("Base is deleted");
         }
         return null;
     }
 
-    public void setName(String name) {
+    public void updateName(String name) throws SQLException {
         if (!deleted) {
-            this.name = name;
+            if (persist(this.id, name, solute)) this.name = name;
         } else {
-            //throw error here
+            System.out.println("Base is deleted");
         }
     }
 
-    public int getSolute() {
+    public long getSolute() {
         if (!deleted) {
             return solute;
         } else {
-            //throw error here
+            System.out.println("Base is deleted");
         }
         return -1;
     }
 
-    public void setSolute(int solute) {
+    public void updateSolute(int solute) {
         if (!deleted) {
-            this.solute = solute;
+            if (persist(this.id, this.name, solute)) this.solute = solute;
         } else {
-            //throw error here
+            System.out.println("Base is deleted");
         }
+    }
+
+    public boolean persist(long id, String name, long solute) {
+        try {
+            dbMethods.updateBase(id, name, solute);
+        } catch (Exception ex) {
+            // Fails because already exists?
+            return false;
+        }
+        return true;
     }
 }
