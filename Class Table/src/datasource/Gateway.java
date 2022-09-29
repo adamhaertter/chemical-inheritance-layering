@@ -12,7 +12,7 @@ public class Gateway {
         this.deleted = true;
     }
 
-    private boolean verifyExistence() {
+    public boolean verifyExistence() {
         return !deleted;
     }
 }

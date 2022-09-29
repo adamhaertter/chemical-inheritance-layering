@@ -15,4 +15,14 @@ public class ChemicalDataGateway extends Gateway {
         name = this.name;
         deleted = false;
     }
+
+    /** getters and setters **/
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        verifyExistence();
+        this.name = name;
+    }
 }
