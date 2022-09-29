@@ -18,5 +18,14 @@ public class MetalDataGateway extends ElementDataGateway {
         super(elementId);
         dissolvedBy = dissolvedByAcid;
     }
-    
+
+    /** getters and setters **/
+    public long getDissolvedBy() {
+        return dissolvedBy;
+    }
+
+    public void setDissolvedBy(long dissolvedBy) {
+        verifyExistence();
+        this.dissolvedBy = dissolvedBy;
+    }
 }

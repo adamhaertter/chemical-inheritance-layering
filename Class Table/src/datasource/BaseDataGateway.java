@@ -16,4 +16,14 @@ public class BaseDataGateway extends Gateway {
         solute = this.solute;
         deleted = false;
     }
+
+    /** getters and setters **/
+    public int getSolute() {
+        return solute;
+    }
+
+    public void setSolute(int solute) {
+        verifyExistence();
+        this.solute = solute;
+    }
 }
