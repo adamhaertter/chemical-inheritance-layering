@@ -9,16 +9,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
-import static src.ChemicalDataGateways.m_dbConn;
 
 public class TestChemicalDataGateways {
     String[] dissolved = new String[]{"HCl", "H2O"};
     @Test
-    public void testPersistsWithID() throws SQLException {
+    public void testInitializationWithID() throws SQLException {
         Statement stmt = m_dbConn.createStatement();
 
         ChemicalDataGateways Gateway = new ChemicalDataGateways(1234567);
-        Gateway.persists();
         String statement = new String("SELECT * FROM project-1-single-table WHERE id=1234567");
         stmt.execute(statement);
 
@@ -27,11 +25,10 @@ public class TestChemicalDataGateways {
     }
 
     @Test
-    public void testPersistsWithEverything() throws SQLException {
+    public void testInitializationWithEverything() throws SQLException {
         Statement stmt = m_dbConn.createStatement();
         ChemicalDataGateways Gateway = new ChemicalDataGateways("Iron", 26, 55.85,
                 0, 0, dissolved, 5678);
-        Gateway.persists();
         String statement = new String("SELECT * FROM project-1-single-table WHERE name=\"Iron\"");
         stmt.execute(statement);
 
@@ -54,8 +51,15 @@ public class TestChemicalDataGateways {
 
     @Test
     public void testGetMetalsDissolvedBy() throws SQLException {
-        long[] IDListMethod = this.getMetalsDissolvedBy(5678);
-        long[] IDList = new long[33295, 3287352, 3295732];
+        ChemicalDataGateways gatewayOne = new ChemicalDataGateways(1234);
+        gatewayOne.setDissolvedBy(1010);
+        ChemicalDataGateways gatewayTwo = new ChemicalDataGateways(5678);
+        gatewayTwo.setDissolvedBy(1010);
+        ChemicalDataGateways gatewayThree = new ChemicalDataGateways(9999);
+        gatewayThree.setDissolvedBy(1010);
+
+        long[] IDListMethod = this.getMetalsDissolvedBy(1010);
+        long[] IDList = new long[1234, 5678, 9999];
 
         assertEquals(IDList, IDListMethod);
     }

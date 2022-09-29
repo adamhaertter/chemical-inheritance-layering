@@ -14,27 +14,6 @@ public class ChemicalDataGateways {
     long dissolvedBy = 0;
     boolean deleted = false;
 
-    public static final String DB_LOCATION = "jdbc:mysql://45.77.144.116/phpmyadmin/index.php";
-    public static final String LOGIN_NAME = "brennan";
-    public static final String PASSWORD = "BgdGGZJQf1rPBcNb";
-    public static Connection m_dbConn = null;
-
-    /**
-     * Creates a connection to the database that you can then send commands to.
-     */
-    static {
-        try {
-            m_dbConn = DriverManager.getConnection(DB_LOCATION, LOGIN_NAME, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * To get the meta data for the DB.
-     */
-    DatabaseMetaData meta = m_dbConn.getMetaData();
-
     public ChemicalDataGateways(long identification) throws SQLException {
         id = identification;
     }
@@ -191,17 +170,5 @@ public class ChemicalDataGateways {
     public void persists() {
         verifyExistence();
 
-    }
-
-    //Necessary in order for accessing the Database
-    public static boolean activateJDBC() {
-        try {
-            Driver myDriver = new com.mysql.cj.jdbc.Driver();
-            DriverManager.registerDriver(myDriver);
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
-
-        return true;
     }
 }
