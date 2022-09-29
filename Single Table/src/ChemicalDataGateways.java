@@ -17,7 +17,7 @@ public class ChemicalDataGateways {
     public static final String DB_LOCATION = "jdbc:mysql://45.77.144.116/phpmyadmin/index.php";
     public static final String LOGIN_NAME = "brennan";
     public static final String PASSWORD = "BgdGGZJQf1rPBcNb";
-    protected static Connection m_dbConn = null;
+    public static Connection m_dbConn = null;
 
     /**
      * Creates a connection to the database that you can then send commands to.
@@ -39,7 +39,7 @@ public class ChemicalDataGateways {
         id = identification;
     }
 
-    public ChemicalDataGateways(String n, int number, double mass, int bSolute, int aSolute, String[] diss, long dissBy) {
+    public ChemicalDataGateways(String n, int number, double mass, int bSolute, int aSolute, String[] diss, long dissBy) throws SQLException {
         name = n;
         atomicNumber = number;
         atomicMass = mass;
