@@ -54,14 +54,9 @@ public class TestChemicalDataGateways {
 
     @Test
     public void testGetMetalsDissolvedBy() throws SQLException {
-        Statement stmt = m_dbConn.createStatement();
-        long[] IDList = new long[];
-        String statement = new String("SELECT * FROM project-1-single-table WHERE dissolvedBy=5678");
-        stmt.execute(statement);
+        long[] IDListMethod = this.getMetalsDissolvedBy(5678);
+        long[] IDList = new long[33295, 3287352, 3295732];
 
-        ResultSet getInfo = stmt.getResultSet();
-        for(int i = 0; getInfo.next(); i++) {
-            IDList[i] = getInfo.getLong("id");
-        }
+        assertEquals(IDList, IDListMethod);
     }
 }
