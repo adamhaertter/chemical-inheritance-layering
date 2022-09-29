@@ -36,7 +36,7 @@
       <recent name="src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.ClassTable">
+  <component name="RunManager" selected="Application.SingleTable">
     <configuration name="ClassTable" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="17" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -56,6 +56,8 @@
       </method>
     </configuration>
     <configuration name="SingleTable" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="src.Main" />
+      <module name="Single Table" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -90,7 +92,7 @@
       <workItem from="1664487246448" duration="668000" />
       <workItem from="1664487923082" duration="8000" />
       <workItem from="1664488033478" duration="680000" />
-      <workItem from="1664488722126" duration="54000" />
+      <workItem from="1664488722126" duration="237000" />
     </task>
     <servers />
   </component>
