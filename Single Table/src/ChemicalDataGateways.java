@@ -152,21 +152,6 @@ public class ChemicalDataGateways {
 
     }
 
-    public void getAllCompounds() {
-        verifyExistence();
-
-    }
-
-    public void getMetalsDissolvedBy(int acidID) {
-        verifyExistence();
-
-    }
-
-    public void getNonMetalsDissolvedBy(int acidID) {
-        verifyExistence();
-
-    }
-
     public void persists() {
         verifyExistence();
 
