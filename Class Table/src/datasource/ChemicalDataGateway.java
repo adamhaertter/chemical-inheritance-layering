@@ -2,7 +2,7 @@ package datasource;
 public class ChemicalDataGateway extends Gateway {
     
     private long id = 0;
-    private String name = "";
+    protected String name = "";
 
     
     public ChemicalDataGateway(long id) {

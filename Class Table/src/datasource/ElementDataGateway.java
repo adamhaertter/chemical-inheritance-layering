@@ -21,6 +21,10 @@ public class ElementDataGateway extends ChemicalDataGateway {
         deleted = false;
     }
 
+    private boolean validate() {
+        return this.id != 0 && this.name != null && this.atomicNumber != 0 && this.atomicMass != 0;
+    }
+
     /** getters and setters **/
     public int getAtomicNumber() {
         return atomicNumber;

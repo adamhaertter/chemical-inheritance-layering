@@ -26,6 +26,10 @@ public class AcidDataGateway extends ChemicalDataGateway {
         deleted = false;
     }
 
+    private boolean validate() {
+        return this.id != 0 && this.name != null && this.solute != 0;
+    }
+
     /** getters and setters **/
     public int getSolute() {
         return solute;

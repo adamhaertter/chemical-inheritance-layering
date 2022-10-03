@@ -21,7 +21,11 @@ public class BaseDataGateway extends ChemicalDataGateway {
         // Create in DB
     }
 
-    public void persists() {
+    private boolean validate() {
+        return this.id != 0 && this.name != null && this.solute != 0;
+    }
+
+    public void persist() {
         // Update in DB
     }
 
