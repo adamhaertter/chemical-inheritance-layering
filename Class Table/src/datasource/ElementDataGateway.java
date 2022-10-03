@@ -7,12 +7,14 @@ public class ElementDataGateway extends Gateway {
 
     
     public ElementDataGateway(long id) {
+        super();
         this.id = id;
         deleted = false;
     }
 
 
     public ElementDataGateway(int atomicNumber, int atomicMass) {
+        super();
         // Since we are removing inhabits, we don't set that up here
         atomicNumber = this.atomicNumber;
         atomicMass = this.atomicMass;
