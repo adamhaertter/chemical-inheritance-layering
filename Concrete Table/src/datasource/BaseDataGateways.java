@@ -1,6 +1,9 @@
-import config.ProjectConfig;
+package datasource;
 
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Both row and table gateways for the element class

@@ -1,6 +1,8 @@
-import java.sql.*;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+package datasource;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * Deals with our key table
