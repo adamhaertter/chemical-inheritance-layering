@@ -9,7 +9,6 @@ public class ChemicalDataGateway extends Gateway {
     int acidSolute = 0;
     String[] dissolved;
     long dissolvedBy = 0;
-    protected boolean deleted = false;
 
     public ChemicalDataGateway(long identification) throws SQLException {
         id = identification;
@@ -110,21 +109,15 @@ public class ChemicalDataGateway extends Gateway {
     }
 
     public boolean persist() {
-        verifyExistence();
         try {
-        } catch(Error e) {
-
+            Statement statement = conn.createStatement();
+            statement.executeUpdate("UPDATE Chemical SET id = '" + id + "', name = '" + name +
+                    "' WHERE id = '" + id + "'");
+        } catch (Exception ex) {
+            // Fails because already exists?
+            return false;
         }
-
-    }
-
-    public void delete() {
-        try {
-            // delete code from DB
-        } catch (Exception e) {
-            //throw error about delete failure
-        }
-        this.deleted = true;
+        return true;
     }
 
     private void verifyExistence() {

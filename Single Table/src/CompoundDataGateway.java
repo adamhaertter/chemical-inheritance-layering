@@ -6,7 +6,6 @@ public class CompoundDataGateway extends Gateway {
     long compoundID;
     long elementID;
     protected static Connection m_dbConn = null;
-    protected boolean deleted = false;
 
     public CompoundDataGateway(long compound) {
         this.compoundID = compound;

@@ -3,7 +3,6 @@ package test;
 
 import org.junit.Test;
 import src.ChemicalDataGateway;
-import src.CompoundDataGateway;
 import src.Main;
 
 import java.sql.ResultSet;
@@ -12,7 +11,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestChemicalDataGateways {
+public class ChemicalDataGatewaysTest {
     String[] dissolved = new String[]{"HCl", "H2O"};
     @Test
     public void testInitializationWithID() {
@@ -52,32 +51,6 @@ public class TestChemicalDataGateways {
         assertEquals(0, Gateway.getAcidSolute());
         assertEquals(dissolved, Gateway.getDissolved());
         assertEquals(5678, Gateway.getDissolvedBy());
-    }
-
-    @Test
-    public void testGetAllCompounds() throws SQLException {
-        Statement stmt = m_dbConn.createStatement();
-        Compound compOne = new Compound(12345, 9999);
-        Compound compTwo = new Compound(5678, 9999);
-        ArrayList<Compound> methodList = getAllCompounds();
-        ArrayList<Compound> normalList;
-        normalList.append(compOne);
-        normalList.append(compTwo);
-
-        assertEquals(normalList, methodList);
-    }
-
-    @Test
-    public void testGetCompoundsByElementID() throws SQLException {
-        Statement stmt = m_dbConn.createStatement();
-        Compound compOne = new Compound(12345, 9999);
-        Compound compTwo = new Compound(5678, 9999);
-        ArrayList<Compound> methodList = getCompoundsByElementID(9999);
-        ArrayList<Compound> normalList;
-        normalList.append(compOne);
-        normalList.append(compTwo);
-
-        assertEquals(normalList, methodList);
     }
 
     @Test

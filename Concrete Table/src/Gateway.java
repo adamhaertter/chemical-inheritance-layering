@@ -2,6 +2,7 @@ import config.ProjectConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * General gateway class that has the methods needed in all gateways
@@ -28,12 +29,13 @@ public class Gateway {
         return null;
     }
 
-    public void delete() {
+    public void delete() throws SQLException {
         try {
             // delete code from DB
         } catch (Exception e) {
             //throw error about delete failure
         }
         this.deleted = true;
+        conn.close();
     }
 }
