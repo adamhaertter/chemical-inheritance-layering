@@ -42,8 +42,20 @@ public class BaseDataGateways extends Gateway {
      */
     public BaseDataGateways(String name, long solute) {
         super();
+        this.id = KeyTableGateways.getNextValidKey();
         this.name = name;
         this.solute = solute;
+
+        // store the new base in the DB
+        try {
+            Statement statement = conn.createStatement();
+            String addBase = "INSERT INTO Base" +
+                    "(id, name, solute) VALUES ('" +
+                    id + "','" + name + "','" + solute + "')";
+            statement.executeUpdate(addBase);
+        } catch (Exception ex) {
+            //key didn't insert because already in db?
+        }
     }
 
     /**

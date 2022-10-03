@@ -7,31 +7,31 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 
 public class KeyTableGateways extends Gateway {
-    private final static AtomicLong key = new AtomicLong();
 
     /**
      * Get the current key in our DB, this is the next available key, and then increment it and push back
      * so that we can retrieve it on our next call.
      * @return the current key
      */
-    public static synchronized long getKey() {
+    public static synchronized long getNextValidKey() {
         Connection conn = Gateway.setUpConnection();
-        // get current key
-        long currentKey = key.get();
+        // get current key and then set the value in key to the next valid id
+        long nextValidKey = -1;
 
-        // update the key and push back to the DB
-
-        return currentKey;
-    }
-
-    public boolean persists() {
         try {
+            assert conn != null;
             Statement statement = conn.createStatement();
-            statement.executeUpdate("UPDATE KeyTable SET nextValidId = '" + key.get() + "'");
+            // Get the next valid key from the DB
+            ResultSet rs = statement.executeQuery("SELECT * FROM KeyTable");
+            rs.next();
+            nextValidKey = rs.getLong("nextValidId");
+
+            // Increment the key in the DB
+            String updateKey = "UPDATE KeyTable SET nextValidId = '" + (nextValidKey + 1) + "'";
+            statement.executeUpdate(updateKey);
         } catch (Exception ex) {
-            // Fails because already exists?
-            return false;
+            //key didn't insert because already in db?
         }
-        return true;
+        return nextValidKey;
     }
 }
