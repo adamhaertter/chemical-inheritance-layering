@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 
 public class Gateway {
 
+    /* wip, trying to abstract delete()
+    private long id;
+    private String tableName;
+     */
     protected boolean deleted = false;
     protected Connection conn;
 
@@ -28,6 +32,10 @@ public class Gateway {
     public void delete() {
         try {
             // TODO code to delete from database
+            // CallableStatement statement = conn.prepareCall("DELETE FROM " + tableName + "WHERE id = " + id);
+
+
+            // close db connection if successful
         } catch (Exception e) {
             // throw error about failing to delete
         }
