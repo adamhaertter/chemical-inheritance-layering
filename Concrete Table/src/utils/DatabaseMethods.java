@@ -41,11 +41,15 @@ public class DatabaseMethods {
     public void updateBase(long id, String name, long solute) throws SQLException {
         try {
             Statement statement = conn.createStatement();
-            String updateBase = new String("UPDATE Base SET name = '" + name + "', solute = '" + solute +
-                    "' WHERE id = '" + id + "'");
+            String updateBase = "UPDATE Base SET name = '" + name + "', solute = '" + solute +
+                    "' WHERE id = '" + id + "'";
             statement.executeUpdate(updateBase);
         } catch (Exception ex) {
             System.out.println("Base is not in the DB");
         }
+    }
+
+    public long getKey() {
+        return 0;
     }
 }
