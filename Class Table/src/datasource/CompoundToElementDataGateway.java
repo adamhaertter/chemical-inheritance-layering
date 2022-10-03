@@ -7,6 +7,7 @@ public class CompoundToElementDataGateway extends Gateway {
 
     /** only for finding what's already in the database **/
     public CompoundToElementDataGateway(long compoundId, long elementId) {
+        super();
         this.elementId = elementId;
         this.compoundId = compoundId;
         deleted = false;

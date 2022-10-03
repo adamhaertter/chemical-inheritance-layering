@@ -6,11 +6,13 @@ public class ChemicalDataGateway extends Gateway {
 
     
     public ChemicalDataGateway(long id) {
+        super();
         this.id = id;
         deleted = false;
     }
 
     public ChemicalDataGateway(String name) {
+        super();
         // Since we are removing inhabits, we don't set that up here
         this.name = name;
         deleted = false;
