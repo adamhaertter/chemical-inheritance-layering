@@ -1,4 +1,3 @@
-package src;
 import java.util.ArrayList;
 
 public class Main {
@@ -6,22 +5,22 @@ public class Main {
         System.out.println("Hello world!");
     }
 
-    public static ArrayList<src.Compound> getAllCompounds() {
+    public static ArrayList<CompoundDataGateway> getAllCompounds() {
 
     }
 
     //Retrieves all metals that are dissolved by a certain acid ID
-    public static ArrayList<src.ChemicalDataGateways> getMetalsDissolvedBy(int acidID) {
+    public static ArrayList<ChemicalDataGateway> getMetalsDissolvedBy(int acidID) {
 
     }
 
     //Retrieves all nonmetals that are dissolved by a certain acid ID
-    public static ArrayList<src.ChemicalDataGateways> getNonMetalsDissolvedBy(int acidID) {
+    public static ArrayList<ChemicalDataGateway> getNonMetalsDissolvedBy(int acidID) {
 
     }
 
     //Retrieves Compounds by an ElementID
-    public static ArrayList<src.Compound> getCompoundsByElementID(int elementID) {
+    public static ArrayList<CompoundDataGateway> getCompoundsByElementID(int elementID) {
 
     }
 

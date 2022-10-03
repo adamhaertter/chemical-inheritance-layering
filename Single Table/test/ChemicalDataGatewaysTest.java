@@ -2,8 +2,8 @@ package test;
 
 
 import org.junit.Test;
-import src.ChemicalDataGateways;
-import src.Compound;
+import src.ChemicalDataGateway;
+import src.CompoundDataGateway;
 import src.Main;
 
 import java.sql.ResultSet;
