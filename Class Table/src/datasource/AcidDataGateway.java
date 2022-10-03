@@ -1,6 +1,6 @@
 package datasource;
 
-public class AcidDataGateway extends Gateway {
+public class AcidDataGateway extends ChemicalDataGateway {
     
     private long id = 0;
     private int solute = 0;
@@ -11,7 +11,7 @@ public class AcidDataGateway extends Gateway {
      * @param id
      */
     public AcidDataGateway(long id) {
-        super();
+        super(id);
         this.id = id;
         deleted = false;
     }
@@ -20,8 +20,8 @@ public class AcidDataGateway extends Gateway {
      * Used to create a new acid in the database and a row data gateway for it
      * @param solute
      */
-    public AcidDataGateway(int solute) {
-        super();
+    public AcidDataGateway(String name, int solute) {
+        super(name);
         this.solute = solute;
         deleted = false;
     }

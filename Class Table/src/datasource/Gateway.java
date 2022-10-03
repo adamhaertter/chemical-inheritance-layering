@@ -18,7 +18,7 @@ public class Gateway {
      */
     public static Connection setUpConnection() {
         try {
-            return DriverManager.getConnection(ProjectConfig.DatabaseURL, ProjectConfig.DatabaseUser, ProjectConfig.DatabasePassword);
+            return DriverManager.getConnection(config.ProjectConfig.DatabaseURL, config.ProjectConfig.DatabaseUser, config.ProjectConfig.DatabasePassword);
         } catch (Exception ex) {
             System.out.println("Error connecting to database");
         }
