@@ -7,7 +7,7 @@ public class ElementDataGateway extends Gateway {
 
     
     public ElementDataGateway(long id) {
-        id = this.id;
+        this.id = id;
         deleted = false;
     }
 

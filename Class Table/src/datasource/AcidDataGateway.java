@@ -11,7 +11,7 @@ public class AcidDataGateway extends Gateway {
      * @param id
      */
     public AcidDataGateway(long id) {
-        id = this.id;
+        this.id = id;
         deleted = false;
     }
 
@@ -20,7 +20,7 @@ public class AcidDataGateway extends Gateway {
      * @param solute
      */
     public AcidDataGateway(int solute) {
-        solute = this.solute;
+        this.solute = solute;
         deleted = false;
     }
 

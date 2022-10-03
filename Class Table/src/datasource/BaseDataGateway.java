@@ -7,13 +7,13 @@ public class BaseDataGateway extends Gateway {
 
    /** only used to create a data gateway for base **/
     BaseDataGateway(long id) {
-        id = this.id;
+        this.id = id;
         deleted = false;
     }
 
     /** used to create a new base **/
     BaseDataGateway(int solute) {
-        solute = this.solute;
+        this.solute = solute;
         deleted = false;
     }
 
