@@ -1,10 +1,6 @@
 import config.ProjectConfig;
-import utils.DatabaseMethods;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.*;
+import java.sql.*;
 
 /**
  * Both row and table gateways for the element class
@@ -13,23 +9,50 @@ public class BaseDataGateways extends Gateway {
     private String name;
     private long solute;
     private long id;
-    private DatabaseMethods dbMethods = new DatabaseMethods();
 
     /**
      * Constructor that uses the id only to create a row gateway for an existing base in the DB
      * @param id
      */
     public BaseDataGateways(long id) {
+        super();
         this.id = id;
-        //query DB for base with the given id
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Base WHERE id = ?");
+            statement.setLong(1, id);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            this.name = rs.getString("name");
+            rs.next();
+            this.solute = rs.getLong("solute");
+
+            if (!validate()) {
+                this.id = -1;
+                this.name = null;
+                this.solute = -1;
+                System.out.println("No base was found with the given id.");
+            }
+        } catch(Exception ex) {
+            // Some other error (There is not an error if the entry doesn't exist)
+        }
     }
 
     /**
      * Constructor for adding the new base into the DB and creating a row data gateway for it as well
      */
     public BaseDataGateways(String name, long solute) {
+        super();
         this.name = name;
         this.solute = solute;
+    }
+
+    /**
+     * This method checks if everything we need for this object exists, some gateways may be able to have some fields
+     * empty, for this example it is not the case
+     * @return if this instance is valid
+     */
+    private boolean validate() {
+        return this.id != 0 && this.name != null && this.solute != 0;
     }
 
     public String getName() {
@@ -69,7 +92,9 @@ public class BaseDataGateways extends Gateway {
 
     public boolean persist(long id, String name, long solute) {
         try {
-            dbMethods.updateBase(id, name, solute);
+            Statement statement = conn.createStatement();
+            statement.executeUpdate("UPDATE Base SET name = '" + name + "', solute = '" + solute +
+                    "' WHERE id = '" + id + "'");
         } catch (Exception ex) {
             // Fails because already exists?
             return false;
