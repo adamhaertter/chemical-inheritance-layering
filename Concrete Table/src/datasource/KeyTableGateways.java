@@ -1,6 +1,8 @@
-import java.sql.*;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+package datasource;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * Deals with our key table
@@ -29,6 +31,7 @@ public class KeyTableGateways extends Gateway {
             // Increment the key in the DB
             String updateKey = "UPDATE KeyTable SET nextValidId = '" + (nextValidKey + 1) + "'";
             statement.executeUpdate(updateKey);
+            conn.close();
         } catch (Exception ex) {
             //key didn't insert because already in db?
         }

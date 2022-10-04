@@ -1,3 +1,5 @@
+package datasource;
+
 import config.ProjectConfig;
 
 import java.sql.Connection;
@@ -32,8 +34,10 @@ public class Gateway {
     public void delete() throws SQLException {
         try {
             // delete code from DB
+
         } catch (Exception e) {
             //throw error about delete failure
+            return;
         }
         this.deleted = true;
         conn.close();
