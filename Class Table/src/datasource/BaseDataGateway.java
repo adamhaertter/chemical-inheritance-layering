@@ -36,7 +36,7 @@ public class BaseDataGateway extends ChemicalDataGateway {
     }
 
     /** getters and setters **/
-    public int getSolute() {
+    public long getSolute() {
         return solute;
     }
 

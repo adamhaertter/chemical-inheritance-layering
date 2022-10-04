@@ -12,6 +12,7 @@ public class AcidDataGateway extends ChemicalDataGateway {
         super(id);
         this.id = id;
         deleted = false;
+        // Read from DB
     }
 
     /**
@@ -23,6 +24,7 @@ public class AcidDataGateway extends ChemicalDataGateway {
         super(name);
         this.solute = solute;
         deleted = false;
+        // Create in DB
     }
 
     private boolean validate() {
@@ -30,7 +32,7 @@ public class AcidDataGateway extends ChemicalDataGateway {
     }
 
     /** getters and setters **/
-    public int getSolute() {
+    public long getSolute() {
         return solute;
     }
 
