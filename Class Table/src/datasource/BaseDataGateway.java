@@ -6,7 +6,7 @@ public class BaseDataGateway extends ChemicalDataGateway {
     private int solute = 0;
 
    /** only used to create a data gateway for base **/
-    BaseDataGateway(long id) {
+    public BaseDataGateway(long id) {
         super(id);
         this.id = id;
         deleted = false;
@@ -14,7 +14,7 @@ public class BaseDataGateway extends ChemicalDataGateway {
     }
 
     /** used to create a new base **/
-    BaseDataGateway(String name, int solute) {
+    public BaseDataGateway(String name, int solute) {
         super(name);
         this.solute = solute;
         deleted = false;
@@ -26,10 +26,6 @@ public class BaseDataGateway extends ChemicalDataGateway {
     }
 
     public void persist() {
-        // Update in DB
-    }
-
-    public void delete() {
         // Update in DB
     }
 

@@ -8,8 +8,8 @@ public class MetalDataGateway extends ElementDataGateway {
         super(id);
     }
 
-    public MetalDataGateway(int atomicNumber, int atomicMass, long dissolvedByAcid) {
-        super(atomicNumber, atomicMass);
+    public MetalDataGateway(String name, int atomicNumber, int atomicMass, long dissolvedByAcid) {
+        super(name, atomicNumber, atomicMass);
         dissolvedBy = dissolvedByAcid;
     }
 
