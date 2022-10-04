@@ -2,10 +2,12 @@ package datasource;
 
 public class BaseDataGateway extends ChemicalDataGateway {
 
-    private long id = 0;
     private int solute = 0;
 
-   /** only used to create a data gateway for base **/
+   /**
+    * Only used to create a data gateway for base that already exists
+    * @param id the primary key id
+    */
     public BaseDataGateway(long id) {
         super(id);
         this.id = id;
@@ -13,7 +15,11 @@ public class BaseDataGateway extends ChemicalDataGateway {
         //Read from DB
     }
 
-    /** used to create a new base **/
+    /**
+     * Used to create a new base and add it to the database
+     * @param name the name field of the parent table, Chemical
+     * @param solute the solute field of the Base table
+     */
     public BaseDataGateway(String name, int solute) {
         super(name);
         this.solute = solute;

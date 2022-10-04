@@ -11,6 +11,7 @@ public class CompoundToElementDataGateway extends Gateway {
         this.elementId = elementId;
         this.compoundId = compoundId;
         deleted = false;
+        id = compoundId; // For consistency, the id field of Gateway should be filled by either key.
     }
 
     private boolean validate() {
