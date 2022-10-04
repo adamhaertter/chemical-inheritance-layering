@@ -2,12 +2,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import config.ProjectConfig;
 
+/**
+ * Used as a table data gateway for the CompoundToElement Table
+ */
 public class CompoundDataGateway extends Gateway {
     long compoundID;
     long elementID;
     protected static Connection m_dbConn = null;
 
     /**
+     * Constructor that creates an entry based off of the compound ID
      *
      * @param compound - the compoundID
      */
@@ -26,11 +30,12 @@ public class CompoundDataGateway extends Gateway {
     }
 
     /**
+     * Constructor that creates an entry based off of the compound ID and element ID
      *
      * @param compound - the compoundID
      * @param element - the elementID
      */
-    public CompoundDataGatdeway(long compound, long element) {
+    public CompoundDataGateway(long compound, long element) {
         super();
         this.compoundID = compound;
         this.elementID = element;
@@ -84,7 +89,7 @@ public class CompoundDataGateway extends Gateway {
     }
 
     /**
-     * Getter f
+     * Gets all of the Compounds that contain that Element
      * @param elemID - the identification of the element
      * @return compoundList - a list of compounds
      * @throws SQLException
@@ -106,7 +111,7 @@ public class CompoundDataGateway extends Gateway {
     }
 
     /**
-     *
+     * Retrieves all of the Elements in a Compound
      * @param compID - the identification of the compound
      * @return compoundList - a list of compounds
      * @throws SQLException
@@ -128,6 +133,7 @@ public class CompoundDataGateway extends Gateway {
     }
 
     /**
+     * Takes all of the elements currently in the object and pushes them to the DB
      *
      * @return true or false
      */
@@ -144,7 +150,7 @@ public class CompoundDataGateway extends Gateway {
     }
 
     /**
-     *
+     * Clarifies if the row has been deleted or not
      */
     private void verifyExistence() {
         if (deleted)

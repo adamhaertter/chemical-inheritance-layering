@@ -24,6 +24,9 @@ public class Gateway {
         return null;
     }
 
+    /**
+     * Deletes a row in the database
+     */
     public void delete() {
         try {
             // delete code from DB

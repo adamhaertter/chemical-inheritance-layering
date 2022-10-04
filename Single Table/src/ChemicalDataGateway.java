@@ -1,5 +1,8 @@
 import java.sql.*;
 
+/**
+ * Used as a row data gateway for Chemical Table
+ */
 public class ChemicalDataGateway extends Gateway {
     long id = 0;
     String name = "";
@@ -65,9 +68,6 @@ public class ChemicalDataGateway extends Gateway {
         this.dissolves = diss;
         this.dissolvedBy = dissBy;
         this.type = type;
-
-        
-
         persist();
     }
 
@@ -234,6 +234,7 @@ public class ChemicalDataGateway extends Gateway {
     }
 
     /**
+     * Takes all of the elements currently in the object and pushes them to the DB
      *
      * @return true or false
      */
@@ -252,7 +253,7 @@ public class ChemicalDataGateway extends Gateway {
     }
 
     /**
-     *
+     * Clarifies if the row has been deleted or not
      */
     private void verifyExistence() {
         if (deleted)
