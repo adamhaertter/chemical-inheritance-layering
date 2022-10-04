@@ -1,8 +1,11 @@
 package datasource;
 
+import java.util.ArrayList;
+
 public class AcidDataGateway extends ChemicalDataGateway {
 
     private long solute = 0;
+    ArrayList<Long> dissolves;
 
     /**
      * Used to create a new row data gateway for an existing acid in the database
@@ -13,6 +16,7 @@ public class AcidDataGateway extends ChemicalDataGateway {
         this.id = id;
         deleted = false;
         // Read from DB
+        dissolves = MetalDataGateway.getAllDissolvedBy(id);
     }
 
     /**
@@ -25,6 +29,8 @@ public class AcidDataGateway extends ChemicalDataGateway {
         this.solute = solute;
         deleted = false;
         // Create in DB
+        // TODO get id
+        dissolves = MetalDataGateway.getAllDissolvedBy(id);
     }
 
     private boolean validate() {
@@ -39,5 +45,12 @@ public class AcidDataGateway extends ChemicalDataGateway {
     public void setSolute(long solute) {
         verifyExistence();
         this.solute = solute;
+    }
+
+    /**
+     * @return metal ids dissolved by this Acid
+     */
+    public ArrayList<Long> getDissolves() {
+        return dissolves;
     }
 }
