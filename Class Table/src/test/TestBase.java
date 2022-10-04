@@ -24,7 +24,7 @@ public class TestBase {
 
         long trueId = 100L;
         String trueName = "Test";
-        int trueSolute = 1;
+        long trueSolute = 1;
 
         // Create row in table
         try {
@@ -37,7 +37,7 @@ public class TestBase {
 
             statement = conn.prepareCall("INSERT INTO Base (`id`, `solute`) VALUES (?, ?)");
             statement.setLong(1, trueId);
-            statement.setInt(2, trueSolute);
+            statement.setLong(2, trueSolute);
             result = statement.executeUpdate();
             assertNotEquals(0, result);
         } catch (SQLException e) {
@@ -58,7 +58,7 @@ public class TestBase {
         assertNotNull(conn);
 
         String trueName = "Ex";
-        int trueSolute = 1;
+        long trueSolute = 1;
 
         BaseDataGateway base = new BaseDataGateway(trueName, trueSolute);
         // Test that the value is set properly for the Object
@@ -73,7 +73,7 @@ public class TestBase {
             assertEquals(rs.getString("name"), trueName);
 
             statement = conn.prepareCall("SELECT * from Base WHERE solute = ?");
-            statement.setInt(1, trueSolute);
+            statement.setLong(1, trueSolute);
             rs = statement.executeQuery();
             rs.next();
             assertEquals(rs.getLong("solute"), trueSolute);
@@ -91,7 +91,7 @@ public class TestBase {
 
         long trueId = 100L;
         String trueName = "Test";
-        int trueSolute = 1;
+        long trueSolute = 1;
 
         // Create rows in table
         try {
@@ -104,7 +104,7 @@ public class TestBase {
 
             statement = conn.prepareCall("INSERT INTO Base (`id`, `solute`) VALUES (?, ?)");
             statement.setLong(1, trueId);
-            statement.setInt(2, trueSolute);
+            statement.setLong(2, trueSolute);
             result = statement.executeUpdate();
             assertNotEquals(0, result);
         } catch (SQLException e) {

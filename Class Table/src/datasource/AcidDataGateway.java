@@ -2,7 +2,7 @@ package datasource;
 
 public class AcidDataGateway extends ChemicalDataGateway {
 
-    private int solute = 0;
+    private long solute = 0;
 
     /**
      * Used to create a new row data gateway for an existing acid in the database
@@ -19,7 +19,7 @@ public class AcidDataGateway extends ChemicalDataGateway {
      * @param name the name field of the parent table, Chemical
      * @param solute the solute field of the db
      */
-    public AcidDataGateway(String name, int solute) {
+    public AcidDataGateway(String name, long solute) {
         super(name);
         this.solute = solute;
         deleted = false;
@@ -34,7 +34,7 @@ public class AcidDataGateway extends ChemicalDataGateway {
         return solute;
     }
 
-    public void setSolute(int solute) {
+    public void setSolute(long solute) {
         verifyExistence();
         this.solute = solute;
     }
