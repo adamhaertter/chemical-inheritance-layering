@@ -13,6 +13,10 @@ import static org.junit.Assert.assertEquals;
 
 public class ChemicalDataGatewaysTest {
     String[] dissolved = new String[]{"HCl", "H2O"};
+
+    /**
+     * Tests when it initializes with identification
+     */
     @Test
     public void testInitializationWithID() {
         ChemicalDataGateways Gateway = new ChemicalDataGateways(1234567);
@@ -26,6 +30,9 @@ public class ChemicalDataGatewaysTest {
         assertEquals(1234567, Gateway.getID());
     }
 
+    /**
+     * Tests when it initializes with all the information
+     */
     @Test
     public void testInitializationWithEverything() {
         //Statement stmt = m_dbConn.createStatement();
@@ -53,6 +60,9 @@ public class ChemicalDataGatewaysTest {
         assertEquals(5678, Gateway.getDissolvedBy());
     }
 
+    /**
+     * Tests that deleting items works
+     */
     @Test
     public void testDelete() {
         Statement stmt = m_dbConn.createStatement();
@@ -65,6 +75,11 @@ public class ChemicalDataGatewaysTest {
         assertNull(getInfo);
     }
 
+    /**
+     * Tests the getDissolvedBy function and setDissolvedBy function
+     * to ensure it is getting the correct array values
+     * @throws SQLException
+     */
     @Test
     public void testGetDissolvedBy() throws SQLException {
         ChemicalDataGateways gatewayOne = new ChemicalDataGateways(1234);

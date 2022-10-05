@@ -5,7 +5,7 @@ import config.ProjectConfig;
 /**
  * Used as a table data gateway for the CompoundToElement Table
  */
-public class CompoundDataGateway extends Gateway {
+public class CompoundDataGateway extends ChemicalDataGateway {
     long compoundID;
     long elementID;
     protected static Connection m_dbConn = null;
@@ -15,12 +15,12 @@ public class CompoundDataGateway extends Gateway {
      *
      * @param compound - the compoundID
      */
-    public CompoundDataGateway(long compound) {
-        super();
+    public CompoundDataGateway(long compound) throws SQLException {
+        super(compound);
         this.compoundID = compound;
         try {
             CallableStatement statement = conn.prepareCall("SELECT * FROM 'CompoundToElement'" +
-                                                                "WHERE CompoundId = '" + CompoundID + "'");
+                                                                "WHERE CompoundId = '" + compound + "'");
             ResultSet rs = statement.executeQuery();
             this.elementID = rs.getLong("ElementId");
             persist();
@@ -35,8 +35,8 @@ public class CompoundDataGateway extends Gateway {
      * @param compound - the compoundID
      * @param element - the elementID
      */
-    public CompoundDataGateway(long compound, long element) {
-        super();
+    public CompoundDataGateway(long compound, long element) throws SQLException {
+        super(compound);
         this.compoundID = compound;
         this.elementID = element;
         persist();
@@ -80,16 +80,22 @@ public class CompoundDataGateway extends Gateway {
      * @throws SQLException
      */
     public ArrayList<CompoundDataGateway> getAllCompounds() throws SQLException {
-        ArrayList<CompoundDataGateway> allCompoundsList = new ArrayList<>();
+        ArrayList<CompoundDataGateway> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
         String stmt = new String("SELECT * FROM CompoundToElement");
         statement.execute(stmt);
 
-        return allCompoundsList;
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            CompoundDataGateway compound = new CompoundDataGateway(rs.getLong("CompoundID"));
+            compoundList.add(compound);
+        }
+
+        return compoundList;
     }
 
     /**
-     * Gets all of the Compounds that contain that Element
+     * Gets all the Compounds that contain that Element
      * @param elemID - the identification of the element
      * @return compoundList - a list of compounds
      * @throws SQLException
@@ -100,10 +106,9 @@ public class CompoundDataGateway extends Gateway {
         String stmt = new String("SELECT * FROM CompoundToElement WHERE ElementId=" + elemID);
         statement.execute(stmt);
 
-        ResultSet getCompounds = statement.getResultSet();
-        while(getCompounds.next()) {
-            CompoundDataGateway compound = new CompoundDataGateway(getCompounds.getLong("CompoundID"),
-                                                                                                        elemID);
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            CompoundDataGateway compound = new CompoundDataGateway(rs.getLong("CompoundID"), elemID);
             compoundList.add(compound);
         }
 
@@ -111,7 +116,7 @@ public class CompoundDataGateway extends Gateway {
     }
 
     /**
-     * Retrieves all of the Elements in a Compound
+     * Retrieves all the Elements in a Compound
      * @param compID - the identification of the compound
      * @return compoundList - a list of compounds
      * @throws SQLException
@@ -133,7 +138,7 @@ public class CompoundDataGateway extends Gateway {
     }
 
     /**
-     * Takes all of the elements currently in the object and pushes them to the DB
+     * Takes all the elements currently in the object and pushes them to the DB
      *
      * @return true or false
      */

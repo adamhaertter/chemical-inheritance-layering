@@ -12,7 +12,10 @@ import java.sql.Statement;
 import static org.junit.Assert.assertEquals;
 
 public class CompoundDataGatewaysTest {
-
+    /**
+     * Tests that getting all compounds will retrieve all the compounds
+     * @throws SQLException
+     */
     @Test
     public void testGetAllCompounds() throws SQLException {
         Statement stmt = m_dbConn.createStatement();
@@ -26,6 +29,10 @@ public class CompoundDataGatewaysTest {
         assertEquals(normalList, methodList);
     }
 
+    /**
+     * Tests that getting compounds by element id will only return the correct compounds
+     * @throws SQLException
+     */
     @Test
     public void testGetCompoundsByElementID() throws SQLException {
         Statement stmt = m_dbConn.createStatement();

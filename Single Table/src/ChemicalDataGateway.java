@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Used as a row data gateway for Chemical Table
@@ -13,6 +14,7 @@ public class ChemicalDataGateway extends Gateway {
     String[] dissolves;
     long dissolvedBy = 0;
     String type = "";
+    protected static Connection m_dbConn = null;
 
     /**
      * Constructor that uses the id to create a row data gateway
@@ -34,11 +36,12 @@ public class ChemicalDataGateway extends Gateway {
             this.dissolvedBy = rs.getLong("dissolvedBy");
             this.type = rs.getString("type");
 
-            statement = conn.prepareCall("SELECT dissolvedBy FROM 'Chemical'" +
-                                                "WHERE id = '" + id + "'");
-            rs = statement.executeQuery();
-            for(int i = 0; rs.next(); i++) {
-                dissolves[i] = rs.getString(i);
+            if(type.equals("Acid")) {
+                statement = conn.prepareCall("SELECT dissolvedBy FROM 'Chemical' " + "WHERE id = '" + id + "'");
+                rs = statement.executeQuery();
+                for (int i = 0; rs.next(); i++) {
+                    dissolves[i] = rs.getString(i);
+                }
             }
             persist();
         } catch(Exception ex) {
@@ -55,7 +58,7 @@ public class ChemicalDataGateway extends Gateway {
      * @param aSolute - the acid solute of the chemical
      * @param diss - the list of chemicals that are capable of being dissolved
      * @param dissBy - the acid that a chemical is dissolved by
-     * @param type -
+     * @param type - Type of Chemical (i.e. Metal, Nonmetal, etc.)
      */
     public ChemicalDataGateway(String n, int number, double mass, int bSolute,
                                int aSolute, String[] diss, long dissBy, String type) {
@@ -216,7 +219,7 @@ public class ChemicalDataGateway extends Gateway {
 
     /**
      * Getter for dissolvedBy
-     * @return type - the acid that a chemical is dissolved by
+     * @return type - the type of chemical, (i.e. Metal, Nonmetal, etc.)
      */
     public String getType() {
         verifyExistence();
@@ -225,12 +228,121 @@ public class ChemicalDataGateway extends Gateway {
 
     /**
      * Setter for type
-     * @param type - the acid that a chemical is dissolved by
+     * @param type - the type of chemical, (i.e. Metal, Nonmetal, etc.)
      */
     public void setType(String type) {
         verifyExistence();
         this.type = type;
         persist();
+    }
+
+    //Table Data Gateway
+
+    /**
+     * Getter for all the metals dissolved by a certain acid
+     * @param acidID - the acid that a chemical is dissolved by
+     * @return metalList - the list of metals dissolved by a specific acid
+     * @throws SQLException
+     */
+    public ArrayList<ChemicalDataGateway> getAllMetalsDissolvedBy(long acidID) throws SQLException {
+        ArrayList<ChemicalDataGateway> metalList = new ArrayList<>();
+        Statement statement = m_dbConn.createStatement();
+        String stmt = new String("SELECT * FROM Chemical WHERE dissolvedBy="
+                + acidID + " AND Type='Metal'");
+        statement.executeQuery(stmt);
+
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            ChemicalDataGateway chem = new ChemicalDataGateway(rs.getLong("id"));
+            metalList.add(chem);
+        }
+
+        return metalList;
+    }
+
+    /**
+     * Getter for all acids that dissolved a certain element
+     * @param elementID - the identification of the element
+     * @return acidList - list of acids that dissolve a specified element
+     * @throws SQLException
+     */
+    public ArrayList<ChemicalDataGateway> getAllAcidsThatDissolve(long elementID) throws SQLException {
+        ArrayList<ChemicalDataGateway> acidList = new ArrayList<>();
+        Statement statement = m_dbConn.createStatement();
+        String stmt = new String("SELECT * FROM Chemical WHERE dissolves="
+                + elementID + " AND Type<>'Acid'");
+        statement.executeQuery(stmt);
+
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            ChemicalDataGateway chem = new ChemicalDataGateway(rs.getLong("id"));
+            acidList.add(chem);
+        }
+
+        return acidList;
+    }
+
+    /**
+     * Getter for all acids
+     *
+     * @return acidList - list of acids that dissolve a specified element
+     * @throws SQLException
+     */
+    public ArrayList<ChemicalDataGateway> getAllAcids() throws SQLException {
+        ArrayList<ChemicalDataGateway> acidList = new ArrayList<>();
+        Statement statement = m_dbConn.createStatement();
+        String stmt = new String("SELECT * FROM Chemical WHERE Type='Acid'");
+        statement.executeQuery(stmt);
+
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            ChemicalDataGateway chem = new ChemicalDataGateway(rs.getLong("id"));
+            acidList.add(chem);
+        }
+
+        return acidList;
+    }
+
+    /**
+     * Getter for all bases
+     *
+     * @return baseList - list of bases that dissolve a specified element
+     * @throws SQLException
+     */
+    public ArrayList<ChemicalDataGateway> getAllBases() throws SQLException {
+        ArrayList<ChemicalDataGateway> baseList = new ArrayList<>();
+        Statement statement = m_dbConn.createStatement();
+        String stmt = new String("SELECT * FROM Chemical WHERE Type='Base'");
+        statement.executeQuery(stmt);
+
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            ChemicalDataGateway chem = new ChemicalDataGateway(rs.getLong("id"));
+            baseList.add(chem);
+        }
+
+        return baseList;
+    }
+
+    /**
+     * Getter for all chemicals
+     *
+     * @return chemicalList - list of chemicals
+     * @throws SQLException
+     */
+    public ArrayList<ChemicalDataGateway> getAllChemicals() throws SQLException {
+        ArrayList<ChemicalDataGateway> chemicalList = new ArrayList<>();
+        Statement statement = m_dbConn.createStatement();
+        String stmt = new String("SELECT * FROM Chemical");
+        statement.executeQuery(stmt);
+
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            ChemicalDataGateway chem = new ChemicalDataGateway(rs.getLong("id"));
+            chemicalList.add(chem);
+        }
+
+        return chemicalList;
     }
 
     /**
