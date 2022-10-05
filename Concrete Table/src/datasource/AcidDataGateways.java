@@ -20,7 +20,6 @@ public class AcidDataGateways extends Gateway {
             ResultSet rs = statement.executeQuery();
             rs.next();
             this.name = rs.getString("name");
-            rs.next();
             this.solute = rs.getLong("solute");
 
             if (!validate()) {
@@ -43,10 +42,10 @@ public class AcidDataGateways extends Gateway {
         // store the new acid or base in the DB
         try {
             Statement statement = conn.createStatement();
-            String addAcidBase = "INSERT INTO AcidBase" +
+            String addAcid = "INSERT INTO Acid" +
                     "(id, name, solute) VALUES ('" +
                     id + "','" + name + "','" + solute + "')";
-            statement.executeUpdate(addAcidBase);
+            statement.executeUpdate(addAcid);
         } catch (Exception ex) {
             //key didn't insert because already in db?
         }
