@@ -11,7 +11,6 @@ import java.sql.Statement;
 public class BaseDataGateways extends Gateway {
     private String name;
     private long solute;
-    private long id;
 
     /**
      * Constructor that uses the id only to create a row gateway for an existing base in the DB
@@ -26,7 +25,6 @@ public class BaseDataGateways extends Gateway {
             ResultSet rs = statement.executeQuery();
             rs.next();
             this.name = rs.getString("name");
-            rs.next();
             this.solute = rs.getLong("solute");
 
             if (!validate()) {
@@ -66,25 +64,23 @@ public class BaseDataGateways extends Gateway {
      * empty, for this example it is not the case
      * @return if this instance is valid
      */
-    private boolean validate() {
-        return this.id != 0 && this.name != null && this.solute != 0;
-    }
+    private boolean validate() { return this.id > 0 && this.name != null && this.solute > 0; }
 
     public String getName() {
         if (!deleted) {
             return name;
         }
         else {
-            System.out.println("Base is deleted");
+            System.out.println("This base has been deleted");
         }
         return null;
     }
 
-    public void updateName(String name) throws SQLException {
+    public void updateName(String name) {
         if (!deleted) {
             if (persist(this.id, name, solute)) this.name = name;
         } else {
-            System.out.println("Base is deleted");
+            System.out.println("This base has been deleted");
         }
     }
 
@@ -92,7 +88,7 @@ public class BaseDataGateways extends Gateway {
         if (!deleted) {
             return solute;
         } else {
-            System.out.println("Base is deleted");
+            System.out.println("This base has been deleted");
         }
         return -1;
     }
@@ -101,7 +97,7 @@ public class BaseDataGateways extends Gateway {
         if (!deleted) {
             if (persist(this.id, this.name, solute)) this.solute = solute;
         } else {
-            System.out.println("Base is deleted");
+            System.out.println("This base has been deleted");
         }
     }
 
