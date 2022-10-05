@@ -1,0 +1,91 @@
+package datasource;
+
+import dto.MetalDTO;
+
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+public class AcidBaseGateways extends Gateway {
+    private String name;
+    private long solute;
+
+    public AcidBaseGateways(long id) {
+        super();
+        this.id = id;
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from AcidBase WHERE id = ?");
+            statement.setLong(1, id);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            this.name = rs.getString("name");
+            rs.next();
+            this.solute = rs.getLong("solute");
+
+            if (!validate()) {
+                this.id = -1;
+                this.name = null;
+                this.solute = -1;
+                System.out.println("No acid or base was found with the given id.");
+            }
+        } catch (Exception ex) {
+            // Some other error (There is not an error if the entry doesn't exist)
+        }
+    }
+
+    public AcidBaseGateways(String name, long solute) {
+        super();
+        this.id = KeyTableGateways.getNextValidKey();
+        this.name = name;
+        this.solute = solute;
+
+        // store the new acid or base in the DB
+        try {
+            Statement statement = conn.createStatement();
+            String addAcidBase = "INSERT INTO AcidBase" +
+                    "(id, name, solute) VALUES ('" +
+                    id + "','" + name + "','" + solute + "')";
+            statement.executeUpdate(addAcidBase);
+        } catch (Exception ex) {
+            //key didn't insert because already in db?
+        }
+    }
+
+    private boolean validate() {
+        return (name != null && solute < 1);
+    }
+
+    // Getters and setters
+    public String getName() {
+        if (!deleted) {
+            return name;
+        } else {
+            System.out.println("This acid has been deleted.");
+        }
+        return null;
+    }
+
+    // Table gateway to get all metals dissolved by this acid and get the gateways for them
+    public ArrayList<MetalDTO> getDissolvedMetals() {
+        ArrayList<MetalDTO> metals = new ArrayList<>();
+
+        // Construct our Metal DTOs from the DB
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Dissolves WHERE id = ?");
+            statement.setLong(1, id);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                metals.add(new MetalDTO(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getLong("atomicNumber"),
+                        rs.getLong("atomicMass"),
+                        rs.getLong("dissolvedBy")));
+            }
+        } catch (Exception ex) {
+            // Some other error (There is not an error if the entry doesn't exist)
+        }
+        return metals;
+    }
+}
