@@ -81,16 +81,76 @@ public class ChemicalDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void testGetDissolvedBy() throws SQLException {
+    public void testGetMetalsDissolvedBy() throws SQLException {
         ChemicalDataGateways gatewayOne = new ChemicalDataGateways(1234);
         gatewayOne.setDissolvedBy(1010);
+        gatewayOne.setType("Metal");
         ChemicalDataGateways gatewayTwo = new ChemicalDataGateways(5678);
         gatewayTwo.setDissolvedBy(1010);
+        gatewayTwo.setType("Metal");
         ChemicalDataGateways gatewayThree = new ChemicalDataGateways(9999);
         gatewayThree.setDissolvedBy(1010);
+        gatewayThree.setType("Metal");
 
         long[] IDListMethod = getMetalsDissolvedBy(1010);
         long[] IDList = new long[1234, 5678, 9999];
+
+        assertEquals(IDList, IDListMethod);
+    }
+
+    @Test
+    public void testGetAcidsThatDissolve() throws SQLException {
+        ChemicalDataGateways gatewayOne = new ChemicalDataGateways(1234);
+        gatewayOne.setDissolves(1010);
+        gatewayOne.setType("Acid");
+        ChemicalDataGateways gatewayTwo = new ChemicalDataGateways(5678);
+        gatewayTwo.setDissolves(1010);
+        gatewayTwo.setType("Acid");
+        ChemicalDataGateways gatewayThree = new ChemicalDataGateways(9999);
+        gatewayThree.setDissolves(1010);
+        gatewayThree.setType("Acid");
+
+        long[] IDListMethod = getAcidsThatDissolve(1010);
+        long[] IDList = new long[1234, 5678, 9999];
+
+        assertEquals(IDList, IDListMethod);
+    }
+
+    @Test
+    public void testGetAllOfAType() throws SQLException {
+        ChemicalDataGateways gatewayOne = new ChemicalDataGateways(1234);
+        gatewayOne.setType("Acid");
+        ChemicalDataGateways gatewayTwo = new ChemicalDataGateways(5678);
+        gatewayTwo.setType("Acid");
+        ChemicalDataGateways gatewayThree = new ChemicalDataGateways(9999);
+        gatewayThree.setType("Acid");
+
+        long[] IDListMethod = getAllAcids();
+        long[] IDList = new long[1234, 5678, 9999];
+
+        assertEquals(IDList, IDListMethod);
+
+        hemicalDataGateways gatewayOne = new ChemicalDataGateways(1234);
+        gatewayOne.setType("Metal");
+        ChemicalDataGateways gatewayTwo = new ChemicalDataGateways(5678);
+        gatewayTwo.setType("Metal");
+        ChemicalDataGateways gatewayThree = new ChemicalDataGateways(9999);
+        gatewayThree.setType("Metal");
+
+        IDListMethod = getAllMetals();
+        IDList = new long[1234, 5678, 9999];
+
+        assertEquals(IDList, IDListMethod);
+
+        hemicalDataGateways gatewayOne = new ChemicalDataGateways(1234);
+        gatewayOne.setType("Base");
+        ChemicalDataGateways gatewayTwo = new ChemicalDataGateways(5678);
+        gatewayTwo.setType("Base");
+        ChemicalDataGateways gatewayThree = new ChemicalDataGateways(9999);
+        gatewayThree.setType("Base");
+
+        IDListMethod = getAllAcids();
+        IDList = new long[1234, 5678, 9999];
 
         assertEquals(IDList, IDListMethod);
     }

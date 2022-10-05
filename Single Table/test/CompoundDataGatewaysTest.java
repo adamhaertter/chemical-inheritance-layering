@@ -45,4 +45,21 @@ public class CompoundDataGatewaysTest {
 
         assertEquals(normalList, methodList);
     }
+
+    /**
+     * Tests that getting compound elements will return the correct compound elements
+     * @throws SQLException
+     */
+    @Test
+    public void testGetCompoundElements() throws SQLException {
+        Statement stmt = m_dbConn.createStatement();
+        Compound compOne = new Compound(12345, 9999);
+        Compound compTwo = new Compound(5678, 9999);
+        ArrayList<Compound> methodList = testGetCompoundElements(9999);
+        ArrayList<Compound> normalList;
+        normalList.append(compOne);
+        normalList.append(compTwo);
+
+        assertEquals(normalList, methodList);
+    }
 }
