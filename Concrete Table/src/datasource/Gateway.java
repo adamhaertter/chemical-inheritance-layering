@@ -13,6 +13,7 @@ import java.sql.SQLException;
 public class Gateway {
     protected boolean deleted = false;
     protected Connection conn;
+    protected long id;
 
     public Gateway() {
         this.conn = setUpConnection();
