@@ -7,11 +7,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class AcidBaseGateways extends Gateway {
+public class AcidDataGateways extends Gateway {
     private String name;
     private long solute;
 
-    public AcidBaseGateways(long id) {
+    public AcidDataGateways(long id) {
         super();
         this.id = id;
         try {
@@ -34,7 +34,7 @@ public class AcidBaseGateways extends Gateway {
         }
     }
 
-    public AcidBaseGateways(String name, long solute) {
+    public AcidDataGateways(String name, long solute) {
         super();
         this.id = KeyTableGateways.getNextValidKey();
         this.name = name;
@@ -53,7 +53,19 @@ public class AcidBaseGateways extends Gateway {
     }
 
     private boolean validate() {
-        return (name != null && solute < 1);
+        return (name != null && solute > 0);
+    }
+
+    private boolean persist(long id, String name, long solute) {
+        try {
+            Statement statement = conn.createStatement();
+            statement.executeUpdate("UPDATE Acid SET name = '" + name + "', solute = '" + solute +
+                    "' WHERE id = '" + id + "'");
+            return true;
+        } catch (Exception ex) {
+            //key didn't insert because already in db?
+            return false;
+        }
     }
 
     // Getters and setters
@@ -65,6 +77,33 @@ public class AcidBaseGateways extends Gateway {
         }
         return null;
     }
+
+    public void updateName(String name) {
+        if (!deleted) {
+            if (persist(this.id, name, this.solute)) this.name = name;
+        } else {
+            System.out.println("This acid has been deleted.");
+        }
+    }
+
+    public long getSolute() {
+        if (!deleted) {
+            return solute;
+        } else {
+            System.out.println("This acid has been deleted.");
+        }
+        return 0;
+    }
+
+    public void updateSolute(long solute) {
+        if (!deleted) {
+            if (persist(this.id, this.name, solute)) this.solute = solute;
+        } else {
+            System.out.println("This acid has been deleted.");
+        }
+    }
+
+
 
     // Table gateway to get all metals dissolved by this acid and get the gateways for them
     public ArrayList<MetalDTO> getDissolvedMetals() {
