@@ -47,6 +47,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @return compoundID - the identification of the compound
      */
     public long getCompoundID() {
+        verifyExistence();
         return compoundID;
     }
 
@@ -55,6 +56,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @param compoundID - the identification of the compound
      */
     public void setCompoundID(long compoundID) {
+        verifyExistence();
         this.compoundID = compoundID;
     }
 
@@ -63,6 +65,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @return elementID - the identification of the element
      */
     public long getElementID() {
+        verifyExistence();
         return elementID;
     }
 
@@ -71,6 +74,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @param elementID - the identification of the element
      */
     public void setElementID(long elementID) {
+        verifyExistence();
         this.elementID = elementID;
     }
 
@@ -80,6 +84,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @throws SQLException
      */
     public ArrayList<CompoundDataGateway> getAllCompounds() throws SQLException {
+        verifyExistence();
         ArrayList<CompoundDataGateway> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
         String stmt = new String("SELECT * FROM CompoundToElement");
@@ -101,6 +106,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @throws SQLException
      */
     public ArrayList<CompoundDataGateway> getCompoundsByElementID(long elemID) throws SQLException {
+        verifyExistence();
         ArrayList<CompoundDataGateway> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
         String stmt = new String("SELECT * FROM CompoundToElement WHERE ElementId=" + elemID);
@@ -122,6 +128,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @throws SQLException
      */
     public ArrayList<CompoundDataGateway> getCompoundElements(int compID) throws SQLException {
+        verifyExistence();
         ArrayList<CompoundDataGateway> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
         String stmt = new String("SELECT * FROM CompoundToElement WHERE CompoundId=" + compID);
