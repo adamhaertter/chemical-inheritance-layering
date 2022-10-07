@@ -1,3 +1,5 @@
+package datasource;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -26,7 +28,7 @@ public class ChemicalDataGateway extends Gateway {
         super();
         this.id = identification;
         try {
-            CallableStatement statement = conn.prepareCall("SELECT * FROM 'Chemical' WHERE id = '" + id + "'");
+            CallableStatement statement = m_dbConn.prepareCall("SELECT * FROM 'Chemical' WHERE id = '" + id + "'");
             ResultSet rs = statement.executeQuery();
             this.name = rs.getString("name");
             this.atomicNumber = rs.getInt("atomicNumber");
@@ -37,7 +39,7 @@ public class ChemicalDataGateway extends Gateway {
             this.type = rs.getString("type");
 
             if(type.equals("Acid")) {
-                statement = conn.prepareCall("SELECT dissolvedBy FROM 'Chemical' " + "WHERE id = '" + id + "'");
+                statement = m_dbConn.prepareCall("SELECT dissolvedBy FROM 'Chemical' " + "WHERE id = '" + id + "'");
                 rs = statement.executeQuery();
                 for (int i = 0; rs.next(); i++) {
                     dissolves[i] = rs.getString(i);
@@ -236,7 +238,7 @@ public class ChemicalDataGateway extends Gateway {
         persist();
     }
 
-    //Table Data Gateway
+    //Table Data datasource.Gateway
 
     /**
      * Getter for all the metals dissolved by a certain acid
@@ -352,7 +354,7 @@ public class ChemicalDataGateway extends Gateway {
      */
     public boolean persist() {
         try {
-            Statement statement = conn.createStatement();
+            Statement statement = m_dbConn.createStatement();
             statement.executeUpdate("UPDATE Chemical SET id = '" + id + "', name = '" + name + "', " +
                     "atomicNumber = '" + atomicNumber + "', atomicMass = '" + atomicMass + "', baseSolute = '"
                     + baseSolute + "', acidSolute = '" + acidSolute + "', dissolves = '" + dissolves +

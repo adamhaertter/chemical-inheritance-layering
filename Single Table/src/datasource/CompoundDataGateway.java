@@ -1,6 +1,7 @@
+package datasource;
+
 import java.sql.*;
 import java.util.ArrayList;
-import config.ProjectConfig;
 
 /**
  * Used as a table data gateway for the CompoundToElement Table
@@ -19,7 +20,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
         super(compound);
         this.compoundID = compound;
         try {
-            CallableStatement statement = conn.prepareCall("SELECT * FROM 'CompoundToElement'" +
+            CallableStatement statement = ChemicalDataGateway.m_dbConn.prepareCall("SELECT * FROM 'CompoundToElement'" +
                                                                 "WHERE CompoundId = '" + compound + "'");
             ResultSet rs = statement.executeQuery();
             this.elementID = rs.getLong("ElementId");
@@ -151,7 +152,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      */
     public boolean persist() {
         try {
-            Statement statement = conn.createStatement();
+            Statement statement = ChemicalDataGateway.m_dbConn.createStatement();
             statement.executeUpdate("UPDATE CompoundToElement SET CompoundId = '" + compoundID + "'," +
                     "ElementId = '" + elementID + "' WHERE CompoundId = '" + compoundID + "'");
         } catch (Exception ex) {

@@ -1,3 +1,8 @@
+package datasource;
+
+import datasource.ChemicalDataGateway;
+import datasource.CompoundDataGateway;
+
 import java.util.ArrayList;
 
 public class Main {
