@@ -1,13 +1,16 @@
 package test;
 
 
-import org.junit.Test;
+import dto.CompoundToElementDTO;
+import org.junit.jupiter.api.Assertions;
 
-import java.sql.SQLException;
-import java.sql.Statement;
+import org.junit.jupiter.api.Assertions;
+
+import java.sql.*;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CompoundDataGatewayTest {
     /**
@@ -17,14 +20,14 @@ class CompoundDataGatewayTest {
     @org.junit.jupiter.api.Test
     public void testGetAllCompounds() throws SQLException {
         Statement stmt = m_dbConn.createStatement();
-        Compound compOne = new Compound(12345, 9999);
-        Compound compTwo = new Compound(5678, 9999);
-        ArrayList<Compound> methodList = getAllCompounds();
-        ArrayList<Compound> normalList = new ArrayList<Compound>();
+        CompoundToElementDTO compOne = new CompoundToElementDTO(12345, 9999);
+        CompoundToElementDTO compTwo = new CompoundToElementDTO(5678, 9999);
+        ArrayList<CompoundToElementDTO> methodList = getAllCompounds();
+        ArrayList<CompoundToElementDTO> normalList = new ArrayList<CompoundToElementDTO>();
         normalList.append(compOne);
         normalList.append(compTwo);
 
-        assertEquals(normalList, methodList);
+        Assertions.assertEquals(normalList, methodList);
     }
 
     /**
@@ -34,14 +37,14 @@ class CompoundDataGatewayTest {
     @org.junit.jupiter.api.Test
     public void testGetCompoundsByElementID() throws SQLException {
         Statement stmt = m_dbConn.createStatement();
-        Compound compOne = new Compound(12345, 9999);
-        Compound compTwo = new Compound(5678, 9999);
-        ArrayList<Compound> methodList = getCompoundsByElementID(9999);
-        ArrayList<Compound> normalList = new ArrayList<Compound>();
+        CompoundToElementDTO compOne = new CompoundToElementDTO(12345, 9999);
+        CompoundToElementDTO compTwo = new CompoundToElementDTO(5678, 9999);
+        ArrayList<CompoundToElementDTO> methodList = getCompoundsByElementID(9999);
+        ArrayList<CompoundToElementDTO> normalList = new ArrayList<>();
         normalList.append(compOne);
         normalList.append(compTwo);
 
-        assertEquals(normalList, methodList);
+        Assertions.assertEquals(normalList, methodList);
     }
 
     /**
@@ -51,13 +54,13 @@ class CompoundDataGatewayTest {
     @org.junit.jupiter.api.Test
     public void testGetCompoundElements() throws SQLException {
         Statement stmt = m_dbConn.createStatement();
-        Compound compOne = new Compound(12345, 9999);
-        Compound compTwo = new Compound(5678, 9999);
-        ArrayList<Compound> methodList = getCompoundElements(9999);
-        ArrayList<Compound> normalList = new ArrayList<Compound>();
+        CompoundToElementDTO compOne = new CompoundToElementDTO(12345, 9999);
+        CompoundToElementDTO compTwo = new CompoundToElementDTO(5678, 9999);
+        ArrayList<CompoundToElementDTO> methodList = getCompoundElements(9999);
+        ArrayList<CompoundToElementDTO> normalList = new ArrayList<CompoundToElementDTO>();
         normalList.append(compOne);
         normalList.append(compTwo);
 
-        assertEquals(normalList, methodList);
+        Assertions.assertEquals(normalList, methodList);
     }
 }
