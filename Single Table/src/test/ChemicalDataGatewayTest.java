@@ -2,6 +2,7 @@ package test;
 
 import config.ProjectConfig;
 import datasource.ChemicalDataGateway;
+import dto.ChemicalDTO;
 import org.junit.jupiter.api.Assertions;
 
 import java.sql.*;
@@ -18,12 +19,12 @@ class ChemicalDataGatewayTest {
     void setUp() throws SQLException {
         conn = DriverManager.getConnection(ProjectConfig.DatabaseURL, ProjectConfig.DatabaseUser, ProjectConfig.DatabasePassword);
         conn.setAutoCommit(false);
+
         // Insert Test Data
-        Statement stmnt = conn.createStatement();
-        String insertTestBase = "INSERT into Chemical VALUES (1, 'TestBase', 2)";
-        String insertTestSolute = "INSERT into Chemical VALUES (2, 'TestBase', 1)";
-        stmnt.executeUpdate(insertTestSolute);
-        stmnt.executeUpdate(insertTestBase);
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate("INSERT into Chemical VALUES (1, "TestMetal", 2)");
+        stmt.executeUpdate("INSERT into Chemical VALUES (2, "TestBase", 1)");
+        stmt.executeUpdate("INSERT into Chemical VALUES (3, "TestAcid", 2)");
     }
 
     @org.junit.jupiter.api.Test
@@ -37,22 +38,9 @@ class ChemicalDataGatewayTest {
      */
     @org.junit.jupiter.api.Test
     public void testInitializationWithEverything() {
-        //Statement stmt = m_dbConn.createStatement();
         ChemicalDataGateway Gateway = new ChemicalDataGateway("Iron", 26, 55.85,
-                0, 0, dissolved, 5678);
-        //String statement = new String("SELECT * FROM project-1-single-table WHERE name=\"Iron\"");
-        //stmt.execute(statement);
+                0, 0, dissolved, 5678, "Metal");
 
-        /*
-        ResultSet getInfo = stmt.getResultSet();
-        assertEquals("Iron", getInfo.getString("name"));
-        assertEquals(26, getInfo.getInt("atomicNumber"));
-        assertEquals(55.85, getInfo.getDouble("atomicMass"));
-        assertEquals(0, getInfo.getInt("baseSolute"));
-        assertEquals(0, getInfo.getInt("acidSolute"));
-        assertEquals(dissolved[0], getInfo.getString("dissolved"));
-        assertEquals(5678, getInfo.getLong("dissolvedBy"));
-        */
         Assertions.assertEquals("Iron", Gateway.getName());
         Assertions.assertEquals(26, Gateway.getAtomicNumber());
         Assertions.assertEquals(55.85, Gateway.getAtomicMass());
@@ -60,6 +48,7 @@ class ChemicalDataGatewayTest {
         Assertions.assertEquals(0, Gateway.getAcidSolute());
         Assertions.assertEquals(dissolved, Gateway.getDissolves());
         Assertions.assertEquals(5678, Gateway.getDissolvedBy());
+        Assertions.assertEquals("Metal", Gateway.getType());
     }
 
     /**
@@ -84,15 +73,17 @@ class ChemicalDataGatewayTest {
      */
     @org.junit.jupiter.api.Test
     public void testGetMetalsDissolvedBy() throws SQLException {
-        ChemicalDataGateway gatewayOne = new ChemicalDataGateway(1234);
-        gatewayOne.setDissolvedBy(1010);
-        gatewayOne.setType("Metal");
+        ChemicalDTO chemOne = new ChemicalDTO(1234);
+        chemOne.setDissolvedBy(1010);
+        chemOne.setType("Metal");
         ChemicalDataGateway gatewayTwo = new ChemicalDataGateway(5678);
         gatewayTwo.setDissolvedBy(1010);
         gatewayTwo.setType("Metal");
         ChemicalDataGateway gatewayThree = new ChemicalDataGateway(9999);
         gatewayThree.setDissolvedBy(1010);
         gatewayThree.setType("Metal");
+
+
 
         long[] IDListMethod = getMetalsDissolveBy(1010);
         long[] IDList = new long[1234, 5678, 9999];

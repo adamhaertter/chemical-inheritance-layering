@@ -1,5 +1,7 @@
 package datasource;
 
+import dto.CompoundToElementDTO;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -24,7 +26,6 @@ public class CompoundDataGateway extends ChemicalDataGateway {
                                                                 "WHERE CompoundId = '" + compoundID + "'");
             ResultSet rs = statement.executeQuery();
             this.elementID = rs.getLong("ElementId");
-            persist();
         } catch(Exception ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
@@ -100,16 +101,17 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @return allCompoundsList - a list of all the compounds in the table
      * @throws SQLException
      */
-    public ArrayList<CompoundDataGateway> getAllCompounds() throws SQLException {
+    public ArrayList<CompoundToElementDTO> getAllCompounds() throws SQLException {
         verifyExistence();
-        ArrayList<CompoundDataGateway> compoundList = new ArrayList<>();
+        ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
         String stmt = new String("SELECT * FROM CompoundToElement");
         statement.execute(stmt);
 
         ResultSet rs = statement.getResultSet();
         while(rs.next()) {
-            CompoundDataGateway compound = new CompoundDataGateway(rs.getLong("CompoundID"));
+            CompoundToElementDTO compound = new CompoundToElementDTO(rs.getLong("CompoundID"),
+                                                                    rs.getLong("ElementID"));
             compoundList.add(compound);
         }
 
@@ -122,16 +124,16 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @return compoundList - a list of compounds
      * @throws SQLException
      */
-    public ArrayList<CompoundDataGateway> getCompoundsByElementID(long elemID) throws SQLException {
+    public ArrayList<CompoundToElementDTO> getCompoundsByElementID(long elemID) throws SQLException {
         verifyExistence();
-        ArrayList<CompoundDataGateway> compoundList = new ArrayList<>();
+        ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
-        String stmt = new String("SELECT * FROM CompoundToElement WHERE ElementId=" + elemID);
+        String stmt = "SELECT * FROM CompoundToElement WHERE ElementId=" + elemID;
         statement.execute(stmt);
 
         ResultSet rs = statement.getResultSet();
         while(rs.next()) {
-            CompoundDataGateway compound = new CompoundDataGateway(rs.getLong("CompoundID"), elemID);
+            CompoundToElementDTO compound = new CompoundToElementDTO(rs.getLong("CompoundID"), elemID);
             compoundList.add(compound);
         }
 
@@ -144,16 +146,16 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @return compoundList - a list of compounds
      * @throws SQLException
      */
-    public ArrayList<CompoundDataGateway> getCompoundElements(int compID) throws SQLException {
+    public ArrayList<CompoundToElementDTO> getCompoundElements(int compID) throws SQLException {
         verifyExistence();
-        ArrayList<CompoundDataGateway> compoundList = new ArrayList<>();
+        ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
         String stmt = new String("SELECT * FROM CompoundToElement WHERE CompoundId=" + compID);
         statement.execute(stmt);
 
         ResultSet getCompounds = statement.getResultSet();
         while(getCompounds.next()) {
-            CompoundDataGateway compound = new CompoundDataGateway(compID,
+            CompoundToElementDTO compound = new CompoundToElementDTO(compID,
                                                                     getCompounds.getLong("ElementID"));
             compoundList.add(compound);
         }
