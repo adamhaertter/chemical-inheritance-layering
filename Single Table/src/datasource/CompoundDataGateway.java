@@ -14,14 +14,14 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     /**
      * Constructor that creates an entry based off of the compound ID
      *
-     * @param compound - the compoundID
+     * @param compoundID - the compoundID
      */
-    public CompoundDataGateway(long compound) throws SQLException {
-        super(compound);
-        this.compoundID = compound;
+    public CompoundDataGateway(long compoundID) throws SQLException {
+        super(compoundID);
+        this.compoundID = compoundID;
         try {
             CallableStatement statement = ChemicalDataGateway.m_dbConn.prepareCall("SELECT * FROM 'CompoundToElement'" +
-                                                                "WHERE CompoundId = '" + compound + "'");
+                                                                "WHERE CompoundId = '" + compoundID + "'");
             ResultSet rs = statement.executeQuery();
             this.elementID = rs.getLong("ElementId");
             persist();
@@ -33,14 +33,14 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     /**
      * Constructor that creates an entry based off of the compound ID and element ID
      *
-     * @param compound - the compoundID
-     * @param element - the elementID
+     * @param compoundID - the compoundID
+     * @param elementID - the elementID
      */
-    public CompoundDataGateway(long compound, long element) throws SQLException {
-        super(compound);
-        this.compoundID = compound;
-        this.elementID = element;
-        persist();
+    public CompoundDataGateway(long compoundID, long elementID) throws SQLException {
+        super(compoundID);
+        this.compoundID = compoundID;
+        this.elementID = elementID;
+        persist(compoundID, elementID);
     }
 
     /**
@@ -48,8 +48,12 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @return compoundID - the identification of the compound
      */
     public long getCompoundID() {
-        verifyExistence();
-        return compoundID;
+        if (!deleted) {
+            return compoundID;
+        } else {
+            System.out.println("This Compound has been deleted.");
+        }
+        return -1;
     }
 
     /**
@@ -57,8 +61,12 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @param compoundID - the identification of the compound
      */
     public void setCompoundID(long compoundID) {
-        verifyExistence();
-        this.compoundID = compoundID;
+        if (!deleted) {
+            if (persist(compoundID, this.elementID))
+                this.compoundID = compoundID;
+        } else {
+            System.out.println("This Compound has been deleted.");
+        }
     }
 
     /**
@@ -66,8 +74,12 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @return elementID - the identification of the element
      */
     public long getElementID() {
-        verifyExistence();
-        return elementID;
+        if (!deleted) {
+            return elementID;
+        } else {
+            System.out.println("This Compound has been deleted.");
+        }
+        return -1;
     }
 
     /**
@@ -75,8 +87,12 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @param elementID - the identification of the element
      */
     public void setElementID(long elementID) {
-        verifyExistence();
-        this.elementID = elementID;
+        if (!deleted) {
+            if (persist(this.compoundID, elementID))
+                this.elementID = elementID;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
     }
 
     /**
@@ -150,7 +166,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      *
      * @return true or false
      */
-    public boolean persist() {
+    public boolean persist(long compoundID, long elementID) {
         try {
             Statement statement = ChemicalDataGateway.m_dbConn.createStatement();
             statement.executeUpdate("UPDATE CompoundToElement SET CompoundId = '" + compoundID + "'," +
@@ -165,13 +181,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     /**
      * Clarifies if the row has been deleted or not
      */
-    private void verifyExistence() {
-        if (deleted)
-            try {
-                throw new Exception("This item has been deleted.");
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+    private boolean verifyExistence() {
+        return (compoundID > 0 && elementID > 0);
     }
 }

@@ -45,7 +45,7 @@ public class ChemicalDataGateway extends Gateway {
                     dissolves[i] = rs.getString(i);
                 }
             }
-            persist();
+            persist(id, name, atomicNumber, atomicMass, baseSolute, acidSolute, dissolves, dissolvedBy, type);
         } catch(Exception ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
@@ -73,26 +73,22 @@ public class ChemicalDataGateway extends Gateway {
         this.dissolves = diss;
         this.dissolvedBy = dissBy;
         this.type = type;
-        persist();
+        persist(this.id, this.name, this.atomicNumber, atomicMass, this.baseSolute, this.acidSolute,
+                this.dissolves, this.dissolvedBy, this.type);
     }
 
     //Getters & Setters ----------------------------------------------------------------------
-    /**
-     * Getter for the id
-     * @return id - the identification
-     */
-    public long getID() {
-        verifyExistence();
-        return id;
-    }
-
     /**
      * Getter for the name
      * @return name - the name of the chemical
      */
     public String getName() {
-        verifyExistence();
-        return name;
+        if (!deleted) {
+            return name;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return null;
     }
 
     /**
@@ -100,9 +96,13 @@ public class ChemicalDataGateway extends Gateway {
      * @param name - the name of the chemical
      */
     public void setName(String name) {
-        verifyExistence();
-        this.name = name;
-        persist();
+        if (!deleted) {
+            if (persist(this.id, name, this.atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
+                    this.dissolves, this.dissolvedBy, this.type))
+                this.name = name;
+        } else {
+            System.out.println("This metal has been deleted.");
+        }
     }
 
     /**
@@ -110,8 +110,12 @@ public class ChemicalDataGateway extends Gateway {
      * @return atomicNumber - the atomic number of the chemical
      */
     public int getAtomicNumber() {
-        verifyExistence();
-        return atomicNumber;
+        if (!deleted) {
+            return atomicNumber;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return -1;
     }
 
     /**
@@ -119,9 +123,13 @@ public class ChemicalDataGateway extends Gateway {
      * @param atomicNumber - the atomic number of the chemical
      */
     public void setAtomicNumber(int atomicNumber) {
-        verifyExistence();
-        this.atomicNumber = atomicNumber;
-        persist();
+        if (!deleted) {
+            if (persist(this.id, this.name, atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
+                    this.dissolves, this.dissolvedBy, this.type))
+                this.atomicNumber = atomicNumber;
+        } else {
+            System.out.println("This metal has been deleted.");
+        }
     }
 
     /**
@@ -129,8 +137,12 @@ public class ChemicalDataGateway extends Gateway {
      * @return atomicMass - the atomic mass of the chemical
      */
     public double getAtomicMass() {
-        verifyExistence();
-        return atomicMass;
+        if (!deleted) {
+            return atomicMass;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return -1;
     }
 
     /**
@@ -138,9 +150,13 @@ public class ChemicalDataGateway extends Gateway {
      * @param atomicMass - the atomic mass of the chemical
      */
     public void setAtomicMass(double atomicMass) {
-        verifyExistence();
-        this.atomicMass = atomicMass;
-        persist();
+        if (!deleted) {
+            if (persist(this.id, this.name, this.atomicNumber, atomicMass, this.baseSolute, this.acidSolute,
+                    this.dissolves, this.dissolvedBy, this.type))
+                this.atomicMass = atomicMass;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
     }
 
     /**
@@ -148,8 +164,12 @@ public class ChemicalDataGateway extends Gateway {
      * @return baseSolute - the base solute of the chemical
      */
     public int getBaseSolute() {
-        verifyExistence();
-        return baseSolute;
+        if (!deleted) {
+            return baseSolute;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return -1;
     }
 
     /**
@@ -157,9 +177,13 @@ public class ChemicalDataGateway extends Gateway {
      * @param baseSolute - the base solute of the chemical
      */
     public void setBaseSolute(int baseSolute) {
-        verifyExistence();
-        this.baseSolute = baseSolute;
-        persist();
+        if (!deleted) {
+            if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, baseSolute, this.acidSolute,
+                    this.dissolves, this.dissolvedBy, this.type))
+                this.baseSolute = baseSolute;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
     }
 
     /**
@@ -167,8 +191,12 @@ public class ChemicalDataGateway extends Gateway {
      * @return acidSolute - the acid solute of the chemical
      */
     public int getAcidSolute() {
-        verifyExistence();
-        return acidSolute;
+        if (!deleted) {
+            return acidSolute;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return -1;
     }
 
     /**
@@ -176,9 +204,13 @@ public class ChemicalDataGateway extends Gateway {
      * @param acidSolute - the acid solute of the chemical
      */
     public void setAcidSolute(int acidSolute) {
-        verifyExistence();
-        this.acidSolute = acidSolute;
-        persist();
+        if (!deleted) {
+            if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, this.baseSolute, acidSolute,
+                    this.dissolves, this.dissolvedBy, this.type))
+                this.acidSolute = acidSolute;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
     }
 
     /**
@@ -186,8 +218,12 @@ public class ChemicalDataGateway extends Gateway {
      * @return dissolves - the list of chemicals that are capable of being dissolved
      */
     public String[] getDissolves() {
-        verifyExistence();
-        return dissolves;
+        if (!deleted) {
+            return dissolves;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return null;
     }
 
     /**
@@ -195,9 +231,13 @@ public class ChemicalDataGateway extends Gateway {
      * @param dissolves - the list of chemicals that are capable of being dissolved
      */
     public void setDissolves(String[] dissolves) {
-        verifyExistence();
-        this.dissolves = dissolves;
-        persist();
+        if (!deleted) {
+            if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
+                    dissolves, this.dissolvedBy, this.type))
+                this.dissolves = dissolves;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
     }
 
     /**
@@ -205,8 +245,12 @@ public class ChemicalDataGateway extends Gateway {
      * @return dissolvedBy - the acid that a chemical is dissolved by
      */
     public long getDissolvedBy() {
-        verifyExistence();
-        return dissolvedBy;
+        if (!deleted) {
+            return dissolvedBy;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return -1;
     }
 
     /**
@@ -214,9 +258,13 @@ public class ChemicalDataGateway extends Gateway {
      * @param dissolvedBy - the acid that a chemical is dissolved by
      */
     public void setDissolvedBy(long dissolvedBy) {
-        verifyExistence();
-        this.dissolvedBy = dissolvedBy;
-        persist();
+        if (!deleted) {
+            if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
+                    this.dissolves, dissolvedBy, this.type))
+                this.dissolvedBy = dissolvedBy;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
     }
 
     /**
@@ -224,8 +272,12 @@ public class ChemicalDataGateway extends Gateway {
      * @return type - the type of chemical, (i.e. Metal, Nonmetal, etc.)
      */
     public String getType() {
-        verifyExistence();
-        return type;
+        if (!deleted) {
+            return type;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return null;
     }
 
     /**
@@ -233,9 +285,13 @@ public class ChemicalDataGateway extends Gateway {
      * @param type - the type of chemical, (i.e. Metal, Nonmetal, etc.)
      */
     public void setType(String type) {
-        verifyExistence();
-        this.type = type;
-        persist();
+        if (!deleted) {
+            if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
+                    this.dissolves, this.dissolvedBy, type))
+                this.type = type;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
     }
 
     //Table Data datasource.Gateway
@@ -348,34 +404,31 @@ public class ChemicalDataGateway extends Gateway {
     }
 
     /**
-     * Takes all of the elements currently in the object and pushes them to the DB
+     * Takes all the elements currently in the object and pushes them to the DB
      *
      * @return true or false
      */
-    public boolean persist() {
+    public boolean persist(long id, String name, int atomicNumber, double atomicMass, int baseSolute, int acidSolute,
+                           String[] dissolves, long dissolvedBy, String type) {
         try {
             Statement statement = m_dbConn.createStatement();
             statement.executeUpdate("UPDATE Chemical SET id = '" + id + "', name = '" + name + "', " +
                     "atomicNumber = '" + atomicNumber + "', atomicMass = '" + atomicMass + "', baseSolute = '"
                     + baseSolute + "', acidSolute = '" + acidSolute + "', dissolves = '" + dissolves +
                     "', dissolvedBy = '" + dissolvedBy + "', type = '" + type + "' WHERE id = '" + id + "'");
+            return true;
         } catch (Exception ex) {
             // Fails because already exists
             return false;
         }
-        return true;
     }
 
     /**
      * Clarifies if the row has been deleted or not
+     *
+     * @return true or false
      */
-    private void verifyExistence() {
-        if (deleted)
-            try {
-                throw new Exception("This item has been deleted.");
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+    private boolean verifyExistence() {
+        return (name != null && atomicNumber > 0 && atomicMass > 0 && !(type.equals("")));
     }
 }

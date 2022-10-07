@@ -2,7 +2,7 @@ package test;
 
 import config.ProjectConfig;
 import datasource.ChemicalDataGateway;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import java.sql.*;
 import java.sql.DriverManager;
@@ -33,22 +33,6 @@ class ChemicalDataGatewayTest {
     }
 
     /**
-     * Tests when it initializes with identification
-     */
-    @org.junit.jupiter.api.Test
-    public void testInitializationWithID() {
-        ChemicalDataGateway Gateway = new ChemicalDataGateway(1234567);
-        /*
-        String statement = new String("SELECT * FROM project-1-single-table WHERE id=1234567");
-        stmt.execute(statement);
-
-        ResultSet getID = stmt.getResultSet();
-        assertEquals(1234567, getID.getLong("id"));
-         */
-        assertEquals(1234567, Gateway.getID());
-    }
-
-    /**
      * Tests when it initializes with all the information
      */
     @org.junit.jupiter.api.Test
@@ -69,13 +53,13 @@ class ChemicalDataGatewayTest {
         assertEquals(dissolved[0], getInfo.getString("dissolved"));
         assertEquals(5678, getInfo.getLong("dissolvedBy"));
         */
-        assertEquals("Iron", Gateway.getName());
-        assertEquals(26, Gateway.getAtomicNumber());
-        assertEquals(55.85, Gateway.getAtomicMass());
-        assertEquals(0, Gateway.getBaseSolute());
-        assertEquals(0, Gateway.getAcidSolute());
-        assertEquals(dissolved, Gateway.getDissolves());
-        assertEquals(5678, Gateway.getDissolvedBy());
+        Assertions.assertEquals("Iron", Gateway.getName());
+        Assertions.assertEquals(26, Gateway.getAtomicNumber());
+        Assertions.assertEquals(55.85, Gateway.getAtomicMass());
+        Assertions.assertEquals(0, Gateway.getBaseSolute());
+        Assertions.assertEquals(0, Gateway.getAcidSolute());
+        Assertions.assertEquals(dissolved, Gateway.getDissolves());
+        Assertions.assertEquals(5678, Gateway.getDissolvedBy());
     }
 
     /**
@@ -113,7 +97,7 @@ class ChemicalDataGatewayTest {
         long[] IDListMethod = getMetalsDissolveBy(1010);
         long[] IDList = new long[1234, 5678, 9999];
 
-        assertEquals(IDList, IDListMethod);
+        Assertions.assertEquals(IDList, IDListMethod);
     }
 
     @org.junit.jupiter.api.Test
@@ -131,7 +115,7 @@ class ChemicalDataGatewayTest {
         long[] IDListMethod = getAcidsThatDissolve(1010);
         long[] IDList = new long[1234, 5678, 9999];
 
-        assertEquals(IDList, IDListMethod);
+        Assertions.assertEquals(IDList, IDListMethod);
     }
 
     @org.junit.jupiter.api.Test
@@ -146,7 +130,7 @@ class ChemicalDataGatewayTest {
         long[] IDListMethod = getAllAcids();
         long[] IDList = new long[1234, 5678, 9999];
 
-        assertEquals(IDList, IDListMethod);
+        Assertions.assertEquals(IDList, IDListMethod);
 
         ChemicalDataGateway metalGatewayOne = new ChemicalDataGateway(1234);
         metalGatewayOne.setType("Metal");
@@ -156,9 +140,8 @@ class ChemicalDataGatewayTest {
         metalGatewayThree.setType("Metal");
 
         IDListMethod = getAllMetals();
-        IDList = new long[1234, 5678, 9999];
 
-        assertEquals(IDList, IDListMethod);
+        Assertions.assertEquals(IDList, IDListMethod);
 
         ChemicalDataGateway baseGatewayOne = new ChemicalDataGateway(1234);
         baseGatewayOne.setType("Base");
@@ -168,8 +151,7 @@ class ChemicalDataGatewayTest {
         baseGatewayThree.setType("Base");
 
         IDListMethod = getAllAcids();
-        IDList = new long[1234, 5678, 9999];
 
-        assertEquals(IDList, IDListMethod);
+        Assertions.assertEquals(IDList, IDListMethod);
     }
 }
