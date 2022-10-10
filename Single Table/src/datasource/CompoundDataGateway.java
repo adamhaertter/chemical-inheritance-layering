@@ -105,8 +105,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
         verifyExistence();
         ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
-        String stmt = new String("SELECT * FROM CompoundToElement");
-        statement.execute(stmt);
+        statement.execute("SELECT * FROM CompoundToElement");
 
         ResultSet rs = statement.getResultSet();
         while(rs.next()) {
@@ -128,8 +127,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
         verifyExistence();
         ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
-        String stmt = "SELECT * FROM CompoundToElement WHERE ElementId=" + elemID;
-        statement.execute(stmt);
+        statement.execute("SELECT * FROM CompoundToElement WHERE ElementId=" + elemID);
 
         ResultSet rs = statement.getResultSet();
         while(rs.next()) {
@@ -150,8 +148,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
         verifyExistence();
         ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
-        String stmt = new String("SELECT * FROM CompoundToElement WHERE CompoundId=" + compID);
-        statement.execute(stmt);
+        statement.execute("SELECT * FROM CompoundToElement WHERE CompoundId=" + compID);
 
         ResultSet getCompounds = statement.getResultSet();
         while(getCompounds.next()) {

@@ -26,7 +26,8 @@ public class ChemicalDTO {
      * @param dissolvedBy - the acid that a chemical is dissolved by
      * @param type - Type of Chemical (i.e. Metal, Nonmetal, etc.)
      */
-    public ChemicalDTO(long id, String name, int atomicNumber, double atomicMass, int baseSolute, int acidSolute, String[] dissolves, long dissolvedBy, String type) {
+    public ChemicalDTO(long id, String name, int atomicNumber, double atomicMass, int baseSolute, int acidSolute,
+                       long dissolvedBy, String type) {
         this.id = id;
         this.name = name;
         this.atomicNumber = atomicNumber;
