@@ -16,6 +16,24 @@ public class MetalDataGateway extends ElementDataGateway {
      */
     public MetalDataGateway(long id) {
         super(id);
+
+        // Read from DB
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Metal WHERE id = ?");
+            statement.setLong(1, id);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            this.dissolvedBy = rs.getInt("dissolvedBy");
+
+            if (!validate()) {
+                this.id = -1;
+                this.name = null;
+                this.dissolvedBy = -1;
+                System.out.println("No metal was found with the given id " + id);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -34,6 +52,10 @@ public class MetalDataGateway extends ElementDataGateway {
     public MetalDataGateway(long elementId, long dissolvedByAcid) {
         super(elementId);
         dissolvedBy = dissolvedByAcid;
+    }
+
+    protected boolean validate() {
+        return super.validate() && this.dissolvedBy > 0;
     }
 
     /**

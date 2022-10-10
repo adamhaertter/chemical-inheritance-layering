@@ -1,4 +1,8 @@
 package datasource;
+
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+
 public class ChemicalDataGateway extends Gateway {
 
     protected String name = "";
@@ -11,6 +15,23 @@ public class ChemicalDataGateway extends Gateway {
         super();
         this.id = id;
         deleted = false;
+
+        // Read from DB
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE id = ?");
+            statement.setLong(1, id);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            this.name = rs.getString("name");
+
+            if (!validate()) {
+                this.id = -1;
+                this.name = null;
+                System.out.println("No chemical was found with the given id " + id);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -22,6 +43,10 @@ public class ChemicalDataGateway extends Gateway {
         // Since we are removing inhabits, we don't set that up here
         this.name = name;
         deleted = false;
+    }
+
+    protected boolean validate() {
+        return this.id != 0 && this.name != null;
     }
 
     /** getters and setters **/

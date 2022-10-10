@@ -1,5 +1,8 @@
 package datasource;
 
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+
 public class ElementDataGateway extends ChemicalDataGateway {
 
     private int atomicNumber = 0, atomicMass = 0;
@@ -12,6 +15,26 @@ public class ElementDataGateway extends ChemicalDataGateway {
         super(id);
         this.id = id;
         deleted = false;
+
+        // Read from DB
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Element WHERE id = ?");
+            statement.setLong(1, id);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            this.atomicNumber = rs.getInt("atomicNumber");
+            this.atomicMass = rs.getInt("atomicMass");
+
+            if (!validate()) {
+                this.id = -1;
+                this.name = null;
+                this.atomicMass = -1;
+                this.atomicNumber = -1;
+                System.out.println("No element was found with the given id " + id);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -28,8 +51,8 @@ public class ElementDataGateway extends ChemicalDataGateway {
         deleted = false;
     }
 
-    private boolean validate() {
-        return this.id != 0 && this.name != null && this.atomicNumber != 0 && this.atomicMass != 0;
+    protected boolean validate() {
+        return super.validate() && this.atomicNumber > 0 && this.atomicMass > 0;
     }
 
     /** getters and setters **/
