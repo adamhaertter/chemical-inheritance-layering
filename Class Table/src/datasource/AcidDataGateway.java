@@ -2,6 +2,7 @@ package datasource;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class AcidDataGateway extends ChemicalDataGateway {
@@ -48,8 +49,18 @@ public class AcidDataGateway extends ChemicalDataGateway {
         super(name);
         this.solute = solute;
         deleted = false;
+
         // Create in DB
-        // TODO get id
+        try {
+            Statement statement = conn.createStatement();
+            String addEntry = "INSERT INTO Acid" +
+                    "(id, solute) VALUES ('" +
+                    id + "','" + solute + "')";
+            statement.executeUpdate(addEntry);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         dissolves = MetalDataGateway.getAllDissolvedBy(id);
     }
 

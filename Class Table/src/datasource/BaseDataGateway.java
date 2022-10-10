@@ -2,6 +2,7 @@ package datasource;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class BaseDataGateway extends ChemicalDataGateway {
 
@@ -44,7 +45,17 @@ public class BaseDataGateway extends ChemicalDataGateway {
         super(name);
         this.solute = solute;
         deleted = false;
+
         // Create in DB
+        try {
+            Statement statement = conn.createStatement();
+            String addEntry = "INSERT INTO Base" +
+                    "(id, solute) VALUES ('" +
+                    id + "','" + solute + "')";
+            statement.executeUpdate(addEntry);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     protected boolean validate() {

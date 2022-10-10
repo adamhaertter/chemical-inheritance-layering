@@ -2,6 +2,7 @@ package datasource;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class ChemicalDataGateway extends Gateway {
 
@@ -43,6 +44,19 @@ public class ChemicalDataGateway extends Gateway {
         // Since we are removing inhabits, we don't set that up here
         this.name = name;
         deleted = false;
+
+        //TODO Set up id for all children
+
+        // Create in DB
+        try {
+            Statement statement = conn.createStatement();
+            String addEntry = "INSERT INTO Chemical" +
+                    "(id, name) VALUES ('" +
+                    id + "','" + name + "')";
+            statement.executeUpdate(addEntry);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     protected boolean validate() {

@@ -1,9 +1,6 @@
 package datasource;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class MetalDataGateway extends ElementDataGateway {
@@ -46,6 +43,19 @@ public class MetalDataGateway extends ElementDataGateway {
     public MetalDataGateway(String name, int atomicNumber, int atomicMass, long dissolvedByAcid) {
         super(name, atomicNumber, atomicMass);
         dissolvedBy = dissolvedByAcid;
+
+        // Create in DB
+        try {
+            Statement statement = conn.createStatement();
+            String addEntry = "INSERT INTO Metal" +
+                    "(id, dissolvedBy) VALUES ('" +
+                    id + "','" + dissolvedByAcid + "')";
+            statement.executeUpdate(addEntry);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
     }
 
     // I'm not sure if this constructor will be useful in the long term

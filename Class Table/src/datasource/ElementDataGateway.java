@@ -2,6 +2,7 @@ package datasource;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class ElementDataGateway extends ChemicalDataGateway {
 
@@ -46,9 +47,20 @@ public class ElementDataGateway extends ChemicalDataGateway {
     public ElementDataGateway(String name, int atomicNumber, int atomicMass) {
         super(name);
         // Since we are removing inhabits, we don't set that up here
-        atomicNumber = this.atomicNumber;
-        atomicMass = this.atomicMass;
+        this.atomicNumber = atomicNumber;
+        this.atomicMass = atomicMass;
         deleted = false;
+
+        // Create in DB
+        try {
+            Statement statement = conn.createStatement();
+            String addEntry = "INSERT INTO Element" +
+                    "(id, atomicNumber, atomicMass) VALUES ('" +
+                    id + "','" + atomicNumber +  "','" + atomicMass + "')";
+            statement.executeUpdate(addEntry);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     protected boolean validate() {
