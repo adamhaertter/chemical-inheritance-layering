@@ -69,6 +69,24 @@ public class MetalDataGateway extends ElementDataGateway {
     }
 
     /**
+     * Updates the database with the values stored to the instance variables of the gateway.
+     * Cascades upward to all parent tables.
+     * @return Whether the update is passed correctly.
+     */
+    protected boolean persist() {
+        super.persist();
+        try {
+            Statement statement = conn.createStatement();
+            statement.executeUpdate("UPDATE Metal SET dissolvedBy = '" + dissolvedBy +
+                    "' WHERE id = '" + id + "'");
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * Queries the database for all metals dissolved by a given acid id and returns said ids as an ArrayList of longs.
      *
      * @param acidId the id of the acid that dissolves these metals

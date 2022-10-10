@@ -63,6 +63,23 @@ public class ChemicalDataGateway extends Gateway {
         return this.id != 0 && this.name != null;
     }
 
+    /**
+     * Updates the database with the values stored to the instance variables of the gateway.
+     * @return Whether the update is passed correctly.
+     */
+    protected boolean persist() {
+        try {
+            Statement statement = conn.createStatement();
+            statement.executeUpdate("UPDATE Chemical SET name = '" + name +
+                    "' WHERE id = '" + id + "'");
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+
     /** getters and setters **/
     public String getName() {
         return name;

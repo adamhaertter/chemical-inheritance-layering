@@ -68,6 +68,24 @@ public class AcidDataGateway extends ChemicalDataGateway {
         return super.validate() && this.solute != 0;
     }
 
+    /**
+     * Updates the database with the values stored to the instance variables of the gateway.
+     * Cascades upward to all parent tables.
+     * @return Whether the update is passed correctly.
+     */
+    protected boolean persist() {
+        super.persist();
+        try {
+            Statement statement = conn.createStatement();
+            statement.executeUpdate("UPDATE Acid SET solute = '" + solute +
+                    "' WHERE id = '" + id + "'");
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     /** getters and setters **/
     public long getSolute() {
         return solute;

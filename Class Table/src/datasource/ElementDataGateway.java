@@ -67,6 +67,25 @@ public class ElementDataGateway extends ChemicalDataGateway {
         return super.validate() && this.atomicNumber > 0 && this.atomicMass > 0;
     }
 
+    /**
+     * Updates the database with the values stored to the instance variables of the gateway.
+     * Cascades upward to all parent tables.
+     * @return Whether the update is passed correctly.
+     */
+    protected boolean persist() {
+        super.persist();
+        try {
+            Statement statement = conn.createStatement();
+            statement.executeUpdate("UPDATE Element SET atomicMass = '" + atomicMass + "', atomicNumber = '" + atomicNumber +
+                    "' WHERE id = '" + id + "'");
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+
     /** getters and setters **/
     public int getAtomicNumber() {
         return atomicNumber;
