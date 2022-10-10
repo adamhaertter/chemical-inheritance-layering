@@ -45,7 +45,8 @@ public class ChemicalDataGateway extends Gateway {
         this.name = name;
         deleted = false;
 
-        //TODO Set up id for all children
+        // Generate next valid id for this row
+        id = KeyTableGateway.getNextValidKey();
 
         // Create in DB
         try {
