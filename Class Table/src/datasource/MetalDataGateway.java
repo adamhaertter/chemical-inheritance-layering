@@ -40,7 +40,7 @@ public class MetalDataGateway extends ElementDataGateway {
      * @param atomicMass the atomicMass field of parent table Element
      * @param dissolvedByAcid the dissolvedBy foreign key of the Metal Table
      */
-    public MetalDataGateway(String name, int atomicNumber, int atomicMass, long dissolvedByAcid) {
+    public MetalDataGateway(String name, int atomicNumber, double atomicMass, long dissolvedByAcid) {
         super(name, atomicNumber, atomicMass);
         dissolvedBy = dissolvedByAcid;
 
@@ -56,12 +56,6 @@ public class MetalDataGateway extends ElementDataGateway {
         }
 
 
-    }
-
-    // I'm not sure if this constructor will be useful in the long term
-    public MetalDataGateway(long elementId, long dissolvedByAcid) {
-        super(elementId);
-        dissolvedBy = dissolvedByAcid;
     }
 
     protected boolean validate() {

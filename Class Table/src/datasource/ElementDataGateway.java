@@ -6,7 +6,8 @@ import java.sql.Statement;
 
 public class ElementDataGateway extends ChemicalDataGateway {
 
-    private int atomicNumber = 0, atomicMass = 0;
+    private int atomicNumber = 0;
+    private double atomicMass = 0;
 
     /**
      * Reads a row corresponding to some Element id and creates a row data gateway from it
@@ -24,12 +25,12 @@ public class ElementDataGateway extends ChemicalDataGateway {
             ResultSet rs = statement.executeQuery();
             rs.next();
             this.atomicNumber = rs.getInt("atomicNumber");
-            this.atomicMass = rs.getInt("atomicMass");
+            this.atomicMass = rs.getDouble("atomicMass");
 
             if (!validate()) {
                 this.id = -1;
                 this.name = null;
-                this.atomicMass = -1;
+                this.atomicMass = -1.0;
                 this.atomicNumber = -1;
                 System.out.println("No element was found with the given id " + id);
             }
@@ -44,7 +45,7 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * @param atomicNumber the atomic number field of Element
      * @param atomicMass the atomic mass field of Element
      */
-    public ElementDataGateway(String name, int atomicNumber, int atomicMass) {
+    public ElementDataGateway(String name, int atomicNumber, double atomicMass) {
         super(name);
         // Since we are removing inhabits, we don't set that up here
         this.atomicNumber = atomicNumber;
@@ -64,7 +65,7 @@ public class ElementDataGateway extends ChemicalDataGateway {
     }
 
     protected boolean validate() {
-        return super.validate() && this.atomicNumber > 0 && this.atomicMass > 0;
+        return super.validate() && this.atomicNumber > 0 && this.atomicMass > 0.0;
     }
 
     /**
@@ -98,11 +99,11 @@ public class ElementDataGateway extends ChemicalDataGateway {
         persist();
     }
 
-    public int getAtomicMass() {
+    public double getAtomicMass() {
         return atomicMass;
     }
 
-    public void setAtomicMass(int atomicMass) {
+    public void setAtomicMass(double atomicMass) {
         if( !verify() )
             return;
         this.atomicMass = atomicMass;

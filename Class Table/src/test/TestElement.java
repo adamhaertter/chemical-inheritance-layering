@@ -25,7 +25,7 @@ public class TestElement {
         long trueId = 100L;
         String trueName = "Test";
         int trueNumber = 1;
-        int trueMass = 5;
+        double trueMass = 5.0;
 
 
         // Create row in table
@@ -40,7 +40,7 @@ public class TestElement {
             statement = conn.prepareCall("INSERT INTO Element (`id`, `atomicNumber`, `atomicMass`) VALUES (?, ?, ?)");
             statement.setLong(1, trueId);
             statement.setInt(2, trueNumber);
-            statement.setInt(3, trueMass);
+            statement.setDouble(3, trueMass);
             result = statement.executeUpdate();
             assertNotEquals(0, result);
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class TestElement {
         // Does it correspond to the right row?
         assertEquals(elem.getName(), trueName);
         assertEquals(elem.getAtomicNumber(), trueNumber);
-        assertEquals(elem.getAtomicMass(), trueMass);
+        assertTrue(elem.getAtomicMass() == trueMass);
     }
 
     /**
@@ -63,13 +63,13 @@ public class TestElement {
 
         String trueName = "Ex";
         int trueNumber = 1;
-        int trueMass = 5;
+        double trueMass = 5;
 
         ElementDataGateway elem = new ElementDataGateway(trueName, trueNumber, trueMass);
         // Test that the value is set properly for the Object
         assertEquals(elem.getName(), trueName);
         assertEquals(elem.getAtomicNumber(), trueNumber);
-        assertEquals(elem.getAtomicMass(), trueMass);
+        assertTrue(elem.getAtomicMass() == trueMass);
 
 
         // Test that the value exists in the database
@@ -81,10 +81,10 @@ public class TestElement {
             assertEquals(rs.getString("name"), trueName);
 
             statement = conn.prepareCall("SELECT * from Element WHERE atomicMass = ?");
-            statement.setInt(1, trueMass);
+            statement.setDouble(1, trueMass);
             rs = statement.executeQuery();
             rs.next();
-            assertEquals(rs.getInt("atomicMass"), trueMass);
+            assertTrue(rs.getDouble("atomicMass") == trueMass);
             assertEquals(rs.getInt("atomicNumber"), trueNumber);
         } catch (SQLException e) {
             fail();
@@ -101,7 +101,7 @@ public class TestElement {
         long trueId = 100L;
         String trueName = "Test";
         int trueNumber = 1;
-        int trueMass = 5;
+        double trueMass = 5.0;
 
         // Create rows in table
         try {
@@ -115,7 +115,7 @@ public class TestElement {
             statement = conn.prepareCall("INSERT INTO Element (`id`, `atomicNumber`, `atomicMass`) VALUES (?, ?, ?)");
             statement.setLong(1, trueId);
             statement.setInt(2, trueNumber);
-            statement.setInt(3, trueMass);
+            statement.setDouble(3, trueMass);
             result = statement.executeUpdate();
             assertNotEquals(0, result);
         } catch (SQLException e) {

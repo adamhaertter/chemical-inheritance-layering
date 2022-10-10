@@ -25,7 +25,7 @@ public class TestMetal {
         long trueId = 100L;
         String trueName = "Test";
         int trueNumber = 1;
-        int trueMass = 5;
+        double trueMass = 5.0;
         long trueDissolve = 75;
 
 
@@ -41,7 +41,7 @@ public class TestMetal {
             statement = conn.prepareCall("INSERT INTO Element (`id`, `atomicNumber`, `atomicMass`) VALUES (?, ?, ?)");
             statement.setLong(1, trueId);
             statement.setInt(2, trueNumber);
-            statement.setInt(3, trueMass);
+            statement.setDouble(3, trueMass);
             result = statement.executeUpdate();
             assertNotEquals(0, result);
 
@@ -58,7 +58,7 @@ public class TestMetal {
         // Does it correspond to the right row?
         assertEquals(metal.getName(), trueName);
         assertEquals(metal.getAtomicNumber(), trueNumber);
-        assertEquals(metal.getAtomicMass(), trueMass);
+        assertTrue(metal.getAtomicMass() == trueMass);
     }
 
     /**
@@ -70,14 +70,14 @@ public class TestMetal {
 
         String trueName = "Ex";
         int trueNumber = 1;
-        int trueMass = 5;
+        double trueMass = 5.0;
         long trueDissolve = 75;
 
         MetalDataGateway metal = new MetalDataGateway(trueName, trueNumber, trueMass, trueDissolve);
         // Test that the value is set properly for the Object
         assertEquals(metal.getName(), trueName);
         assertEquals(metal.getAtomicNumber(), trueNumber);
-        assertEquals(metal.getAtomicMass(), trueMass);
+        assertTrue(metal.getAtomicMass() == trueMass);
         assertEquals(metal.getDissolvedBy(), trueDissolve);
 
 
@@ -90,10 +90,10 @@ public class TestMetal {
             assertEquals(rs.getString("name"), trueName);
 
             statement = conn.prepareCall("SELECT * from Element WHERE atomicMass = ?");
-            statement.setInt(1, trueMass);
+            statement.setDouble(1, trueMass);
             rs = statement.executeQuery();
             rs.next();
-            assertEquals(rs.getInt("atomicMass"), trueMass);
+            assertTrue(rs.getInt("atomicMass") == trueMass);
             assertEquals(rs.getInt("atomicNumber"), trueNumber);
 
             statement = conn.prepareCall("SELECT * from Metal WHERE dissolvedBy = ?");
@@ -116,7 +116,7 @@ public class TestMetal {
         long trueId = 100L;
         String trueName = "Test";
         int trueNumber = 1;
-        int trueMass = 5;
+        double trueMass = 5.0;
         long trueDissolve = 75;
 
         // Create rows
@@ -131,7 +131,7 @@ public class TestMetal {
             statement = conn.prepareCall("INSERT INTO Element (`id`, `atomicNumber`, `atomicMass`) VALUES (?, ?, ?)");
             statement.setLong(1, trueId);
             statement.setInt(2, trueNumber);
-            statement.setInt(3, trueMass);
+            statement.setDouble(3, trueMass);
             result = statement.executeUpdate();
             assertNotEquals(0, result);
 
