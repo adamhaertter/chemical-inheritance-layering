@@ -80,7 +80,7 @@ public class TestElement {
             rs.next();
             assertEquals(rs.getString("name"), trueName);
 
-            statement = conn.prepareCall("SELECT * from Elem WHERE atomicMass = ?");
+            statement = conn.prepareCall("SELECT * from Element WHERE atomicMass = ?");
             statement.setInt(1, trueMass);
             rs = statement.executeQuery();
             rs.next();
@@ -125,9 +125,9 @@ public class TestElement {
         ElementDataGateway elem = new ElementDataGateway(trueId);
 
         // Does the deleted boolean change?
-        assertTrue(elem.verifyExistence());
+        assertTrue(elem.verify());
         elem.delete();
-        assertFalse(elem.verifyExistence());
+        assertFalse(elem.verify());
 
         try {
             CallableStatement statement = conn.prepareCall("SELECT * FROM Acid WHERE id = ?");

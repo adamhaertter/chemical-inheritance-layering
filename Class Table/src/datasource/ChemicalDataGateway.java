@@ -79,6 +79,17 @@ public class ChemicalDataGateway extends Gateway {
         }
     }
 
+    /**
+     * If the entry is deleted, prints a message. Returns whether it has been deleted.
+     * @return Whether the entry exists still.
+     */
+    public boolean verify() {
+        if(deleted) {
+            System.out.println("Entry " + name + " has been deleted.");
+        }
+        return !deleted;
+    }
+
 
     /** getters and setters **/
     public String getName() {
@@ -86,7 +97,9 @@ public class ChemicalDataGateway extends Gateway {
     }
 
     public void setName(String name) {
-        verifyExistence();
+        if( !verify() )
+            return;
         this.name = name;
+        persist();
     }
 }

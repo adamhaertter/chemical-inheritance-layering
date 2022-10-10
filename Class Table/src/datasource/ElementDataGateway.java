@@ -92,8 +92,10 @@ public class ElementDataGateway extends ChemicalDataGateway {
     }
 
     public void setAtomicNumber(int atomicNumber) {
-        verifyExistence();
+        if( !verify() )
+            return;
         this.atomicNumber = atomicNumber;
+        persist();
     }
 
     public int getAtomicMass() {
@@ -101,7 +103,9 @@ public class ElementDataGateway extends ChemicalDataGateway {
     }
 
     public void setAtomicMass(int atomicMass) {
-        verifyExistence();
+        if( !verify() )
+            return;
         this.atomicMass = atomicMass;
+        persist();
     }
 }

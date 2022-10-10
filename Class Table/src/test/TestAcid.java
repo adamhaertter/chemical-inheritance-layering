@@ -114,9 +114,9 @@ public class TestAcid {
         AcidDataGateway acid = new AcidDataGateway(trueId);
 
         // Does the deleted boolean change?
-        assertTrue(acid.verifyExistence());
+        assertTrue(acid.verify());
         acid.delete();
-        assertFalse(acid.verifyExistence());
+        assertFalse(acid.verify());
 
         try {
             CallableStatement statement = conn.prepareCall("SELECT * FROM Acid WHERE id = ?");

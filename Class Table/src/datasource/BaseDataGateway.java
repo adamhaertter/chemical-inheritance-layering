@@ -86,7 +86,9 @@ public class BaseDataGateway extends ChemicalDataGateway {
     }
 
     public void setSolute(long solute) {
-        verifyExistence();
+        if( !verify() )
+            return;
         this.solute = solute;
+        persist();
     }
 }

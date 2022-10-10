@@ -91,9 +91,9 @@ public class TestChemical {
         ChemicalDataGateway chem = new ChemicalDataGateway(trueId);
 
         // Does the deleted boolean change?
-        assertTrue(chem.verifyExistence());
+        assertTrue(chem.verify());
         chem.delete();
-        assertFalse(chem.verifyExistence());
+        assertFalse(chem.verify());
 
         try {
             CallableStatement statement = conn.prepareCall("SELECT * FROM Chemical WHERE id = ?");

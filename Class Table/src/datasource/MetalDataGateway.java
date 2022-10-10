@@ -117,7 +117,9 @@ public class MetalDataGateway extends ElementDataGateway {
     }
 
     public void setDissolvedBy(long dissolvedBy) {
-        verifyExistence();
+        if( !verify() )
+            return;
         this.dissolvedBy = dissolvedBy;
+        persist();
     }
 }

@@ -114,9 +114,9 @@ public class TestBase {
         BaseDataGateway base = new BaseDataGateway(trueId);
 
         // Does the deleted boolean change?
-        assertTrue(base.verifyExistence());
+        assertTrue(base.verify());
         base.delete();
-        assertFalse(base.verifyExistence());
+        assertFalse(base.verify());
 
         try {
             CallableStatement statement = conn.prepareCall("SELECT * FROM Base WHERE id = ?");

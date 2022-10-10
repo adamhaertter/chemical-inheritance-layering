@@ -51,8 +51,4 @@ public class Gateway {
         // does not hit unless sql delete is successful
         this.deleted = true;
     }
-
-    public boolean verifyExistence() {
-        return !deleted;
-    }
 }
