@@ -36,7 +36,7 @@ class BaseDataGatewaysTest {
 
     @Test
     void getName() throws SQLException {
-        BaseDataGateways base = new BaseDataGateways(1);
+        BaseDataGateways base = new BaseDataGateways(conn, 1);
         assertEquals("TestBase", base.getName());
         base.delete();
         assertNull(base.getName());
@@ -44,14 +44,14 @@ class BaseDataGatewaysTest {
 
     @Test
     void updateName() {
-        BaseDataGateways base = new BaseDataGateways(1);
-        base.updateName("UpdatedName");
+        BaseDataGateways base = new BaseDataGateways(conn, 1);
+        base.updateName(conn, "UpdatedName");
         assertEquals("UpdatedName", base.getName());
     }
 
     @Test
     void getSolute() throws SQLException {
-        BaseDataGateways base = new BaseDataGateways(1);
+        BaseDataGateways base = new BaseDataGateways(conn, 1);
         assertEquals(2, base.getSolute());
         base.delete();
         assertEquals(-1, base.getSolute());
@@ -59,16 +59,16 @@ class BaseDataGatewaysTest {
 
     @Test
     void updateSolute() {
-        BaseDataGateways base = new BaseDataGateways(1);
-        base.updateSolute(3);
+        BaseDataGateways base = new BaseDataGateways(conn, 1);
+        base.updateSolute(conn, 3);
         assertEquals(3, base.getSolute());
     }
 
     @Test
     void persist() throws SQLException {
-        BaseDataGateways base = new BaseDataGateways(1);
+        BaseDataGateways base = new BaseDataGateways(conn, 1);
         // These values are different than the ones we instantiate the tests with
-        base.persist(1, "UpdatedSolute", 3);
+        base.persist(conn, 1, "UpdatedName", 3);
 
         Statement stmnt = conn.createStatement();
         // We only care about the first entry
@@ -79,17 +79,5 @@ class BaseDataGatewaysTest {
         long soluteFromDB = rs.getLong("solute");
         assertEquals("UpdatedName", nameFromDB);
         assertEquals(3, soluteFromDB);
-    }
-
-    @Test
-    void constructorInsert() throws SQLException {
-        BaseDataGateways base = new BaseDataGateways("TestBase2", 2);
-        Statement stmnt = conn.createStatement();
-        ResultSet rs = stmnt.executeQuery("SELECT * FROM Base WHERE id = 4");
-        rs.next();
-        String nameFromDB = rs.getString("name");
-        long soluteFromDB = rs.getLong("solute");
-        assertEquals("TestBase2", nameFromDB);
-        assertEquals(2, soluteFromDB);
     }
 }

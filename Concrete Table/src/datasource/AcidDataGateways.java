@@ -3,6 +3,7 @@ package datasource;
 import dto.MetalDTO;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class AcidDataGateways extends Gateway {
     private String name;
     private long solute;
 
-    public AcidDataGateways(long id) {
+    public AcidDataGateways(Connection conn, long id) {
         super();
         this.id = id;
         try {
@@ -33,9 +34,9 @@ public class AcidDataGateways extends Gateway {
         }
     }
 
-    public AcidDataGateways(String name, long solute) {
+    public AcidDataGateways(Connection conn, String name, long solute) {
         super();
-        this.id = KeyTableGateways.getNextValidKey();
+        this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
         this.solute = solute;
 
@@ -55,7 +56,7 @@ public class AcidDataGateways extends Gateway {
         return (name != null && solute > 0);
     }
 
-    private boolean persist(long id, String name, long solute) {
+    private boolean persist(Connection conn, long id, String name, long solute) {
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Acid SET name = '" + name + "', solute = '" + solute +
@@ -77,9 +78,9 @@ public class AcidDataGateways extends Gateway {
         return null;
     }
 
-    public void updateName(String name) {
+    public void updateName(Connection conn, String name) {
         if (!deleted) {
-            if (persist(this.id, name, this.solute)) this.name = name;
+            if (persist(conn, this.id, name, this.solute)) this.name = name;
         } else {
             System.out.println("This acid has been deleted.");
         }
@@ -94,9 +95,9 @@ public class AcidDataGateways extends Gateway {
         return 0;
     }
 
-    public void updateSolute(long solute) {
+    public void updateSolute(Connection conn, long solute) {
         if (!deleted) {
-            if (persist(this.id, this.name, solute)) this.solute = solute;
+            if (persist(conn, this.id, this.name, solute)) this.solute = solute;
         } else {
             System.out.println("This acid has been deleted.");
         }
@@ -105,7 +106,7 @@ public class AcidDataGateways extends Gateway {
 
 
     // Table gateway to get all metals dissolved by this acid and get the gateways for them
-    public ArrayList<MetalDTO> getDissolvedMetals() {
+    public ArrayList<MetalDTO> getDissolvedMetals(Connection conn) {
         ArrayList<MetalDTO> metals = new ArrayList<>();
 
         // Construct our Metal DTOs from the DB

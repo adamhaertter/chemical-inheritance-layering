@@ -15,8 +15,7 @@ public class KeyTableGateways extends Gateway {
      * so that we can retrieve it on our next call.
      * @return the current key
      */
-    public static synchronized long getNextValidKey() {
-        Connection conn = Gateway.setUpConnection();
+    public static synchronized long getNextValidKey(Connection conn) {
         // get current key and then set the value in key to the next valid id
         long nextValidKey = -1;
 
@@ -31,7 +30,6 @@ public class KeyTableGateways extends Gateway {
             // Increment the key in the DB
             String updateKey = "UPDATE KeyTable SET nextValidId = '" + (nextValidKey + 1) + "'";
             statement.executeUpdate(updateKey);
-            conn.close();
         } catch (Exception ex) {
             //key didn't insert because already in db?
         }

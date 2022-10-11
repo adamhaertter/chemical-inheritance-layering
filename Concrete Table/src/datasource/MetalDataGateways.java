@@ -1,6 +1,7 @@
 package datasource;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -15,7 +16,7 @@ public class MetalDataGateways extends Gateway {
      *
      * @param id
      */
-    public MetalDataGateways(long id) {
+    public MetalDataGateways(Connection conn, long id) {
         super();
         this.id = id;
         try {
@@ -43,9 +44,9 @@ public class MetalDataGateways extends Gateway {
     /**
      * Constructor for adding the new base into the DB and creating a row data gateway for it as well
      */
-    public MetalDataGateways(String name, long atomicNumber, long atomicMass, long dissolvedBy) {
+    public MetalDataGateways(Connection conn, String name, long atomicNumber, long atomicMass, long dissolvedBy) {
         super();
-        this.id = KeyTableGateways.getNextValidKey();
+        this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
         this.atomicNumber = atomicNumber;
         this.atomicMass = atomicMass;
@@ -67,7 +68,7 @@ public class MetalDataGateways extends Gateway {
         return (name != null && atomicNumber > 0 && atomicMass > 0);
     }
 
-    public boolean persist(long id, String name, long atomicNumber, long atomicMass, long dissolvedBy) {
+    public boolean persist(Connection conn, long id, String name, long atomicNumber, long atomicMass, long dissolvedBy) {
         try {
             Statement statement = conn.createStatement();
             String updateMetal = "UPDATE Metal SET name = '" + name + "', atomicNumber = '" + atomicNumber + "', atomicMass = '" + atomicMass + "', dissolvedBy = '" + dissolvedBy + "' WHERE id = '" + id + "'";
@@ -87,9 +88,9 @@ public class MetalDataGateways extends Gateway {
         return null;
     }
 
-    public void setName(String name) {
+    public void setName(Connection conn, String name) {
         if (!deleted) {
-            if (persist(this.id, name, this.atomicNumber, this.atomicMass, this.dissolvedBy)) this.name = name;
+            if (persist(conn, this.id, name, this.atomicNumber, this.atomicMass, this.dissolvedBy)) this.name = name;
         } else {
             System.out.println("This metal has been deleted.");
         }
@@ -104,9 +105,9 @@ public class MetalDataGateways extends Gateway {
         return -1;
     }
 
-    public void setAtomicNumber(long atomicNumber) {
+    public void setAtomicNumber(Connection conn, long atomicNumber) {
         if (!deleted) {
-            if (persist(this.id, this.name, atomicNumber, this.atomicMass, this.dissolvedBy))
+            if (persist(conn, this.id, this.name, atomicNumber, this.atomicMass, this.dissolvedBy))
                 this.atomicNumber = atomicNumber;
         } else {
             System.out.println("This metal has been deleted.");
@@ -122,9 +123,9 @@ public class MetalDataGateways extends Gateway {
         return -1;
     }
 
-    public void setAtomicMass(long atomicMass) {
+    public void setAtomicMass(Connection conn, long atomicMass) {
         if (!deleted) {
-            if (persist(this.id, this.name, this.atomicNumber, atomicMass, this.dissolvedBy))
+            if (persist(conn, this.id, this.name, this.atomicNumber, atomicMass, this.dissolvedBy))
                 this.atomicMass = atomicMass;
         } else {
             System.out.println("This metal has been deleted.");
@@ -140,9 +141,9 @@ public class MetalDataGateways extends Gateway {
         return -1;
     }
 
-    public void setDissolvedBy(long dissolvedBy) {
+    public void setDissolvedBy(Connection conn, long dissolvedBy) {
         if (!deleted) {
-            if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, dissolvedBy))
+            if (persist(conn, this.id, this.name, this.atomicNumber, this.atomicMass, dissolvedBy))
                 this.dissolvedBy = dissolvedBy;
         } else {
             System.out.println("This metal has been deleted.");
