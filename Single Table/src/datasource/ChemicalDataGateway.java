@@ -388,7 +388,7 @@ public class ChemicalDataGateway extends Gateway {
      *
      * @return true or false
      */
-    public boolean persist(long id, String name, int atomicNumber, double atomicMass, long baseSolute, long acidSolute,
+    private boolean persist(long id, String name, int atomicNumber, double atomicMass, long baseSolute, long acidSolute,
                            long dissolvedBy, String type) {
         try {
             Statement statement = m_dbConn.createStatement();

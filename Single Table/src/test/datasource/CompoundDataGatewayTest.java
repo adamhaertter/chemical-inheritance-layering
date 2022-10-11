@@ -1,22 +1,22 @@
-package test;
+package datasource;
 
 import config.ProjectConfig;
-import datasource.CompoundDataGateway;
 import dto.CompoundToElementDTO;
-//import org.junit.jupiter.api.*;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CompoundDataGatewayTest {
     private Connection conn;
 
-    @Test
-    void setUp() throws SQLException {
+    @BeforeEach
+    public void setUp() throws SQLException {
         conn = DriverManager.getConnection(ProjectConfig.DatabaseURL, ProjectConfig.DatabaseUser, ProjectConfig.DatabasePassword);
         conn.setAutoCommit(false);
 
@@ -28,8 +28,8 @@ public class CompoundDataGatewayTest {
                                 "VALUES (1, 5678)");
     }
 
-    @Test
-    void tearDown() throws SQLException {
+    @AfterEach
+    public void tearDown() throws SQLException {
         conn.rollback();
         conn.close();
     }

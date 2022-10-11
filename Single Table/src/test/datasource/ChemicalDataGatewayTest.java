@@ -1,25 +1,23 @@
-package test;
+package datasource;
 
 import config.ProjectConfig;
-import datasource.ChemicalDataGateway;
 import dto.ChemicalDTO;
-//import org.junit.jupiter.api.*;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-//import static org.junit.jupiter.api.Assertions.*;
-
-class ChemicalDataGatewayTest {
+public class ChemicalDataGatewayTest {
     private Connection conn;
 
-    @Test
-    void setUp() throws SQLException {
+    @BeforeEach
+    public void setUp() throws SQLException {
         conn = DriverManager.getConnection(ProjectConfig.DatabaseURL, ProjectConfig.DatabaseUser, ProjectConfig.DatabasePassword);
         conn.setAutoCommit(false);
 
@@ -33,8 +31,8 @@ class ChemicalDataGatewayTest {
                                 "dissolvedBy, type) VALUES (3, 'TestAcid', 3, 0, 0, 0, 0, 'Acid')");
     }
 
-    @Test
-    void tearDown() throws SQLException {
+    @AfterEach
+    public void tearDown() throws SQLException {
         conn.rollback();
         conn.close();
     }
@@ -42,7 +40,7 @@ class ChemicalDataGatewayTest {
     /**
      * Tests when it initializes with all the information
      */
-    @org.junit.jupiter.api.Test
+    @Test
     public void testInitializationWithEverything() {
         ChemicalDataGateway Gateway = new ChemicalDataGateway("Iron", 26, 55.85, 0, 0, 5678, "Metal");
 
