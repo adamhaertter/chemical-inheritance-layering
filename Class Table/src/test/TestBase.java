@@ -1,5 +1,6 @@
 package test;
 
+import datasource.AcidDataGateway;
 import datasource.BaseDataGateway;
 import datasource.Gateway;
 import org.junit.Test;
@@ -132,6 +133,63 @@ public class TestBase {
         } catch (SQLException e) {
             fail();
         }
+    }
+
+    /**
+     * ensures that getters and setters are working properly and are changing
+     * both within the database on our end.
+     */
+    @Test
+    public void testUpdateBase() {
+        assertNotNull(conn);
+
+        String trueName = "BaseTest";
+        long trueSolute = 1;
+        long tempSolute = 5;
+
+        BaseDataGateway newBase = new BaseDataGateway(trueName, trueSolute);
+
+        // test that the values are properly set
+
+        assertTrue(newBase.getName().equals(trueName));
+        assertTrue(newBase.getSolute() == trueSolute);
+
+        // test that the values exist in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, trueName);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            assertTrue(rs.getString("name").equals(trueName));
+
+            statement = conn.prepareCall("SELECT * from Base WHERE solute = ?");
+            statement.setLong(1, trueSolute);
+            rs = statement.executeQuery();
+            rs.next();
+            assertEquals(rs.getLong("solute"), trueSolute);
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // set solute to new value
+        newBase.setSolute(tempSolute);
+
+        // test that the value has changed in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Base WHERE solute = ?");
+            statement.setLong(1, tempSolute);
+            ResultSet rs = statement.executeQuery()
+            rs = statement.executeQuery();
+            rs.next();
+            assertEquals(rs.getLong("solute"), tempSolute);
+
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // test that the value has changed on our end
+        assertNotEquals(trueSolute, newBase.getSolute());
+
     }
 
 }

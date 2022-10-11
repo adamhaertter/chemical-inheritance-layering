@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.Assert.*;
+import static org.testng.Assert.assertNotEquals;
+
 
 public class TestChemical {
 
@@ -104,4 +106,5 @@ public class TestChemical {
             fail();
         }
     }
+
 }
