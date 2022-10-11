@@ -4,9 +4,16 @@ import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * Contains both the Row Data Gateway and Table Data Gateway functionality for the Chemical table. Row functions are done
+ * by an instance of this class, while the table functions are static methods.
+ *
+ * As the highest table in the Class Table Inheritance hierarchy, multiple lower classes will extend this class so the
+ * rows are managed in all necessary tables.
+ */
 public class ChemicalDataGateway extends Gateway {
 
-    protected String name = "";
+    protected String name;
 
     /**
      * Creates a row data gateway on the Chemical table of the database using an existing id
@@ -60,6 +67,11 @@ public class ChemicalDataGateway extends Gateway {
         }
     }
 
+    /**
+     * Checks the validity of the information in the row.
+     *
+     * @return Whether the current columns for this row have valid values
+     */
     protected boolean validate() {
         return this.id != 0 && this.name != null;
     }
@@ -93,6 +105,11 @@ public class ChemicalDataGateway extends Gateway {
 
 
     /** getters and setters **/
+
+    /**
+     * Checks that the row is valid, then returns the name of the Chemical
+     * @return name of the chemical, null if invalid
+     */
     public String getName() {
         if(verify())
             return name;
@@ -100,10 +117,17 @@ public class ChemicalDataGateway extends Gateway {
             return null;
     }
 
+    /**
+     * Updates the chemical's name in the database. A message will be printed if this does not occur.
+     *
+     * @param name the name with which to update the DB
+     */
     public void setName(String name) {
-        if( !verify() )
+        // This basic format should be used for all lower setters:
+        // If the row exists AND we can update the values in the DB...
+        if( !verify() && !persist(this.id, name) )
             return;
+        // Set the instance variable to match
         this.name = name;
-        persist(id, name);
     }
 }

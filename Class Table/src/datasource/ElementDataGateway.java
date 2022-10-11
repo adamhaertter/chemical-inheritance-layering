@@ -4,10 +4,17 @@ import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * Contains both the Row Data Gateway and Table Data Gateway functionality for the Element table. Row functions are done
+ * by an instance of this class, while the table functions are static methods.
+ *
+ * Extends the ChemicalDataGateway class so the implementation works across the multiple inherited tables for
+ * Class Table Inheritance.
+ */
 public class ElementDataGateway extends ChemicalDataGateway {
 
-    private int atomicNumber = 0;
-    private double atomicMass = 0;
+    protected int atomicNumber = 0;
+    protected double atomicMass = 0;
 
     /**
      * Reads a row corresponding to some Element id and creates a row data gateway from it
@@ -65,9 +72,8 @@ public class ElementDataGateway extends ChemicalDataGateway {
     }
 
     /**
-     * Makes sure the variables of atomicNumber and atomicMass have
-     * valid numbers given to them.
-     * @return
+     * Makes sure the variables of atomicNumber and atomicMass have valid numbers given to them.
+     * @return True if the row is valid, false otherwise
      */
     protected boolean validate() {
         return super.validate() && this.atomicNumber > 0 && this.atomicMass > 0.0;
@@ -78,7 +84,7 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * Cascades upward to all parent tables.
      * @return Whether the update is passed correctly.
      */
-    protected boolean persist(long id, String name, long atomicMass, long atomicNumber) {
+    protected boolean persist(long id, String name, double atomicMass, int atomicNumber) {
         super.persist(id, name);
         try {
             Statement statement = conn.createStatement();
@@ -93,6 +99,11 @@ public class ElementDataGateway extends ChemicalDataGateway {
 
 
     /** getters and setters **/
+
+    /**
+     * Checks that the row is valid, then returns atomic number
+     * @return value of the atomic number, -1 if invalid
+     */
     public int getAtomicNumber() {
         if(verify())
             return atomicNumber;
@@ -100,13 +111,22 @@ public class ElementDataGateway extends ChemicalDataGateway {
             return -1;
     }
 
+    /**
+     * Updates the atomic number in the database. A message will be printed if this does not occur.
+     *
+     * @param atomicNumber the atomic number value with which to update the DB
+     * @see ChemicalDataGateway#setName(String) for line-by-line comments on structure
+     */
     public void setAtomicNumber(int atomicNumber) {
-        if( !verify() )
+        if( !verify() && !persist(this.id, this.name, this.atomicMass, atomicNumber) )
             return;
         this.atomicNumber = atomicNumber;
-        persist(id, name);
     }
 
+    /**
+     * Checks that the row is valid, then returns atomic mass
+     * @return value of the atomic mass, -1 if invalid
+     */
     public double getAtomicMass() {
         if(verify())
             return atomicMass;
@@ -114,10 +134,15 @@ public class ElementDataGateway extends ChemicalDataGateway {
             return -1;
     }
 
+    /**
+     * Updates the atomic mass in the database. A message will be printed if this does not occur.
+     *
+     * @param atomicMass the atomic mass value with which to update the DB
+     * @see ChemicalDataGateway#setName(String) for line-by-line comments
+     */
     public void setAtomicMass(double atomicMass) {
-        if( !verify() )
+        if( !verify() && !persist(this.id, this.name, atomicMass, this.atomicNumber) )
             return;
         this.atomicMass = atomicMass;
-        persist(id, name);
     }
 }

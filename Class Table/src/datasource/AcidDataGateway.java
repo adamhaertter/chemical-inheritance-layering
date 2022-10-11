@@ -5,6 +5,13 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+/**
+ * Contains both the Row Data Gateway and Table Data Gateway functionality for the Acid table. Row functions are done
+ * by an instance of this class, while the table functions are static methods.
+ *
+ * Extends the ChemicalDataGateway class so the implementation works across the multiple inherited tables for
+ * Class Table Inheritance.
+ */
 public class AcidDataGateway extends ChemicalDataGateway {
 
     private long solute = 0;
@@ -64,6 +71,11 @@ public class AcidDataGateway extends ChemicalDataGateway {
         dissolves = MetalDataGateway.getAllDissolvedBy(id);
     }
 
+    /**
+     * Checks the validity of the information in the row and the corresponding parent rows.
+     *
+     * @return Whether the current columns for this row have valid values
+     */
     protected boolean validate() {
         return super.validate() && this.solute != 0;
     }
@@ -87,6 +99,11 @@ public class AcidDataGateway extends ChemicalDataGateway {
     }
 
     /** getters and setters **/
+
+    /**
+     * Checks that the row is valid, then returns solute FK
+     * @return id of the solute, -1 if invalid
+     */
     public long getSolute() {
         if(verify())
             return solute;
@@ -94,11 +111,18 @@ public class AcidDataGateway extends ChemicalDataGateway {
             return -1;
     }
 
+    /**
+     * Updates the solute id in the database. A message will be printed if this does not occur.
+     *
+     * @param solute the solute id with which to update the DB
+     * @see ChemicalDataGateway#setName(String) for line-by-line comments
+     */
     public void setSolute(long solute) {
-        if( !verify() )
+        // If the row exists AND we can update the values in the DB...
+        if( !verify() && !persist(this.id, this.name, solute) )
             return;
+        // Set the instance variable to match
         this.solute = solute;
-        persist(id, name);
     }
 
     /**

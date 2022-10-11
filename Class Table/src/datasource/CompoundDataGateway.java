@@ -4,6 +4,16 @@ import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * Contains both the Row Data Gateway and Table Data Gateway functionality for the Compound table. Row functions are
+ * done by an instance of this class, while the table functions are static methods.
+ *
+ * Extends the ChemicalDataGateway class so the implementation works across the multiple inherited tables for
+ * Class Table Inheritance.
+ *
+ * Despite not being much different from ChemicalDataGateway itself, this class is here for consistency and
+ * future-proofing, as well as managing the single column rows of Compound table.
+ */
 public class CompoundDataGateway extends ChemicalDataGateway {
 
     /**

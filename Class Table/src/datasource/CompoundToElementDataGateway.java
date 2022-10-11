@@ -3,6 +3,10 @@ package datasource;
 import java.sql.*;
 import java.util.ArrayList;
 
+/**
+ * Contains both the Row Data Gateway and Table Data Gateway functionality for the relation table between Compound and
+ * Element. Row functions are done by an instance of this class, while the table functions are static methods.
+ */
 public class CompoundToElementDataGateway extends Gateway {
 
     private long compoundId = 0;
@@ -11,6 +15,7 @@ public class CompoundToElementDataGateway extends Gateway {
     /**
      * Attempts to read a row with the given values from the DB. If it can't, we create that row in the DB.
      * Because of the structure of this table, both create and read functionality are combined into one constructor.
+     *
      * @param compoundId the compound id in the relation
      * @param elementId the element id in the relation
      */
@@ -46,12 +51,18 @@ public class CompoundToElementDataGateway extends Gateway {
         }
     }
 
+    /**
+     * Checks the validity of the information in the row.
+     *
+     * @return Whether the current columns for this row have valid values
+     */
     private boolean validate() {
         return this.compoundId >= 0 && this.elementId >= 0;
     }
 
     /**
      * Returns an ArrayList of compound ids for any compound in the database containing a given element
+     *
      * @param elementId the element to search for
      * @return the List of compound ids containing the given element
      */
@@ -76,6 +87,7 @@ public class CompoundToElementDataGateway extends Gateway {
 
     /**
      * Produces an ArrayList of element ids contained in a single given compound
+     *
      * @param compoundId the id of the compound to check
      * @return ArrayList of element ids
      */

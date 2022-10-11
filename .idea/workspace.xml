@@ -2,11 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fbb4ccce-2533-479b-b358-2faa6772b4c9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Class Table/src/config/ProjectConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/config/ProjectConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/AcidDataGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/AcidDataGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/BaseDataGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/BaseDataGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/ChemicalDataGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/ChemicalDataGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/CompoundDataGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/CompoundDataGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/CompoundToElementDataGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/CompoundToElementDataGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/ElementDataGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/ElementDataGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/Gateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/Gateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/KeyTableGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/KeyTableGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/MetalDataGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/MetalDataGateway.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/dto/AcidDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/dto/AcidDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/dto/BaseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/dto/BaseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/dto/ChemicalDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/dto/ChemicalDto.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -199,7 +207,7 @@
       <workItem from="1664488722126" duration="237000" />
       <workItem from="1664837696277" duration="15991000" />
       <workItem from="1665430465330" duration="16740000" />
-      <workItem from="1665510623573" duration="4483000" />
+      <workItem from="1665510623573" duration="9003000" />
     </task>
     <servers />
   </component>

@@ -5,9 +5,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 /**
- * Deals with our key table
+ * Deals with our key table which manages the next available unique identifier for primary key generation in our database.
  */
-
 public class KeyTableGateway extends Gateway {
 
     /**
