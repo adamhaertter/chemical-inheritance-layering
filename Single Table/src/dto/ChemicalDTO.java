@@ -10,7 +10,6 @@ public class ChemicalDTO {
     public double atomicMass = 0.0;
     public int baseSolute = 0;
     public int acidSolute = 0;
-    public String[] dissolves;
     public long dissolvedBy = 0;
     public String type = "";
 
@@ -22,7 +21,6 @@ public class ChemicalDTO {
      * @param atomicMass - the atomic mass of the chemical
      * @param baseSolute - the base solute of the chemical
      * @param acidSolute - the acid solute of the chemical
-     * @param dissolves - the list of chemicals that are capable of being dissolved
      * @param dissolvedBy - the acid that a chemical is dissolved by
      * @param type - Type of Chemical (i.e. Metal, Nonmetal, etc.)
      */
@@ -34,7 +32,6 @@ public class ChemicalDTO {
         this.atomicMass = atomicMass;
         this.baseSolute = baseSolute;
         this.acidSolute = acidSolute;
-        this.dissolves = dissolves;
         this.dissolvedBy = dissolvedBy;
         this.type = type;
     }

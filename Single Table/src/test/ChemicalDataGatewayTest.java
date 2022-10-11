@@ -3,31 +3,37 @@ package test;
 import config.ProjectConfig;
 import datasource.ChemicalDataGateway;
 import dto.ChemicalDTO;
-import org.junit.jupiter.api.Assertions;
+//import org.junit.jupiter.api.*;
+import org.junit.Test;
 
 import java.sql.*;
 import java.sql.DriverManager;
+import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+//import static org.junit.jupiter.api.Assertions.*;
 
 class ChemicalDataGatewayTest {
-    String[] dissolved = new String[]{"HCl", "H2O"};
     private Connection conn;
 
-    @org.junit.jupiter.api.Test
+    @Test
     void setUp() throws SQLException {
         conn = DriverManager.getConnection(ProjectConfig.DatabaseURL, ProjectConfig.DatabaseUser, ProjectConfig.DatabasePassword);
         conn.setAutoCommit(false);
 
         // Insert Test Data
         Statement stmt = conn.createStatement();
-        stmt.executeUpdate("INSERT into Chemical VALUES (1, "TestMetal", 2)");
-        stmt.executeUpdate("INSERT into Chemical VALUES (2, "TestBase", 1)");
-        stmt.executeUpdate("INSERT into Chemical VALUES (3, "TestAcid", 2)");
+        stmt.executeUpdate("INSERT INTO Chemical (id, name, atomicNumber, atomicMass, baseSolute, acidSolute," +
+                                "dissolvedBy, type)" + " VALUES (1, 'TestMetal', 1, 0, 0, 0, 3, 'Metal')");
+        stmt.executeUpdate("INSERT INTO Chemical (id, name, atomicNumber, atomicMass, baseSolute, acidSolute," +
+                                "dissolvedBy, type) VALUES (2, 'TestBase', 2, 0, 0, 0, 0, 'Base')");
+        stmt.executeUpdate("INSERT INTO Chemical (id, name, atomicNumber, atomicMass, baseSolute, acidSolute," +
+                                "dissolvedBy, type) VALUES (3, 'TestAcid', 3, 0, 0, 0, 0, 'Acid')");
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void tearDown() throws SQLException {
         conn.rollback();
         conn.close();
@@ -38,29 +44,26 @@ class ChemicalDataGatewayTest {
      */
     @org.junit.jupiter.api.Test
     public void testInitializationWithEverything() {
-        ChemicalDataGateway Gateway = new ChemicalDataGateway("Iron", 26, 55.85,
-                0, 0, dissolved, 5678, "Metal");
+        ChemicalDataGateway Gateway = new ChemicalDataGateway("Iron", 26, 55.85, 0, 0, 5678, "Metal");
 
-        Assertions.assertEquals("Iron", Gateway.getName());
-        Assertions.assertEquals(26, Gateway.getAtomicNumber());
-        Assertions.assertEquals(55.85, Gateway.getAtomicMass());
-        Assertions.assertEquals(0, Gateway.getBaseSolute());
-        Assertions.assertEquals(0, Gateway.getAcidSolute());
-        Assertions.assertEquals(dissolved, Gateway.getDissolves());
-        Assertions.assertEquals(5678, Gateway.getDissolvedBy());
-        Assertions.assertEquals("Metal", Gateway.getType());
+        assertEquals("Iron", Gateway.getName());
+        assertEquals(26, Gateway.getAtomicNumber());
+        assertEquals(55.85, Gateway.getAtomicMass());
+        assertEquals(0, Gateway.getBaseSolute());
+        assertEquals(0, Gateway.getAcidSolute());
+        assertEquals(5678, Gateway.getDissolvedBy());
+        assertEquals("Metal", Gateway.getType());
     }
 
     /**
      * Tests that deleting items works
      */
-    @org.junit.jupiter.api.Test
+    @Test
     public void testDelete() throws SQLException {
         Statement stmt = conn.createStatement();
-        ChemicalDataGateway Gateway = new ChemicalDataGateway(1234567);
+        ChemicalDataGateway Gateway = new ChemicalDataGateway(1);
         Gateway.delete();
-        String statement = new String("SELECT * FROM project-1-single-table WHERE id=1234567");
-        stmt.execute(statement);
+        stmt.execute("SELECT * FROM Chemical WHERE id=1");
         ResultSet getInfo = stmt.getResultSet();
 
         assertNull(getInfo);
@@ -71,78 +74,71 @@ class ChemicalDataGatewayTest {
      * to ensure it is getting the correct array values
      * @throws SQLException
      */
-    @org.junit.jupiter.api.Test
+    @Test
     public void testGetMetalsDissolvedBy() throws SQLException {
-        ChemicalDTO chemOne = new ChemicalDTO(1234);
-        chemOne.setDissolvedBy(1010);
-        chemOne.setType("Metal");
-        ChemicalDataGateway gatewayTwo = new ChemicalDataGateway(5678);
-        gatewayTwo.setDissolvedBy(1010);
-        gatewayTwo.setType("Metal");
-        ChemicalDataGateway gatewayThree = new ChemicalDataGateway(9999);
-        gatewayThree.setDissolvedBy(1010);
-        gatewayThree.setType("Metal");
+        ArrayList<ChemicalDTO> listTester = new ArrayList<>();
+        ChemicalDTO chemOne = new ChemicalDTO(1234, "Iron", 26, 55.845,
+                0, 0, 1010, "Metal");
+        ChemicalDataGateway cdg = new ChemicalDataGateway(1234);
+        listTester.add(chemOne);
+        ChemicalDTO chemTwo = new ChemicalDTO(5678, "Gold", 79, 196.96657,
+                0, 0, 1010, "Metal");
+        listTester.add(chemTwo);
+        ChemicalDTO chemThree = new ChemicalDTO(9999, "Platinum", 78, 195.084,
+                0, 0, 1010, "Metal");
+        listTester.add(chemThree);
 
+        ArrayList<ChemicalDTO> listMethod = cdg.getMetalsDissolvedBy(1010);
 
-
-        long[] IDListMethod = getMetalsDissolveBy(1010);
-        long[] IDList = new long[1234, 5678, 9999];
-
-        Assertions.assertEquals(IDList, IDListMethod);
+        assertEquals(listTester, listMethod);
     }
 
-    @org.junit.jupiter.api.Test
-    public void testGetAcidsThatDissolve() throws SQLException {
-        ChemicalDataGateway gatewayOne = new ChemicalDataGateway(1234);
-        gatewayOne.setDissolves(1010);
-        gatewayOne.setType("Acid");
-        ChemicalDataGateway gatewayTwo = new ChemicalDataGateway(5678);
-        gatewayTwo.setDissolves(1010);
-        gatewayTwo.setType("Acid");
-        ChemicalDataGateway gatewayThree = new ChemicalDataGateway(9999);
-        gatewayThree.setDissolves(1010);
-        gatewayThree.setType("Acid");
-
-        long[] IDListMethod = getAcidsThatDissolve(1010);
-        long[] IDList = new long[1234, 5678, 9999];
-
-        Assertions.assertEquals(IDList, IDListMethod);
-    }
-
-    @org.junit.jupiter.api.Test
+    @Test
     public void testGetAllOfAType() throws SQLException {
-        ChemicalDataGateway acidGatewayOne = new ChemicalDataGateway(1234);
-        acidGatewayOne.setType("Acid");
-        ChemicalDataGateway acidGatewayTwo = new ChemicalDataGateway(5678);
-        acidGatewayTwo.setType("Acid");
-        ChemicalDataGateway acidGatewayThree = new ChemicalDataGateway(9999);
-        acidGatewayThree.setType("Acid");
+        ArrayList<ChemicalDTO> listTester = new ArrayList<>();
+        ChemicalDTO acidOne = new ChemicalDTO(1234, "acidOne", 1,
+                1, 0, 0, 0, "Acid");
+        listTester.add(acidOne);
+        ChemicalDataGateway acidGateway = new ChemicalDataGateway(acidOne.id);
+        ChemicalDTO acidTwo = new ChemicalDTO(4567, "acidTwo", 1,
+                1, 0, 0, 0, "Acid");
+        listTester.add(acidTwo);
+        ChemicalDTO acidThree = new ChemicalDTO(2685, "acidThree", 1,
+                1, 0, 0, 0, "Acid");
+        listTester.add(acidThree);
 
-        long[] IDListMethod = getAllAcids();
-        long[] IDList = new long[1234, 5678, 9999];
+        ArrayList<ChemicalDTO> listMethod = acidGateway.getAllAcids();
+        assertEquals(listTester, listMethod);
+        listTester.clear();
 
-        Assertions.assertEquals(IDList, IDListMethod);
+        ChemicalDTO metalOne = new ChemicalDTO(1234, "metalOne", 1,
+                1, 0, 0, 0, "Metal");
+        ChemicalDataGateway metalGateway = new ChemicalDataGateway(metalOne.id);
+        listTester.add(metalOne);
+        ChemicalDTO metalTwo = new ChemicalDTO(4567, "metalTwo", 1,
+                1, 0, 0, 0, "Metal");
+        listTester.add(metalTwo);
+        ChemicalDTO metalThree = new ChemicalDTO(2685, "metalThree", 1,
+                1, 0, 0, 0, "Metal");
+        listTester.add(metalThree);
 
-        ChemicalDataGateway metalGatewayOne = new ChemicalDataGateway(1234);
-        metalGatewayOne.setType("Metal");
-        ChemicalDataGateway metalGatewayTwo = new ChemicalDataGateway(5678);
-        metalGatewayTwo.setType("Metal");
-        ChemicalDataGateway metalGatewayThree = new ChemicalDataGateways\(9999);
-        metalGatewayThree.setType("Metal");
+        listMethod = metalGateway.getAllMetals();
+        assertEquals(listTester, listMethod);
+        listTester.clear();
 
-        IDListMethod = getAllMetals();
+        ChemicalDTO baseOne = new ChemicalDTO(1234, "baseOne", 1,
+                1, 0, 0, 0, "Base");
+        ChemicalDataGateway baseGateway = new ChemicalDataGateway(baseOne.id);
+        listTester.add(baseOne);
+        ChemicalDTO baseTwo = new ChemicalDTO(4567, "baseTwo", 1,
+                1, 0, 0, 0, "Base");
+        listTester.add(baseTwo);
+        ChemicalDTO baseThree = new ChemicalDTO(2685, "baseThree", 1,
+                1, 0, 0, 0, "Base");
+        listTester.add(baseThree);
 
-        Assertions.assertEquals(IDList, IDListMethod);
+        listMethod = baseGateway.getAllBases();
 
-        ChemicalDataGateway baseGatewayOne = new ChemicalDataGateway(1234);
-        baseGatewayOne.setType("Base");
-        ChemicalDataGateway baseGatewayTwo = new ChemicalDataGateway(5678);
-        baseGatewayTwo.setType("Base");
-        ChemicalDataGateway baseGatewayThree = new ChemicalDataGateway(9999);
-        baseGatewayThree.setType("Base");
-
-        IDListMethod = getAllAcids();
-
-        Assertions.assertEquals(IDList, IDListMethod);
+        assertEquals(listTester, listMethod);
     }
 }

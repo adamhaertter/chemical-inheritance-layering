@@ -1,5 +1,6 @@
 package datasource;
 
+import dto.ChemicalDTO;
 import dto.CompoundToElementDTO;
 
 import java.sql.*;
@@ -26,6 +27,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
                                                                 "WHERE CompoundId = '" + compoundID + "'");
             ResultSet rs = statement.executeQuery();
             this.elementID = rs.getLong("ElementId");
+            this.deleted = false;
         } catch(Exception ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
@@ -123,7 +125,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @return compoundList - a list of compounds
      * @throws SQLException
      */
-    public ArrayList<CompoundToElementDTO> getCompoundsByElementID(long elemID) throws SQLException {
+    public ArrayList<CompoundToElementDTO> getCompoundsContaining(long elemID) throws SQLException {
         verifyExistence();
         ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
@@ -144,7 +146,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @return compoundList - a list of compounds
      * @throws SQLException
      */
-    public ArrayList<CompoundToElementDTO> getCompoundElements(int compID) throws SQLException {
+    public ArrayList<CompoundToElementDTO> getElementsInCompound(int compID) throws SQLException {
         verifyExistence();
         ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
@@ -175,6 +177,22 @@ public class CompoundDataGateway extends ChemicalDataGateway {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Takes all the elements currently in the object and pushes them to the DB
+     *
+     * @return true or false
+     */
+    public boolean persist(CompoundToElementDTO dto) {
+        try {
+            Statement statement = m_dbConn.createStatement();
+            statement.executeUpdate("UPDATE CompoundToElement SET compoundID = '" + dto.compoundID + "'," +
+                    "elementID = '" + dto.elementID + "' WHERE compoundID = '" + dto.compoundID + "'");
+            return true;
+        } catch (SQLException ex) {
+            return false;
+        }
     }
 
     /**

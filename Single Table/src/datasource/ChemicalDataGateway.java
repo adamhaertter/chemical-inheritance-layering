@@ -15,7 +15,6 @@ public class ChemicalDataGateway extends Gateway {
     double atomicMass = 0.0;
     long baseSolute = 0;
     long acidSolute = 0;
-    String[] dissolves;
     long dissolvedBy = 0;
     String type = "";
     protected static Connection m_dbConn = null;
@@ -39,15 +38,9 @@ public class ChemicalDataGateway extends Gateway {
             this.acidSolute = rs.getInt("acidSolute");
             this.dissolvedBy = rs.getLong("dissolvedBy");
             this.type = rs.getString("type");
+            this.deleted = false;
 
-            if(type.equals("Acid")) {
-                statement = m_dbConn.prepareCall("SELECT dissolvedBy FROM 'Chemical' " + "WHERE id = '" + id + "'");
-                rs = statement.executeQuery();
-                for (int i = 0; rs.next(); i++) {
-                    dissolves[i] = rs.getString(i);
-                }
-            }
-            persist(id, name, atomicNumber, atomicMass, baseSolute, acidSolute, dissolves, dissolvedBy, type);
+            persist(id, name, atomicNumber, atomicMass, baseSolute, acidSolute, dissolvedBy, type);
         } catch(Exception ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
@@ -60,23 +53,21 @@ public class ChemicalDataGateway extends Gateway {
      * @param mass - the atomic mass of the chemical
      * @param bSolute - the base solute of the chemical
      * @param aSolute - the acid solute of the chemical
-     * @param diss - the list of chemicals that are capable of being dissolved
      * @param dissBy - the acid that a chemical is dissolved by
      * @param type - Type of Chemical (i.e. Metal, Nonmetal, etc.)
      */
     public ChemicalDataGateway(String n, int number, double mass, int bSolute,
-                               int aSolute, String[] diss, long dissBy, String type) {
+                               int aSolute, long dissBy, String type) {
         super();
         this.name = n;
         this.atomicNumber = number;
         this.atomicMass = mass;
         this.baseSolute = bSolute;
         this.acidSolute = aSolute;
-        this.dissolves = diss;
         this.dissolvedBy = dissBy;
         this.type = type;
         persist(this.id, this.name, this.atomicNumber, atomicMass, this.baseSolute, this.acidSolute,
-                this.dissolves, this.dissolvedBy, this.type);
+                this.dissolvedBy, this.type);
     }
 
     //Getters & Setters ----------------------------------------------------------------------
@@ -100,7 +91,7 @@ public class ChemicalDataGateway extends Gateway {
     public void setName(String name) {
         if (!deleted) {
             if (persist(this.id, name, this.atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
-                    this.dissolves, this.dissolvedBy, this.type))
+                    this.dissolvedBy, this.type))
                 this.name = name;
         } else {
             System.out.println("This metal has been deleted.");
@@ -127,7 +118,7 @@ public class ChemicalDataGateway extends Gateway {
     public void setAtomicNumber(int atomicNumber) {
         if (!deleted) {
             if (persist(this.id, this.name, atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
-                    this.dissolves, this.dissolvedBy, this.type))
+                    this.dissolvedBy, this.type))
                 this.atomicNumber = atomicNumber;
         } else {
             System.out.println("This metal has been deleted.");
@@ -154,7 +145,7 @@ public class ChemicalDataGateway extends Gateway {
     public void setAtomicMass(double atomicMass) {
         if (!deleted) {
             if (persist(this.id, this.name, this.atomicNumber, atomicMass, this.baseSolute, this.acidSolute,
-                    this.dissolves, this.dissolvedBy, this.type))
+                    this.dissolvedBy, this.type))
                 this.atomicMass = atomicMass;
         } else {
             System.out.println("This Chemical has been deleted.");
@@ -165,7 +156,7 @@ public class ChemicalDataGateway extends Gateway {
      * Getter for the base solute
      * @return baseSolute - the base solute of the chemical
      */
-    public int getBaseSolute() {
+    public long getBaseSolute() {
         if (!deleted) {
             return baseSolute;
         } else {
@@ -178,10 +169,10 @@ public class ChemicalDataGateway extends Gateway {
      * Setter for the base solute
      * @param baseSolute - the base solute of the chemical
      */
-    public void setBaseSolute(int baseSolute) {
+    public void setBaseSolute(long baseSolute) {
         if (!deleted) {
             if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, baseSolute, this.acidSolute,
-                    this.dissolves, this.dissolvedBy, this.type))
+                    this.dissolvedBy, this.type))
                 this.baseSolute = baseSolute;
         } else {
             System.out.println("This Chemical has been deleted.");
@@ -192,7 +183,7 @@ public class ChemicalDataGateway extends Gateway {
      * Getter for the acid solute
      * @return acidSolute - the acid solute of the chemical
      */
-    public int getAcidSolute() {
+    public long getAcidSolute() {
         if (!deleted) {
             return acidSolute;
         } else {
@@ -205,38 +196,11 @@ public class ChemicalDataGateway extends Gateway {
      * Set acid solute
      * @param acidSolute - the acid solute of the chemical
      */
-    public void setAcidSolute(int acidSolute) {
+    public void setAcidSolute(long acidSolute) {
         if (!deleted) {
             if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, this.baseSolute, acidSolute,
-                    this.dissolves, this.dissolvedBy, this.type))
+                    this.dissolvedBy, this.type))
                 this.acidSolute = acidSolute;
-        } else {
-            System.out.println("This Chemical has been deleted.");
-        }
-    }
-
-    /**
-     * Getter for dissolves
-     * @return dissolves - the list of chemicals that are capable of being dissolved
-     */
-    public String[] getDissolves() {
-        if (!deleted) {
-            return dissolves;
-        } else {
-            System.out.println("This Chemical has been deleted.");
-        }
-        return null;
-    }
-
-    /**
-     * Setter for dissolves
-     * @param dissolves - the list of chemicals that are capable of being dissolved
-     */
-    public void setDissolves(String[] dissolves) {
-        if (!deleted) {
-            if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
-                    dissolves, this.dissolvedBy, this.type))
-                this.dissolves = dissolves;
         } else {
             System.out.println("This Chemical has been deleted.");
         }
@@ -262,7 +226,7 @@ public class ChemicalDataGateway extends Gateway {
     public void setDissolvedBy(long dissolvedBy) {
         if (!deleted) {
             if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
-                    this.dissolves, dissolvedBy, this.type))
+                    dissolvedBy, this.type))
                 this.dissolvedBy = dissolvedBy;
         } else {
             System.out.println("This Chemical has been deleted.");
@@ -289,7 +253,7 @@ public class ChemicalDataGateway extends Gateway {
     public void setType(String type) {
         if (!deleted) {
             if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, this.baseSolute, this.acidSolute,
-                    this.dissolves, this.dissolvedBy, type))
+                    this.dissolvedBy, type))
                 this.type = type;
         } else {
             System.out.println("This Chemical has been deleted.");
@@ -304,7 +268,7 @@ public class ChemicalDataGateway extends Gateway {
      * @return metalList - the list of metals dissolved by a specific acid
      * @throws SQLException
      */
-    public ArrayList<ChemicalDTO> getAllMetalsDissolvedBy(long acidID) throws SQLException {
+    public ArrayList<ChemicalDTO> getMetalsDissolvedBy(long acidID) throws SQLException {
         ArrayList<ChemicalDTO> metalList = new ArrayList<>();
         Statement statement = m_dbConn.createStatement();
         statement.executeQuery("SELECT * FROM Chemical WHERE dissolvedBy="
@@ -345,6 +309,30 @@ public class ChemicalDataGateway extends Gateway {
         }
 
         return acidList;
+    }
+
+    /**
+     * Getter for all metals
+     *
+     * @return metalList - list of acids that dissolve a specified element
+     * @throws SQLException
+     */
+    public ArrayList<ChemicalDTO> getAllMetals() throws SQLException {
+        ArrayList<ChemicalDTO> metalList = new ArrayList<>();
+        Statement statement = m_dbConn.createStatement();
+        statement.executeQuery("SELECT * FROM Chemical WHERE Type='Metal'");
+
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            ChemicalDTO chem = new ChemicalDTO(
+                    rs.getLong("id"), rs.getString("name"),
+                    rs.getInt("atomicNumber"), rs.getInt("atomicMass"),
+                    rs.getInt("baseSolute"), rs.getInt("acidSolute"),
+                    0, "Metal");
+            metalList.add(chem);
+        }
+
+        return metalList;
     }
 
     /**
@@ -401,7 +389,7 @@ public class ChemicalDataGateway extends Gateway {
      * @return true or false
      */
     public boolean persist(long id, String name, int atomicNumber, double atomicMass, long baseSolute, long acidSolute,
-                           String[] dissolves, long dissolvedBy, String type) {
+                           long dissolvedBy, String type) {
         try {
             Statement statement = m_dbConn.createStatement();
             statement.executeUpdate("UPDATE Chemical SET id = '" + id + "', name = '" + name + "', " +
