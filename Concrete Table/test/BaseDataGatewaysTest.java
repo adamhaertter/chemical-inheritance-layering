@@ -1,8 +1,5 @@
 import config.ProjectConfig;
 import datasource.BaseDataGateways;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +13,15 @@ class BaseDataGatewaysTest {
 
     private Connection conn;
 
+    /**
+     * This creates our connection and makes sure that we don't actually commit any changes to the DB
+     * This also inserts test data into our DB directly
+     * TODO: Create test DB
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     @BeforeEach
-    public void setUp() throws SQLException, ClassNotFoundException {
+    public void setUp() throws SQLException {
         this.conn = DriverManager.getConnection(ProjectConfig.DatabaseURL, ProjectConfig.DatabaseUser, ProjectConfig.DatabasePassword);
         this.conn.setAutoCommit(false);
         // Insert Test Data
@@ -28,12 +32,21 @@ class BaseDataGatewaysTest {
         stmnt.executeUpdate(insertTestBase);
     }
 
+    /**
+     * Rolls back any changes that we made. Also closes our current connection
+     * @throws SQLException
+     */
     @AfterEach
     public void tearDown() throws SQLException {
         this.conn.rollback();
         this.conn.close();
     }
 
+    /**
+     * Tests that we can properly retrieve the name from the class and that it returns the proper value when deleted
+     * This uses the data from the setup
+     * @throws SQLException
+     */
     @Test
     void getName() throws SQLException {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
@@ -42,6 +55,9 @@ class BaseDataGatewaysTest {
         assertNull(base.getName());
     }
 
+    /**
+     * Tests that we can use the gateway to update names properly in the gateway
+     */
     @Test
     void updateName() {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
@@ -49,6 +65,11 @@ class BaseDataGatewaysTest {
         assertEquals("UpdatedName", base.getName());
     }
 
+    /**
+     * Tests that we can properly retrieve the solute from the class and that it returns the proper value when deleted
+     * This uses the data from the setup
+     * @throws SQLException
+     */
     @Test
     void getSolute() throws SQLException {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
@@ -57,27 +78,13 @@ class BaseDataGatewaysTest {
         assertEquals(-1, base.getSolute());
     }
 
+    /**
+     * Tests that we can use the gateway to update solutes properly in the gateway
+     */
     @Test
     void updateSolute() {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
         base.updateSolute(conn, 3);
         assertEquals(3, base.getSolute());
-    }
-
-    @Test
-    void persist() throws SQLException {
-        BaseDataGateways base = new BaseDataGateways(conn, 1);
-        // These values are different than the ones we instantiate the tests with
-        base.persist(conn, 1, "UpdatedName", 3);
-
-        Statement stmnt = conn.createStatement();
-        // We only care about the first entry
-        ResultSet rs = stmnt.executeQuery("SELECT * FROM Base WHERE id = 1");
-        rs.next();
-        // check to make sure they updated in the DB
-        String nameFromDB = rs.getString("name");
-        long soluteFromDB = rs.getLong("solute");
-        assertEquals("UpdatedName", nameFromDB);
-        assertEquals(3, soluteFromDB);
     }
 }

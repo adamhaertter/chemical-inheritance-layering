@@ -98,7 +98,7 @@ public class BaseDataGateways extends Gateway {
         }
     }
 
-    public boolean persist(Connection conn, long id, String name, long solute) {
+    private boolean persist(Connection conn, long id, String name, long solute) {
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Base SET name = '" + name + "', solute = '" + solute +

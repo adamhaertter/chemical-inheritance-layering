@@ -68,7 +68,7 @@ public class MetalDataGateways extends Gateway {
         return (name != null && atomicNumber > 0 && atomicMass > 0);
     }
 
-    public boolean persist(Connection conn, long id, String name, long atomicNumber, long atomicMass, long dissolvedBy) {
+    private boolean persist(Connection conn, long id, String name, long atomicNumber, long atomicMass, long dissolvedBy) {
         try {
             Statement statement = conn.createStatement();
             String updateMetal = "UPDATE Metal SET name = '" + name + "', atomicNumber = '" + atomicNumber + "', atomicMass = '" + atomicMass + "', dissolvedBy = '" + dissolvedBy + "' WHERE id = '" + id + "'";
