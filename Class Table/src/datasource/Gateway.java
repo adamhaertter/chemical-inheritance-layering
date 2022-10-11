@@ -3,16 +3,25 @@ package datasource;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
+/**
+ * Contains basic functionality to be used by all Gateways. All RowDataGateway/TableDataGateway combined classes should
+ * extend this class or a class that inherits these methods to inherit basic delete and connection functionality.
+ */
 public class Gateway {
 
     protected long id;
     protected boolean deleted = false;
     protected Connection conn;
 
-    public Gateway() {
-        this.conn = setUpConnection();
+    /**
+     * Basic Gateway constructor which calls to set up database connectivity for all child gateways. All children
+     * should super(Connection) to inherit this connection.
+     *
+     * @param conn connection to the DB
+     */
+    public Gateway(Connection conn) {
+        this.conn = conn;
     }
 
     /**
@@ -21,8 +30,6 @@ public class Gateway {
      */
     public static Connection setUpConnection() {
         try {
-            //Class.forName("com.mysql.cj.jdbc.Driver");
-            // TODO "No suitable driver found"
             return DriverManager.getConnection(config.ProjectConfig.DatabaseURL, config.ProjectConfig.DatabaseUser, config.ProjectConfig.DatabasePassword);
         } catch (Exception ex) {
             System.out.println("Error connecting to database");
@@ -37,7 +44,6 @@ public class Gateway {
      */
     public void delete() {
         try {
-            // TODO code to delete from database
             CallableStatement statement = conn.prepareCall("DELETE FROM Chemical WHERE id = ?");
             // We only delete from Chemical because the Foreign Keys cascade on delete, removing it from all tables
             statement.setLong(1, id);

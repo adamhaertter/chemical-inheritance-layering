@@ -11,6 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+<<<<<<< HEAD
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -47,5 +48,8 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="junit.jupiter" level="project" />
+=======
+    <orderEntry type="library" name="mysql-connector-j-8.0.31" level="project" />
+>>>>>>> 59dfbb2c4b0eddd60ff65c1e5e03ff222502fe5b
   </component>
 </module>

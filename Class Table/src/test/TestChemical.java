@@ -37,7 +37,7 @@ public class TestChemical {
             fail();
         }
 
-        ChemicalDataGateway chem = new ChemicalDataGateway(trueId);
+        ChemicalDataGateway chem = new ChemicalDataGateway(conn, trueId);
         // Does it correspond to the right row?
         assertTrue(chem.getName().equals(trueName));
     }
@@ -50,7 +50,7 @@ public class TestChemical {
         assertNotNull(conn);
 
         String trueName = "Ex";
-        ChemicalDataGateway chem = new ChemicalDataGateway(trueName);
+        ChemicalDataGateway chem = new ChemicalDataGateway(conn, trueName);
         // Test that the value is set properly for the Object
         assertTrue(chem.getName().equals(trueName));
 
@@ -88,7 +88,7 @@ public class TestChemical {
             fail();
         }
 
-        ChemicalDataGateway chem = new ChemicalDataGateway(trueId);
+        ChemicalDataGateway chem = new ChemicalDataGateway(conn, trueId);
 
         // Does the deleted boolean change?
         assertTrue(chem.verify());
@@ -104,4 +104,52 @@ public class TestChemical {
             fail();
         }
     }
+
+    /**
+     * ensures that getters and setters are working properly and are changing
+     * both within the database and on our end.
+     */
+    @Test
+    public void testUpdateName() {
+        assertNotNull(conn);
+
+        String trueName = "MyTestName";
+        String tempName = "MyTempName";
+
+        ChemicalDataGateway myChemical = new ChemicalDataGateway(conn, trueName);
+
+        // test that the value is set properly for the object
+        assertTrue(myChemical.getName().equals(trueName));
+
+        // test that the value exists in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, trueName);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            assertTrue(rs.getString("name").equals(trueName));
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // set name to new name
+        myChemical.updateName(tempName);
+
+        // test that the changes have been made in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, tempName);
+            ResultSet rs = statement.executeQuery();
+            rs = statement.executeQuery();
+            rs.next();
+            assertEquals(rs.getString("name"), tempName);
+
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // verify that the changes have been made on our end
+        assertNotEquals(trueName, myChemical.getName());
+    }
+
 }
