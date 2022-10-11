@@ -145,4 +145,55 @@ public class TestElement {
         }
     }
 
+    /**
+     * ensures that getters and setters are working properly and are changing
+     * both within the database and on our end.
+     */
+    @Test
+    public void testUpdateMass() {
+        assertNotNull(conn);
+
+        String trueName = "TestElement";
+        int trueNumber = 5;
+        double trueMass = 10.0;
+        double tempMass = 12.0;
+
+        ElementDataGateway myElement = new ElementDataGateway(trueName, trueNumber, trueMass);
+
+        // test that the values exist in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, trueName);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            assertEquals(rs.getString("name"), trueName);
+
+            statement = conn.prepareCall("SELECT * from Element WHERE atomicMass = ?");
+            statement.setDouble(1, trueMass);
+            rs = statement.executeQuery();
+            rs.next();
+            assertTrue(rs.getDouble("atomicMass") == trueMass);
+            assertEquals(rs.getInt("atomicNumber"), trueNumber);
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // set mass to new value
+        myElement.updateAtomicMass(tempMass);
+
+        // test that the value has changed in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Element WHERE atomicMass = ?");
+            statement.setDouble(1, tempMass);
+            ResultSet rs = statement.executeQuery();
+            rs = statement.executeQuery();
+            rs.next();
+            assertTrue(rs.getDouble("atomicMass") == tempMass);
+
+        } catch (SQLException e) {
+            fail();
+        }
+
+        assertNotEquals(trueMass, myElement.getAtomicMass());
+    }
 }

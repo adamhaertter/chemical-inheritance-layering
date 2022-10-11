@@ -120,7 +120,7 @@ public class AcidDataGateway extends ChemicalDataGateway {
      * @param solute the solute id with which to update the DB
      * @see ChemicalDataGateway#setName(String) for line-by-line comments
      */
-    public void setSolute(long solute) {
+    public void updateSolute(long solute) {
         // If the row exists AND we can update the values in the DB...
         if( !verify() && !persist(this.id, this.name, solute) )
             return;

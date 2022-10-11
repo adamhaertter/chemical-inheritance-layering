@@ -1,5 +1,6 @@
 package test;
 
+import datasource.ElementDataGateway;
 import datasource.MetalDataGateway;
 import datasource.Gateway;
 import org.junit.Test;
@@ -172,4 +173,76 @@ public class TestMetal {
         }
     }
 
+    /**
+     * ensures that getters and setters are working properly and are changing
+     * both within the database and on our end.
+     */
+    @Test
+    public void testUpdateMass() {
+        assertNotNull(conn);
+
+        String trueName = "TestElement";
+        int trueNumber = 5;
+        int tempNumber = 6;
+        double trueMass = 10.0;
+        double tempMass = 12.0;
+        long trueDissolve = 55;
+
+
+        MetalDataGateway myMetal = new MetalDataGateway(trueName, trueNumber, trueMass, trueDissolve);
+
+        // test that the values exist in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, trueName);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            assertEquals(rs.getString("name"), trueName);
+
+            statement = conn.prepareCall("SELECT * from Element WHERE atomicMass = ?");
+            statement.setDouble(1, trueMass);
+            rs = statement.executeQuery();
+            rs.next();
+            assertTrue(rs.getDouble("atomicMass") == trueMass);
+            assertEquals(rs.getInt("atomicNumber"), trueNumber);
+
+            statement = conn.prepareCall("SELECT * from Metal WHERE dissolvedBy = ?");
+            statement.setLong(1, trueDissolve);
+            rs = statement.executeQuery();
+            rs.next();
+            assertEquals(rs.getLong("dissolvedBy"), trueDissolve);
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // update to new values
+        myMetal.updateAtomicNumber(tempNumber);
+        myMetal.updateAtomicMass((tempMass));
+        myMetal.updateDissolvedBy(trueDissolve);
+
+        // test that the values have changed in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, trueName);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            assertEquals(rs.getString("name"), trueName);
+
+            statement = conn.prepareCall("SELECT * from Element WHERE atomicMass = ?");
+            statement.setDouble(1, tempMass);
+            rs = statement.executeQuery();
+            rs.next();
+            assertTrue(rs.getDouble("atomicMass") == tempMass);
+            assertEquals(rs.getInt("atomicNumber"), tempNumber);
+
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // test that the value has changed on our end
+        assertNotEquals(trueMass, myMetal.getAtomicMass());
+        assertNotEquals(trueNumber, myMetal.getAtomicNumber());
+
+    }
 }
+
