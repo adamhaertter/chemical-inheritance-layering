@@ -1,9 +1,6 @@
 package datasource;
 
-import java.sql.CallableStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Both row and table gateways for the element class
@@ -16,7 +13,7 @@ public class BaseDataGateways extends Gateway {
      * Constructor that uses the id only to create a row gateway for an existing base in the DB
      * @param id
      */
-    public BaseDataGateways(long id) {
+    public BaseDataGateways(Connection conn, long id) {
         super();
         this.id = id;
         try {
@@ -41,9 +38,9 @@ public class BaseDataGateways extends Gateway {
     /**
      * Constructor for adding the new base into the DB and creating a row data gateway for it as well
      */
-    public BaseDataGateways(String name, long solute) {
+    public BaseDataGateways(Connection conn, String name, long solute) {
         super();
-        this.id = KeyTableGateways.getNextValidKey();
+        this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
         this.solute = solute;
 
@@ -76,9 +73,9 @@ public class BaseDataGateways extends Gateway {
         return null;
     }
 
-    public void updateName(String name) {
+    public void updateName(Connection conn, String name) {
         if (!deleted) {
-            if (persist(this.id, name, solute)) this.name = name;
+            if (persist(conn, this.id, name, solute)) this.name = name;
         } else {
             System.out.println("This base has been deleted");
         }
@@ -93,15 +90,15 @@ public class BaseDataGateways extends Gateway {
         return -1;
     }
 
-    public void updateSolute(int solute) {
+    public void updateSolute(Connection conn, int solute) {
         if (!deleted) {
-            if (persist(this.id, this.name, solute)) this.solute = solute;
+            if (persist(conn, this.id, this.name, solute)) this.solute = solute;
         } else {
             System.out.println("This base has been deleted");
         }
     }
 
-    public boolean persist(long id, String name, long solute) {
+    public boolean persist(Connection conn, long id, String name, long solute) {
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Base SET name = '" + name + "', solute = '" + solute +
