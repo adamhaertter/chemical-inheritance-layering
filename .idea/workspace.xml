@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fbb4ccce-2533-479b-b358-2faa6772b4c9" name="Changes" comment="" />
+    <list default="true" id="fbb4ccce-2533-479b-b358-2faa6772b4c9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/config/ProjectConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/config/ProjectConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class Table/src/datasource/AcidDataGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/Class Table/src/datasource/AcidDataGateway.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -14,17 +27,32 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2FSZ3MST970aiKfjYMuZRXPutLM" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Scott/OneDrive/Documents/School/Shippensburg/Senior Year/Fall Semester/LSA/swe-400-project-1&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ]
   }
 }</component>
   <component name="RecentsManager">
@@ -36,7 +64,7 @@
       <recent name="src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.SingleTable">
+  <component name="RunManager" selected="JUnit.TestAcid.testInitById">
     <configuration name="ClassTable" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="17" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -62,6 +90,70 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="TestAcid.testInitById" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Class Table" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.TestAcid" />
+      <option name="METHOD_NAME" value="testInitById" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestBase.testInitByVal" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Class Table" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.TestBase" />
+      <option name="METHOD_NAME" value="testInitByVal" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestChemical.testInitById" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Class Table" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.TestChemical" />
+      <option name="METHOD_NAME" value="testInitById" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestChemical.testInitByVal" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Class Table" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.TestChemical" />
+      <option name="METHOD_NAME" value="testInitByVal" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <module name="swe-400-project-11" />
       <method v="2">
@@ -79,7 +171,19 @@
       <item itemvalue="Application.ConcreteTable" />
       <item itemvalue="Application.ClassTable" />
       <item itemvalue="Application.SingleTable" />
+      <item itemvalue="JUnit.TestAcid.testInitById" />
+      <item itemvalue="JUnit.TestBase.testInitByVal" />
+      <item itemvalue="JUnit.TestChemical.testInitById" />
+      <item itemvalue="JUnit.TestChemical.testInitByVal" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.TestAcid.testInitById" />
+        <item itemvalue="JUnit.TestBase.testInitByVal" />
+        <item itemvalue="JUnit.TestChemical.testInitById" />
+        <item itemvalue="JUnit.TestChemical.testInitByVal" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -93,6 +197,9 @@
       <workItem from="1664487923082" duration="8000" />
       <workItem from="1664488033478" duration="680000" />
       <workItem from="1664488722126" duration="237000" />
+      <workItem from="1664837696277" duration="15991000" />
+      <workItem from="1665430465330" duration="16740000" />
+      <workItem from="1665510623573" duration="4483000" />
     </task>
     <servers />
   </component>
@@ -104,10 +211,26 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="false" />
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.ClassNotFoundException" package="java.lang" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
