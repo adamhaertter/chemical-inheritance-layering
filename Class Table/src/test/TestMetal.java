@@ -178,7 +178,7 @@ public class TestMetal {
      * both within the database and on our end.
      */
     @Test
-    public void testUpdateMass() {
+    public void testUpdateDissolve() {
         assertNotNull(conn);
 
         String trueName = "TestElement";
@@ -189,7 +189,7 @@ public class TestMetal {
         long trueDissolve = 55;
 
 
-        MetalDataGateway myMetal = new MetalDataGateway(trueName, trueNumber, trueMass, trueDissolve);
+        MetalDataGateway myMetal = new MetalDataGateway(conn, trueName, trueNumber, trueMass, trueDissolve);
 
         // test that the values exist in the database
         try {

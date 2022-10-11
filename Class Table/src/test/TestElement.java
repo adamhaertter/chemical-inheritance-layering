@@ -158,7 +158,7 @@ public class TestElement {
         double trueMass = 10.0;
         double tempMass = 12.0;
 
-        ElementDataGateway myElement = new ElementDataGateway(trueName, trueNumber, trueMass);
+        ElementDataGateway myElement = new ElementDataGateway(conn, trueName, trueNumber, trueMass);
 
         // test that the values exist in the database
         try {
@@ -195,5 +195,56 @@ public class TestElement {
         }
 
         assertNotEquals(trueMass, myElement.getAtomicMass());
+    }
+
+    /**
+     * ensures that getters and setters are working properly and are changing
+     * both within the database and on our end.
+     */
+    @Test
+    public void testUpdateAtomicNumber() {
+        assertNotNull(conn);
+
+        String trueName = "TestElement";
+        int trueNumber = 5;
+        double trueMass = 10.0;
+        int tempNumber = 12;
+
+        ElementDataGateway myElement = new ElementDataGateway(conn, trueName, trueNumber, trueMass);
+
+        // test that the values exist in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, trueName);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            assertEquals(rs.getString("name"), trueName);
+
+            statement = conn.prepareCall("SELECT * from Element WHERE atomicNumber = ?");
+            statement.setInt(1, trueNumber);
+            rs = statement.executeQuery();
+            rs.next();
+            assertTrue(rs.getDouble("atomicMass") == trueMass);
+            assertEquals(rs.getInt("atomicNumber"), trueNumber);
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // set number to new value
+        myElement.updateAtomicNumber(tempNumber);
+
+        // test that the value has changed in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Element WHERE atomicNumber = ?");
+            statement.setInt(1, tempNumber);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            assertTrue(rs.getDouble("atomicNumber") == tempNumber);
+
+        } catch (SQLException e) {
+            fail();
+        }
+
+        assertNotEquals(trueNumber, myElement.getAtomicNumber());
     }
 }

@@ -137,7 +137,7 @@ public class TestCompound {
         String trueName = "MyTestCompound";
         String tempName = "MyTempCompound";
 
-        CompoundDataGateway myCompound = new CompoundDataGateway(trueName);
+        CompoundDataGateway myCompound = new CompoundDataGateway(conn, trueName);
 
         // test that the value is set properly for the object
         assertTrue(myCompound.getName().equals(trueName));

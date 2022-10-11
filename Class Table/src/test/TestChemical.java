@@ -116,7 +116,7 @@ public class TestChemical {
         String trueName = "MyTestName";
         String tempName = "MyTempName";
 
-        ChemicalDataGateway myChemical = new ChemicalDataGateway(trueName);
+        ChemicalDataGateway myChemical = new ChemicalDataGateway(conn, trueName);
 
         // test that the value is set properly for the object
         assertTrue(myChemical.getName().equals(trueName));
