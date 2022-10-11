@@ -137,7 +137,7 @@ public class TestBase {
 
     /**
      * ensures that getters and setters are working properly and are changing
-     * both within the database on our end.
+     * both within the database and on our end.
      */
     @Test
     public void testUpdateBase() {
@@ -172,13 +172,13 @@ public class TestBase {
         }
 
         // set solute to new value
-        newBase.setSolute(tempSolute);
+        newBase.updateSolute(tempSolute);
 
         // test that the value has changed in the database
         try {
             CallableStatement statement = conn.prepareCall("SELECT * from Base WHERE solute = ?");
             statement.setLong(1, tempSolute);
-            ResultSet rs = statement.executeQuery()
+            ResultSet rs = statement.executeQuery();
             rs = statement.executeQuery();
             rs.next();
             assertEquals(rs.getLong("solute"), tempSolute);

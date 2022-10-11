@@ -134,9 +134,9 @@ public class MetalDataGateway extends ElementDataGateway {
      * printed if this does not occur.
      *
      * @param dissolvedBy the acid's id that dissolves this metal with which to update the DB
-     * @see ChemicalDataGateway#setName(String) for line-by-line comments
+     * @see ChemicalDataGateway#UpdateName(String) for line-by-line comments
      */
-    public void setDissolvedBy(long dissolvedBy) {
+    public void updateDissolvedBy(long dissolvedBy) {
         if( !verify() && !persist(this.id, this.name, this.atomicMass, this.atomicNumber, dissolvedBy))
             return;
         this.dissolvedBy = dissolvedBy;

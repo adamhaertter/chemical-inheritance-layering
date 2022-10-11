@@ -130,4 +130,48 @@ public class TestCompound {
         }
     }
 
+    @Test
+    public void testUpdateName() {
+        assertNotNull(conn);
+
+        String trueName = "MyTestCompound";
+        String tempName = "MyTempCompound";
+
+        CompoundDataGateway myCompound = new CompoundDataGateway(trueName);
+
+        // test that the value is set properly for the object
+        assertTrue(myCompound.getName().equals(trueName));
+
+        // test that the value exists in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Compound WHERE name = ?");
+            statement.setString(1, trueName);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            assertTrue(rs.getString("name").equals(trueName));
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // set name to new name
+        myCompound.updateName(tempName);
+
+        // test that the changes have been made in the database
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Compound WHERE name = ?");
+            statement.setString(1, tempName);
+            ResultSet rs = statement.executeQuery();
+            rs = statement.executeQuery();
+            rs.next();
+            assertEquals(rs.getString("name"), tempName);
+
+        } catch (SQLException e) {
+            fail();
+        }
+
+        // verify that the changes have been made on our end
+        assertNotEquals(trueName, myCompound.getName());
+
+    }
+
 }

@@ -122,7 +122,7 @@ public class ChemicalDataGateway extends Gateway {
      *
      * @param name the name with which to update the DB
      */
-    public void setName(String name) {
+    public void updateName(String name) {
         // This basic format should be used for all lower setters:
         // If the row exists AND we can update the values in the DB...
         if( !verify() && !persist(this.id, name) )

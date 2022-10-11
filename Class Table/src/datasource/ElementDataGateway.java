@@ -117,7 +117,7 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * @param atomicNumber the atomic number value with which to update the DB
      * @see ChemicalDataGateway#setName(String) for line-by-line comments on structure
      */
-    public void setAtomicNumber(int atomicNumber) {
+    public void updateAtomicNumber(int atomicNumber) {
         if( !verify() && !persist(this.id, this.name, this.atomicMass, atomicNumber) )
             return;
         this.atomicNumber = atomicNumber;
@@ -140,7 +140,7 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * @param atomicMass the atomic mass value with which to update the DB
      * @see ChemicalDataGateway#setName(String) for line-by-line comments
      */
-    public void setAtomicMass(double atomicMass) {
+    public void updateAtomicMass(double atomicMass) {
         if( !verify() && !persist(this.id, this.name, atomicMass, this.atomicNumber) )
             return;
         this.atomicMass = atomicMass;
