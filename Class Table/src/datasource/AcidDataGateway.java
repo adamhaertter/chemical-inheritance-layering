@@ -1,6 +1,7 @@
 package datasource;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -19,10 +20,11 @@ public class AcidDataGateway extends ChemicalDataGateway {
 
     /**
      * Used to create a new row data gateway for an existing acid in the database
+     * @param conn connection to the DB
      * @param id The id primary key in the db
      */
-    public AcidDataGateway(long id) {
-        super(id);
+    public AcidDataGateway(Connection conn, long id) {
+        super(conn, id);
         this.id = id;
         deleted = false;
 
@@ -49,11 +51,12 @@ public class AcidDataGateway extends ChemicalDataGateway {
 
     /**
      * Used to create a new acid in the database and a row data gateway for it
+     * @param conn connection to the DB
      * @param name the name field of the parent table, Chemical
      * @param solute the solute field of the db
      */
-    public AcidDataGateway(String name, long solute) {
-        super(name);
+    public AcidDataGateway(Connection conn, String name, long solute) {
+        super(conn, name);
         this.solute = solute;
         deleted = false;
 

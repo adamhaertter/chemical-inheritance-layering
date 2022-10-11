@@ -10,8 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.Assert.*;
-import static org.testng.Assert.assertNotEquals;
-
 
 public class TestChemical {
 
@@ -39,7 +37,7 @@ public class TestChemical {
             fail();
         }
 
-        ChemicalDataGateway chem = new ChemicalDataGateway(trueId);
+        ChemicalDataGateway chem = new ChemicalDataGateway(conn, trueId);
         // Does it correspond to the right row?
         assertTrue(chem.getName().equals(trueName));
     }
@@ -52,7 +50,7 @@ public class TestChemical {
         assertNotNull(conn);
 
         String trueName = "Ex";
-        ChemicalDataGateway chem = new ChemicalDataGateway(trueName);
+        ChemicalDataGateway chem = new ChemicalDataGateway(conn, trueName);
         // Test that the value is set properly for the Object
         assertTrue(chem.getName().equals(trueName));
 
@@ -90,7 +88,7 @@ public class TestChemical {
             fail();
         }
 
-        ChemicalDataGateway chem = new ChemicalDataGateway(trueId);
+        ChemicalDataGateway chem = new ChemicalDataGateway(conn, trueId);
 
         // Does the deleted boolean change?
         assertTrue(chem.verify());

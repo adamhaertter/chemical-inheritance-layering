@@ -47,7 +47,7 @@ public class TestElement {
             fail();
         }
 
-        ElementDataGateway elem = new ElementDataGateway(trueId);
+        ElementDataGateway elem = new ElementDataGateway(conn, trueId);
         // Does it correspond to the right row?
         assertEquals(elem.getName(), trueName);
         assertEquals(elem.getAtomicNumber(), trueNumber);
@@ -65,7 +65,7 @@ public class TestElement {
         int trueNumber = 1;
         double trueMass = 5;
 
-        ElementDataGateway elem = new ElementDataGateway(trueName, trueNumber, trueMass);
+        ElementDataGateway elem = new ElementDataGateway(conn, trueName, trueNumber, trueMass);
         // Test that the value is set properly for the Object
         assertEquals(elem.getName(), trueName);
         assertEquals(elem.getAtomicNumber(), trueNumber);
@@ -122,7 +122,7 @@ public class TestElement {
             fail();
         }
 
-        ElementDataGateway elem = new ElementDataGateway(trueId);
+        ElementDataGateway elem = new ElementDataGateway(conn, trueId);
 
         // Does the deleted boolean change?
         assertTrue(elem.verify());

@@ -3,7 +3,6 @@ package datasource;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 /**
  * Contains basic functionality to be used by all Gateways. All RowDataGateway/TableDataGateway combined classes should
@@ -17,10 +16,12 @@ public class Gateway {
 
     /**
      * Basic Gateway constructor which calls to set up database connectivity for all child gateways. All children
-     * should super() to inherit this connection.
+     * should super(Connection) to inherit this connection.
+     *
+     * @param conn connection to the DB
      */
-    public Gateway() {
-        this.conn = setUpConnection();
+    public Gateway(Connection conn) {
+        this.conn = conn;
     }
 
     /**

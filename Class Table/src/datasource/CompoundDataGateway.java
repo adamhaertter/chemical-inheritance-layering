@@ -1,6 +1,7 @@
 package datasource;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -18,10 +19,11 @@ public class CompoundDataGateway extends ChemicalDataGateway {
 
     /**
      * Used to create a new row data gateway for an existing compound in the database
+     * @param conn connection to the DB
      * @param id The id primary key in the db
      */
-    public CompoundDataGateway(long id) {
-        super(id);
+    public CompoundDataGateway(Connection conn, long id) {
+        super(conn, id);
 
         // Read from DB
         try {
@@ -42,10 +44,11 @@ public class CompoundDataGateway extends ChemicalDataGateway {
 
     /**
      * Used to create a new compound in the database and a row data gateway for it
+     * @param conn connection to the DB
      * @param name the name field of the parent table, Chemical
      */
-    public CompoundDataGateway(String name) {
-        super(name);
+    public CompoundDataGateway(Connection conn, String name) {
+        super(conn, name);
 
         // Create in DB
         try {

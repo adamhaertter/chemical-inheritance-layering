@@ -16,11 +16,12 @@ public class CompoundToElementDataGateway extends Gateway {
      * Attempts to read a row with the given values from the DB. If it can't, we create that row in the DB.
      * Because of the structure of this table, both create and read functionality are combined into one constructor.
      *
+     * @param conn connection to the DB
      * @param compoundId the compound id in the relation
      * @param elementId the element id in the relation
      */
-    public CompoundToElementDataGateway(long compoundId, long elementId) {
-        super();
+    public CompoundToElementDataGateway(Connection conn, long compoundId, long elementId) {
+        super(conn);
         deleted = false;
         id = compoundId; // For consistency, the id field of Gateway should be filled by either key.
 

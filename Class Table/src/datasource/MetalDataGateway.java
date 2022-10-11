@@ -16,10 +16,11 @@ public class MetalDataGateway extends ElementDataGateway {
 
     /**
      * Constructs a row data gateway based on an existing id in the database
+     * @param conn connection to the DB
      * @param id primary key id
      */
-    public MetalDataGateway(long id) {
-        super(id);
+    public MetalDataGateway(Connection conn, long id) {
+        super(conn, id);
 
         // Read from DB
         try {
@@ -42,13 +43,14 @@ public class MetalDataGateway extends ElementDataGateway {
 
     /**
      * Creates a row data gateway and a new instance of Metal in the DB and fills the given information into the appropriate tables.
+     * @param conn connection to the DB
      * @param name the name field of parent table Chemical
      * @param atomicNumber the atomicNumber field of parent table Element
      * @param atomicMass the atomicMass field of parent table Element
      * @param dissolvedByAcid the dissolvedBy foreign key of the Metal Table
      */
-    public MetalDataGateway(String name, int atomicNumber, double atomicMass, long dissolvedByAcid) {
-        super(name, atomicNumber, atomicMass);
+    public MetalDataGateway(Connection conn, String name, int atomicNumber, double atomicMass, long dissolvedByAcid) {
+        super(conn, name, atomicNumber, atomicMass);
         dissolvedBy = dissolvedByAcid;
 
         // Create in DB

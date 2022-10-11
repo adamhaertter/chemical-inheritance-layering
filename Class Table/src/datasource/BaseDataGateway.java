@@ -1,6 +1,7 @@
 package datasource;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -17,10 +18,11 @@ public class BaseDataGateway extends ChemicalDataGateway {
 
    /**
     * Only used to create a data gateway for base that already exists
+    * @param conn connection to the DB
     * @param id the primary key id
     */
-    public BaseDataGateway(long id) {
-        super(id);
+    public BaseDataGateway(Connection conn, long id) {
+        super(conn, id);
         this.id = id;
         deleted = false;
 
@@ -45,11 +47,12 @@ public class BaseDataGateway extends ChemicalDataGateway {
 
     /**
      * Used to create a new base and add it to the database
+     * @param conn connection to the DB
      * @param name the name field of the parent table, Chemical
      * @param solute the solute field of the Base table
      */
-    public BaseDataGateway(String name, long solute) {
-        super(name);
+    public BaseDataGateway(Connection conn, String name, long solute) {
+        super(conn, name);
         this.solute = solute;
         deleted = false;
 

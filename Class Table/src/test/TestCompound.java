@@ -42,7 +42,7 @@ public class TestCompound {
             fail();
         }
 
-        CompoundDataGateway com = new CompoundDataGateway(trueId);
+        CompoundDataGateway com = new CompoundDataGateway(conn, trueId);
         // Does it correspond to the right row?
         assertEquals(com.getName(), trueName);
     }
@@ -56,7 +56,7 @@ public class TestCompound {
 
         String trueName = "Ex";
 
-        CompoundDataGateway com = new CompoundDataGateway(trueName);
+        CompoundDataGateway com = new CompoundDataGateway(conn, trueName);
         // Test that the value is set properly for the Object
         assertEquals(com.getName(), trueName);
 
@@ -107,7 +107,7 @@ public class TestCompound {
             fail();
         }
 
-        CompoundDataGateway com = new CompoundDataGateway(trueId);
+        CompoundDataGateway com = new CompoundDataGateway(conn, trueId);
 
         // Does the deleted boolean change?
         assertTrue(com.verify());

@@ -1,6 +1,5 @@
 package test;
 
-import datasource.AcidDataGateway;
 import datasource.BaseDataGateway;
 import datasource.Gateway;
 import org.junit.Test;
@@ -45,7 +44,7 @@ public class TestBase {
             fail();
         }
 
-        BaseDataGateway base = new BaseDataGateway(trueId);
+        BaseDataGateway base = new BaseDataGateway(conn, trueId);
         // Does it correspond to the right row?
         assertEquals(base.getName(), trueName);
         assertEquals(base.getSolute(), trueSolute);
@@ -61,7 +60,7 @@ public class TestBase {
         String trueName = "Ex";
         long trueSolute = 1;
 
-        BaseDataGateway base = new BaseDataGateway(trueName, trueSolute);
+        BaseDataGateway base = new BaseDataGateway(conn, trueName, trueSolute);
         // Test that the value is set properly for the Object
         assertEquals(base.getName(), trueName);
 
@@ -112,7 +111,7 @@ public class TestBase {
             fail();
         }
 
-        BaseDataGateway base = new BaseDataGateway(trueId);
+        BaseDataGateway base = new BaseDataGateway(conn, trueId);
 
         // Does the deleted boolean change?
         assertTrue(base.verify());
@@ -147,7 +146,7 @@ public class TestBase {
         long trueSolute = 1;
         long tempSolute = 5;
 
-        BaseDataGateway newBase = new BaseDataGateway(trueName, trueSolute);
+        BaseDataGateway newBase = new BaseDataGateway(conn, trueName, trueSolute);
 
         // test that the values are properly set
 
@@ -178,8 +177,7 @@ public class TestBase {
         try {
             CallableStatement statement = conn.prepareCall("SELECT * from Base WHERE solute = ?");
             statement.setLong(1, tempSolute);
-            ResultSet rs = statement.executeQuery()
-            rs = statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
             rs.next();
             assertEquals(rs.getLong("solute"), tempSolute);
 

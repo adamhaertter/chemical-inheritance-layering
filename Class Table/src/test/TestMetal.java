@@ -54,7 +54,7 @@ public class TestMetal {
             fail();
         }
 
-        MetalDataGateway metal = new MetalDataGateway(trueId);
+        MetalDataGateway metal = new MetalDataGateway(conn, trueId);
         // Does it correspond to the right row?
         assertEquals(metal.getName(), trueName);
         assertEquals(metal.getAtomicNumber(), trueNumber);
@@ -73,7 +73,7 @@ public class TestMetal {
         double trueMass = 5.0;
         long trueDissolve = 75;
 
-        MetalDataGateway metal = new MetalDataGateway(trueName, trueNumber, trueMass, trueDissolve);
+        MetalDataGateway metal = new MetalDataGateway(conn, trueName, trueNumber, trueMass, trueDissolve);
         // Test that the value is set properly for the Object
         assertEquals(metal.getName(), trueName);
         assertEquals(metal.getAtomicNumber(), trueNumber);
@@ -144,7 +144,7 @@ public class TestMetal {
             fail();
         }
 
-        MetalDataGateway metal = new MetalDataGateway(trueId);
+        MetalDataGateway metal = new MetalDataGateway(conn, trueId);
 
         // Does the deleted boolean change?
         assertTrue(metal.verify());

@@ -1,6 +1,7 @@
 package datasource;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -17,10 +18,11 @@ public class ChemicalDataGateway extends Gateway {
 
     /**
      * Creates a row data gateway on the Chemical table of the database using an existing id
+     * @param conn connection to the DB
      * @param id primary key id for the row
      */
-    public ChemicalDataGateway(long id) {
-        super();
+    public ChemicalDataGateway(Connection conn, long id) {
+        super(conn);
         this.id = id;
         deleted = false;
 
@@ -44,16 +46,17 @@ public class ChemicalDataGateway extends Gateway {
 
     /**
      * Creates a new row in the db and a corresponding row data gateway object for it here
+     * @param conn connection to the DB
      * @param name the value to put into the name column of the table
      */
-    public ChemicalDataGateway(String name) {
-        super();
+    public ChemicalDataGateway(Connection conn, String name) {
+        super(conn);
         // Since we are removing inhabits, we don't set that up here
         this.name = name;
         deleted = false;
 
         // Generate next valid id for this row
-        id = KeyTableGateway.getNextValidKey();
+        id = KeyTableGateway.getNextValidKey(conn);
 
         // Create in DB
         try {

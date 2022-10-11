@@ -44,7 +44,7 @@ public class TestAcid {
             fail();
         }
 
-        AcidDataGateway acid = new AcidDataGateway(trueId);
+        AcidDataGateway acid = new AcidDataGateway(conn, trueId);
         // Does it correspond to the right row?
         assertTrue(acid.getName().equals(trueName));
         assertEquals(acid.getSolute(), trueSolute);
@@ -60,7 +60,7 @@ public class TestAcid {
         String trueName = "Ex";
         long trueSolute = 1;
 
-        AcidDataGateway acid = new AcidDataGateway(trueName, trueSolute);
+        AcidDataGateway acid = new AcidDataGateway(conn, trueName, trueSolute);
         // Test that the value is set properly for the Object
         assertTrue(acid.getName().equals(trueName));
 
@@ -112,7 +112,7 @@ public class TestAcid {
             fail();
         }
 
-        AcidDataGateway acid = new AcidDataGateway(trueId);
+        AcidDataGateway acid = new AcidDataGateway(conn, trueId);
 
         // Does the deleted boolean change?
         assertTrue(acid.verify());
@@ -148,9 +148,9 @@ public class TestAcid {
         long trueSolute = 1;
         long tempSolute = 3;
 
-        AcidDataGateway myAcid = new AcidDataGateway(trueName, trueSolute);
-        assertTrue(myAcid.getName().equals(trueName));
-        assertTrue(myAcid.getSolute() == trueSolute);
+        AcidDataGateway myAcid = new AcidDataGateway(conn, trueName, trueSolute);
+        assertEquals(myAcid.getName(), trueName);
+        assertEquals(myAcid.getSolute(), trueSolute);
 
         // Test that the value exists in the database
         try {
@@ -176,8 +176,7 @@ public class TestAcid {
         try {
             CallableStatement statement = conn.prepareCall("SELECT * from Acid WHERE solute = ?");
             statement.setLong(1, tempSolute);
-            ResultSet rs = statement.executeQuery()
-            rs = statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
             rs.next();
             assertEquals(rs.getLong("solute"), tempSolute);
 
@@ -187,7 +186,6 @@ public class TestAcid {
 
         // test that the value has changed on our end
         assertNotEquals(trueSolute, myAcid.getSolute());
-
     }
 
 }

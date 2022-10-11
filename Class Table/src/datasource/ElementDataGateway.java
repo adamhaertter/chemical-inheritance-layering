@@ -1,6 +1,7 @@
 package datasource;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -18,10 +19,11 @@ public class ElementDataGateway extends ChemicalDataGateway {
 
     /**
      * Reads a row corresponding to some Element id and creates a row data gateway from it
+     * @param conn connection to the DB
      * @param id the primary key id of Element
      */
-    public ElementDataGateway(long id) {
-        super(id);
+    public ElementDataGateway(Connection conn, long id) {
+        super(conn, id);
         this.id = id;
         deleted = false;
 
@@ -48,12 +50,13 @@ public class ElementDataGateway extends ChemicalDataGateway {
 
     /**
      * Creates a new row in the database and a corresponding row data gateway for it
+     * @param conn connection to the DB
      * @param name the name field of the parent table Chemical
      * @param atomicNumber the atomic number field of Element
      * @param atomicMass the atomic mass field of Element
      */
-    public ElementDataGateway(String name, int atomicNumber, double atomicMass) {
-        super(name);
+    public ElementDataGateway(Connection conn, String name, int atomicNumber, double atomicMass) {
+        super(conn, name);
         // Since we are removing inhabits, we don't set that up here
         this.atomicNumber = atomicNumber;
         this.atomicMass = atomicMass;
