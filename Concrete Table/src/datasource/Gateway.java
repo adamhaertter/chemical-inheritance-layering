@@ -1,7 +1,10 @@
+package datasource;
+
 import config.ProjectConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * General gateway class that has the methods needed in all gateways
@@ -10,6 +13,7 @@ import java.sql.DriverManager;
 public class Gateway {
     protected boolean deleted = false;
     protected Connection conn;
+    protected long id;
 
     public Gateway() {
         this.conn = setUpConnection();
@@ -28,12 +32,15 @@ public class Gateway {
         return null;
     }
 
-    public void delete() {
+    public void delete() throws SQLException {
         try {
             // delete code from DB
+
         } catch (Exception e) {
             //throw error about delete failure
+            return;
         }
         this.deleted = true;
+        conn.close();
     }
 }
