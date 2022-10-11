@@ -7,17 +7,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test" isTestSource="true" />
-      <dependencies>
-
-          <!-- add the junit dependency here -->
-          <dependency>
-              <groupId>org.junit.jupiter</groupId>
-              <artifactId>junit-jupiter-api</artifactId>
-              <version>5.7.0</version>
-              <scope>test</scope>
-          </dependency>
-
-      </dependencies>
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -40,7 +30,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="mysql-connector-j-8.0.31" level="project" />
-    <orderEntry type="module-library" scope="TEST">
+    <orderEntry type="module-library" exported="" scope="TEST">
       <library name="JUnit5.7.0">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/junit-jupiter-5.8.1.jar!/" />
@@ -56,5 +46,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="junit.jupiter" level="project" />
   </component>
 </module>

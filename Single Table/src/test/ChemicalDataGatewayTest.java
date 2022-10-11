@@ -1,8 +1,8 @@
-package datasource;
-
 import config.ProjectConfig;
+import datasource.ChemicalDataGateway;
 import dto.ChemicalDTO;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,11 +24,11 @@ public class ChemicalDataGatewayTest {
         // Insert Test Data
         Statement stmt = conn.createStatement();
         stmt.executeUpdate("INSERT INTO Chemical (id, name, atomicNumber, atomicMass, baseSolute, acidSolute," +
-                                "dissolvedBy, type)" + " VALUES (1, 'TestMetal', 1, 0, 0, 0, 3, 'Metal')");
+                "dissolvedBy, type)" + " VALUES (1, 'TestMetal', 1, 0, 0, 0, 3, 'Metal')");
         stmt.executeUpdate("INSERT INTO Chemical (id, name, atomicNumber, atomicMass, baseSolute, acidSolute," +
-                                "dissolvedBy, type) VALUES (2, 'TestBase', 2, 0, 0, 0, 0, 'Base')");
+                "dissolvedBy, type) VALUES (2, 'TestBase', 2, 0, 0, 0, 0, 'Base')");
         stmt.executeUpdate("INSERT INTO Chemical (id, name, atomicNumber, atomicMass, baseSolute, acidSolute," +
-                                "dissolvedBy, type) VALUES (3, 'TestAcid', 3, 0, 0, 0, 0, 'Acid')");
+                "dissolvedBy, type) VALUES (3, 'TestAcid', 3, 0, 0, 0, 0, 'Acid')");
     }
 
     @AfterEach
@@ -44,13 +44,13 @@ public class ChemicalDataGatewayTest {
     public void testInitializationWithEverything() {
         ChemicalDataGateway Gateway = new ChemicalDataGateway("Iron", 26, 55.85, 0, 0, 5678, "Metal");
 
-        assertEquals("Iron", Gateway.getName());
-        assertEquals(26, Gateway.getAtomicNumber());
-        assertEquals(55.85, Gateway.getAtomicMass());
-        assertEquals(0, Gateway.getBaseSolute());
-        assertEquals(0, Gateway.getAcidSolute());
-        assertEquals(5678, Gateway.getDissolvedBy());
-        assertEquals("Metal", Gateway.getType());
+        Assertions.assertEquals("Iron", Gateway.getName());
+        Assertions.assertEquals(26, Gateway.getAtomicNumber());
+        Assertions.assertEquals(55.85, Gateway.getAtomicMass());
+        Assertions.assertEquals(0, Gateway.getBaseSolute());
+        Assertions.assertEquals(0, Gateway.getAcidSolute());
+        Assertions.assertEquals(5678, Gateway.getDissolvedBy());
+        Assertions.assertEquals("Metal", Gateway.getType());
     }
 
     /**
@@ -64,7 +64,7 @@ public class ChemicalDataGatewayTest {
         stmt.execute("SELECT * FROM Chemical WHERE id=1");
         ResultSet getInfo = stmt.getResultSet();
 
-        assertNull(getInfo);
+        Assertions.assertNull(getInfo);
     }
 
     /**
@@ -88,7 +88,7 @@ public class ChemicalDataGatewayTest {
 
         ArrayList<ChemicalDTO> listMethod = cdg.getMetalsDissolvedBy(1010);
 
-        assertEquals(listTester, listMethod);
+        Assertions.assertEquals(listTester, listMethod);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ChemicalDataGatewayTest {
         listTester.add(acidThree);
 
         ArrayList<ChemicalDTO> listMethod = acidGateway.getAllAcids();
-        assertEquals(listTester, listMethod);
+        Assertions.assertEquals(listTester, listMethod);
         listTester.clear();
 
         ChemicalDTO metalOne = new ChemicalDTO(1234, "metalOne", 1,
@@ -121,7 +121,7 @@ public class ChemicalDataGatewayTest {
         listTester.add(metalThree);
 
         listMethod = metalGateway.getAllMetals();
-        assertEquals(listTester, listMethod);
+        Assertions.assertEquals(listTester, listMethod);
         listTester.clear();
 
         ChemicalDTO baseOne = new ChemicalDTO(1234, "baseOne", 1,
@@ -137,6 +137,6 @@ public class ChemicalDataGatewayTest {
 
         listMethod = baseGateway.getAllBases();
 
-        assertEquals(listTester, listMethod);
+        Assertions.assertEquals(listTester, listMethod);
     }
 }

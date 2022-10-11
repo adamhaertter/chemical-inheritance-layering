@@ -1,8 +1,8 @@
-package datasource;
-
 import config.ProjectConfig;
+import datasource.CompoundDataGateway;
 import dto.CompoundToElementDTO;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,9 +23,9 @@ public class CompoundDataGatewayTest {
         // Insert Test Data
         Statement stmt = conn.createStatement();
         stmt.executeUpdate("INSERT INTO CompoundToElement (compoundId, elementId)" + "" +
-                                "VALUES (1, 1234)");
+                "VALUES (1, 1234)");
         stmt.executeUpdate("INSERT INTO CompoundToElement (compoundId, elementId)" + "" +
-                                "VALUES (1, 5678)");
+                "VALUES (1, 5678)");
     }
 
     @AfterEach
@@ -48,7 +48,7 @@ public class CompoundDataGatewayTest {
         CompoundDataGateway gw = new CompoundDataGateway(12345);
         ArrayList<CompoundToElementDTO> listMethod = gw.getAllCompounds();
 
-        assertEquals(listTester, listMethod);
+        Assertions.assertEquals(listTester, listMethod);
     }
 
     /**
@@ -66,7 +66,7 @@ public class CompoundDataGatewayTest {
         listTester.add(compOne);
         listTester.add(compTwo);
 
-        assertEquals(listTester, listMethod);
+        Assertions.assertEquals(listTester, listMethod);
     }
 
     /**
@@ -84,6 +84,6 @@ public class CompoundDataGatewayTest {
         listTester.add(compOne);
         listTester.add(compTwo);
 
-        assertEquals(listTester, listMethod);
+        Assertions.assertEquals(listTester, listMethod);
     }
 }
