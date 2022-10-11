@@ -58,6 +58,11 @@ public class MetalDataGateway extends ElementDataGateway {
 
     }
 
+    /**
+     * Verifies that the dissolvedBy variable is a valid
+     * number.
+     * @return
+     */
     protected boolean validate() {
         return super.validate() && this.dissolvedBy > 0;
     }
@@ -67,8 +72,8 @@ public class MetalDataGateway extends ElementDataGateway {
      * Cascades upward to all parent tables.
      * @return Whether the update is passed correctly.
      */
-    protected boolean persist() {
-        super.persist();
+    protected boolean persist(long id, String name, long dissolvedBy) {
+        super.persist(id, name);
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Metal SET dissolvedBy = '" + dissolvedBy +
@@ -107,13 +112,16 @@ public class MetalDataGateway extends ElementDataGateway {
 
     /** getters and setters **/
     public long getDissolvedBy() {
-        return dissolvedBy;
+        if(verify())
+            return dissolvedBy;
+        else
+            return -1;
     }
 
     public void setDissolvedBy(long dissolvedBy) {
         if( !verify() )
             return;
         this.dissolvedBy = dissolvedBy;
-        persist();
+        persist(id, name);
     }
 }

@@ -64,6 +64,11 @@ public class ElementDataGateway extends ChemicalDataGateway {
         }
     }
 
+    /**
+     * Makes sure the variables of atomicNumber and atomicMass have
+     * valid numbers given to them.
+     * @return
+     */
     protected boolean validate() {
         return super.validate() && this.atomicNumber > 0 && this.atomicMass > 0.0;
     }
@@ -73,8 +78,8 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * Cascades upward to all parent tables.
      * @return Whether the update is passed correctly.
      */
-    protected boolean persist() {
-        super.persist();
+    protected boolean persist(long id, String name, long atomicMass, long atomicNumber) {
+        super.persist(id, name);
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Element SET atomicMass = '" + atomicMass + "', atomicNumber = '" + atomicNumber +
@@ -89,24 +94,30 @@ public class ElementDataGateway extends ChemicalDataGateway {
 
     /** getters and setters **/
     public int getAtomicNumber() {
-        return atomicNumber;
+        if(verify())
+            return atomicNumber;
+        else
+            return -1;
     }
 
     public void setAtomicNumber(int atomicNumber) {
         if( !verify() )
             return;
         this.atomicNumber = atomicNumber;
-        persist();
+        persist(id, name);
     }
 
     public double getAtomicMass() {
-        return atomicMass;
+        if(verify())
+            return atomicMass;
+        else
+            return -1;
     }
 
     public void setAtomicMass(double atomicMass) {
         if( !verify() )
             return;
         this.atomicMass = atomicMass;
-        persist();
+        persist(id, name);
     }
 }
