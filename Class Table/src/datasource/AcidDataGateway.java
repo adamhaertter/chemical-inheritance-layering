@@ -73,8 +73,8 @@ public class AcidDataGateway extends ChemicalDataGateway {
      * Cascades upward to all parent tables.
      * @return Whether the update is passed correctly.
      */
-    protected boolean persist() {
-        super.persist();
+    protected boolean persist(long id, String name, long solute) {
+        super.persist(id, name);
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Acid SET solute = '" + solute +
@@ -88,14 +88,17 @@ public class AcidDataGateway extends ChemicalDataGateway {
 
     /** getters and setters **/
     public long getSolute() {
-        return solute;
+        if(verify())
+            return solute;
+        else
+            return -1;
     }
 
     public void setSolute(long solute) {
         if( !verify() )
             return;
         this.solute = solute;
-        persist();
+        persist(id, name);
     }
 
     /**
