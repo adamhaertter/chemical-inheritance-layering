@@ -8,8 +8,8 @@ public class ChemicalDTO {
     public String name = "";
     public int atomicNumber = 0;
     public double atomicMass = 0.0;
-    public int baseSolute = 0;
-    public int acidSolute = 0;
+    public long baseSolute = 0;
+    public long acidSolute = 0;
     public long dissolvedBy = 0;
     public String type = "";
 
@@ -24,7 +24,7 @@ public class ChemicalDTO {
      * @param dissolvedBy - the acid that a chemical is dissolved by
      * @param type - Type of Chemical (i.e. Metal, Nonmetal, etc.)
      */
-    public ChemicalDTO(long id, String name, int atomicNumber, double atomicMass, int baseSolute, int acidSolute,
+    public ChemicalDTO(long id, String name, int atomicNumber, double atomicMass, long baseSolute, long acidSolute,
                        long dissolvedBy, String type) {
         this.id = id;
         this.name = name;

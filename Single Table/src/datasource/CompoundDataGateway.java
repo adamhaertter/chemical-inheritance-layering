@@ -1,6 +1,5 @@
 package datasource;
 
-import dto.ChemicalDTO;
 import dto.CompoundToElementDTO;
 
 import java.sql.*;
@@ -19,11 +18,11 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      *
      * @param compoundID - the compoundID
      */
-    public CompoundDataGateway(long compoundID) throws SQLException {
-        super(compoundID);
+    public CompoundDataGateway(Connection conn, long compoundID) throws SQLException {
+        super(conn, compoundID);
         this.compoundID = compoundID;
         try {
-            CallableStatement statement = ChemicalDataGateway.m_dbConn.prepareCall("SELECT * FROM 'CompoundToElement'" +
+            CallableStatement statement = conn.prepareCall("SELECT * FROM 'CompoundToElement'" +
                                                                 "WHERE CompoundId = '" + compoundID + "'");
             ResultSet rs = statement.executeQuery();
             this.elementID = rs.getLong("ElementId");
@@ -39,8 +38,8 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @param compoundID - the compoundID
      * @param elementID - the elementID
      */
-    public CompoundDataGateway(long compoundID, long elementID) throws SQLException {
-        super(compoundID);
+    public CompoundDataGateway(Connection conn, long compoundID, long elementID) throws SQLException {
+        super(conn, compoundID);
         this.compoundID = compoundID;
         this.elementID = elementID;
         persist(compoundID, elementID);
@@ -63,7 +62,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * Setter for compoundID
      * @param compoundID - the identification of the compound
      */
-    public void setCompoundID(long compoundID) {
+    public void updateCompoundID(long compoundID) {
         if (!deleted) {
             if (persist(compoundID, this.elementID))
                 this.compoundID = compoundID;
@@ -89,7 +88,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * Setter for elementID
      * @param elementID - the identification of the element
      */
-    public void setElementID(long elementID) {
+    public void updateElementID(long elementID) {
         if (!deleted) {
             if (persist(this.compoundID, elementID))
                 this.elementID = elementID;
@@ -169,7 +168,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      */
     public boolean persist(long compoundID, long elementID) {
         try {
-            Statement statement = ChemicalDataGateway.m_dbConn.createStatement();
+            Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE CompoundToElement SET CompoundId = '" + compoundID + "'," +
                     "ElementId = '" + elementID + "' WHERE CompoundId = '" + compoundID + "'");
         } catch (Exception ex) {
