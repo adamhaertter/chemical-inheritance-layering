@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Concrete Table.iml" filepath="$PROJECT_DIR$/Concrete Table.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Single Table.iml" filepath="$PROJECT_DIR$/.idea/Single Table.iml" />
     </modules>
   </component>
 </project>
