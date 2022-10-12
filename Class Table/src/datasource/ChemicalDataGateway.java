@@ -1,19 +1,28 @@
 package datasource;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * Contains both the Row Data Gateway and Table Data Gateway functionality for the Chemical table. Row functions are done
+ * by an instance of this class, while the table functions are static methods.
+ *
+ * As the highest table in the Class Table Inheritance hierarchy, multiple lower classes will extend this class so the
+ * rows are managed in all necessary tables.
+ */
 public class ChemicalDataGateway extends Gateway {
 
-    protected String name = "";
+    protected String name = null;
 
     /**
      * Creates a row data gateway on the Chemical table of the database using an existing id
+     * @param conn connection to the DB
      * @param id primary key id for the row
      */
-    public ChemicalDataGateway(long id) {
-        super();
+    public ChemicalDataGateway(Connection conn, long id) {
+        super(conn);
         this.id = id;
         deleted = false;
 
@@ -25,7 +34,7 @@ public class ChemicalDataGateway extends Gateway {
             rs.next();
             this.name = rs.getString("name");
 
-            if (!validate()) {
+            if (!this.validateChemical()) {
                 this.id = -1;
                 this.name = null;
                 System.out.println("No chemical was found with the given id " + id);
@@ -37,16 +46,17 @@ public class ChemicalDataGateway extends Gateway {
 
     /**
      * Creates a new row in the db and a corresponding row data gateway object for it here
+     * @param conn connection to the DB
      * @param name the value to put into the name column of the table
      */
-    public ChemicalDataGateway(String name) {
-        super();
+    public ChemicalDataGateway(Connection conn, String name) {
+        super(conn);
         // Since we are removing inhabits, we don't set that up here
         this.name = name;
         deleted = false;
 
         // Generate next valid id for this row
-        id = KeyTableGateway.getNextValidKey();
+        id = KeyTableGateway.getNextValidKey(conn);
 
         // Create in DB
         try {
@@ -60,8 +70,16 @@ public class ChemicalDataGateway extends Gateway {
         }
     }
 
-    protected boolean validate() {
-        return this.id != 0 && this.name != null;
+    /**
+     * Checks the validity of the information in the row.
+     *
+     * @return Whether the current columns for this row have valid values
+     */
+    protected boolean validateChemical() {
+        boolean test1 = this.id != 0;
+        boolean test2 = this.name != null;
+        boolean test3 = test1 && test2;
+        return  test3;
     }
 
     /**
@@ -93,6 +111,11 @@ public class ChemicalDataGateway extends Gateway {
 
 
     /** getters and setters **/
+
+    /**
+     * Checks that the row is valid, then returns the name of the Chemical
+     * @return name of the chemical, null if invalid
+     */
     public String getName() {
         if(verify())
             return name;
@@ -100,10 +123,16 @@ public class ChemicalDataGateway extends Gateway {
             return null;
     }
 
-    public void setName(String name) {
-        if( !verify() )
-            return;
-        this.name = name;
-        persist(id, name);
+    /**
+     * Updates the chemical's name in the database. A message will be printed if this does not occur.
+     *
+     * @param name the name with which to update the DB
+     */
+    public void updateName(String name) {
+        // This basic format should be used for all lower setters:
+        // If the row exists AND we can update the values in the DB...
+        if( verify() && persist(this.id, name) )
+            this.name = name;
+        // Set the instance variable to match
     }
 }

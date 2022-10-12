@@ -1,19 +1,28 @@
 package datasource;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * Contains both the Row Data Gateway and Table Data Gateway functionality for the Base table. Row functions are done
+ * by an instance of this class, while the table functions are static methods.
+ *
+ * Extends the ChemicalDataGateway class so the implementation works across the multiple inherited tables for
+ * Class Table Inheritance.
+ */
 public class BaseDataGateway extends ChemicalDataGateway {
 
     private long solute = 0;
 
    /**
     * Only used to create a data gateway for base that already exists
+    * @param conn connection to the DB
     * @param id the primary key id
     */
-    public BaseDataGateway(long id) {
-        super(id);
+    public BaseDataGateway(Connection conn, long id) {
+        super(conn, id);
         this.id = id;
         deleted = false;
 
@@ -25,7 +34,7 @@ public class BaseDataGateway extends ChemicalDataGateway {
             rs.next();
             this.solute = rs.getLong("solute");
 
-            if (!validate()) {
+            if (!validateBase()) {
                 this.id = -1;
                 this.name = null;
                 this.solute = -1;
@@ -38,11 +47,12 @@ public class BaseDataGateway extends ChemicalDataGateway {
 
     /**
      * Used to create a new base and add it to the database
+     * @param conn connection to the DB
      * @param name the name field of the parent table, Chemical
      * @param solute the solute field of the Base table
      */
-    public BaseDataGateway(String name, long solute) {
-        super(name);
+    public BaseDataGateway(Connection conn, String name, long solute) {
+        super(conn, name);
         this.solute = solute;
         deleted = false;
 
@@ -58,8 +68,13 @@ public class BaseDataGateway extends ChemicalDataGateway {
         }
     }
 
-    protected boolean validate() {
-        return super.validate() && this.solute != 0;
+    /**
+     * Checks the validity of the information in the row and the corresponding parent rows.
+     *
+     * @return Whether the current columns for this row have valid values
+     */
+    protected boolean validateBase() {
+        return validateChemical() && this.solute != 0;
     }
 
     /**
@@ -81,6 +96,11 @@ public class BaseDataGateway extends ChemicalDataGateway {
     }
 
     /** getters and setters **/
+
+    /**
+     * Checks that the row is valid, then returns solute FK
+     * @return id of the solute, -1 if invalid
+     */
     public long getSolute() {
         if(verify())
             return solute;
@@ -88,10 +108,14 @@ public class BaseDataGateway extends ChemicalDataGateway {
             return -1;
     }
 
-    public void setSolute(long solute) {
-        if( !verify() )
-            return;
-        this.solute = solute;
-        persist(id, name);
+    /**
+     * Updates the solute id in the database. A message will be printed if this does not occur.
+     *
+     * @param solute the solute id with which to update the DB
+     * @see ChemicalDataGateway#updateName(String) for line-by-line comments
+     */
+    public void updateSolute(long solute) {
+        if( verify() && persist(this.id, this.name, solute) )
+            this.solute = solute;
     }
 }

@@ -3,16 +3,24 @@ package datasource;
 import java.sql.*;
 import java.util.ArrayList;
 
+/**
+ * Contains both the Row Data Gateway and Table Data Gateway functionality for the Metal table. Row functions are done
+ * by an instance of this class, while the table functions are static methods.
+ *
+ * Extends the ElementDataGateway class, and by extension the ChemicalDataGateway class, so the implementation works
+ * across the multiple inherited tables for Class Table Inheritance.
+ */
 public class MetalDataGateway extends ElementDataGateway {
 
     private long dissolvedBy = 0;
 
     /**
      * Constructs a row data gateway based on an existing id in the database
+     * @param conn connection to the DB
      * @param id primary key id
      */
-    public MetalDataGateway(long id) {
-        super(id);
+    public MetalDataGateway(Connection conn, long id) {
+        super(conn, id);
 
         // Read from DB
         try {
@@ -22,7 +30,7 @@ public class MetalDataGateway extends ElementDataGateway {
             rs.next();
             this.dissolvedBy = rs.getInt("dissolvedBy");
 
-            if (!validate()) {
+            if (!validateMetal()) {
                 this.id = -1;
                 this.name = null;
                 this.dissolvedBy = -1;
@@ -35,13 +43,14 @@ public class MetalDataGateway extends ElementDataGateway {
 
     /**
      * Creates a row data gateway and a new instance of Metal in the DB and fills the given information into the appropriate tables.
+     * @param conn connection to the DB
      * @param name the name field of parent table Chemical
      * @param atomicNumber the atomicNumber field of parent table Element
      * @param atomicMass the atomicMass field of parent table Element
      * @param dissolvedByAcid the dissolvedBy foreign key of the Metal Table
      */
-    public MetalDataGateway(String name, int atomicNumber, double atomicMass, long dissolvedByAcid) {
-        super(name, atomicNumber, atomicMass);
+    public MetalDataGateway(Connection conn, String name, int atomicNumber, double atomicMass, long dissolvedByAcid) {
+        super(conn, name, atomicNumber, atomicMass);
         dissolvedBy = dissolvedByAcid;
 
         // Create in DB
@@ -59,12 +68,11 @@ public class MetalDataGateway extends ElementDataGateway {
     }
 
     /**
-     * Verifies that the dissolvedBy variable is a valid
-     * number.
-     * @return
+     * Verifies that the dissolvedBy variable is a valid number.
+     * @return true if the row is full of valid values, false otherwise
      */
-    protected boolean validate() {
-        return super.validate() && this.dissolvedBy > 0;
+    protected boolean validateMetal() {
+        return validateElement() && this.dissolvedBy > 0;
     }
 
     /**
@@ -72,15 +80,14 @@ public class MetalDataGateway extends ElementDataGateway {
      * Cascades upward to all parent tables.
      * @return Whether the update is passed correctly.
      */
-    protected boolean persist(long id, String name, long dissolvedBy) {
-        super.persist(id, name);
+    protected boolean persist(long id, String name, double atomicMass, int atomicNumber, long dissolvedBy) {
+        super.persist(id, name, atomicMass, atomicNumber);
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Metal SET dissolvedBy = '" + dissolvedBy +
                     "' WHERE id = '" + id + "'");
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
             return false;
         }
     }
@@ -111,6 +118,11 @@ public class MetalDataGateway extends ElementDataGateway {
     }
 
     /** getters and setters **/
+
+    /**
+     * Checks that the row is valid, then returns dissolvedBy FK
+     * @return id of the acid that dissolves this metal, -1 if invalid
+     */
     public long getDissolvedBy() {
         if(verify())
             return dissolvedBy;
@@ -118,10 +130,15 @@ public class MetalDataGateway extends ElementDataGateway {
             return -1;
     }
 
-    public void setDissolvedBy(long dissolvedBy) {
-        if( !verify() )
-            return;
-        this.dissolvedBy = dissolvedBy;
-        persist(id, name);
+    /**
+     * Updates the reference to the id of the acid that dissolves this metal in the database. A message will be
+     * printed if this does not occur.
+     *
+     * @param dissolvedBy the acid's id that dissolves this metal with which to update the DB
+     * @see ChemicalDataGateway#updateName(String) for line-by-line comments
+     */
+    public void updateDissolvedBy(long dissolvedBy) {
+        if( verify() && persist(this.id, this.name, this.atomicMass, this.atomicNumber, dissolvedBy))
+            this.dissolvedBy = dissolvedBy;
     }
 }
