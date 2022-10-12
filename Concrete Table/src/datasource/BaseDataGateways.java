@@ -1,5 +1,10 @@
 package datasource;
 
+import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
+import exceptions.SoluteDoesNotExist;
+import utils.ValidationUtils;
+
 import java.sql.*;
 
 /**
@@ -11,11 +16,13 @@ public class BaseDataGateways extends Gateway {
 
     /**
      * Constructor that uses the id only to create a row gateway for an existing base in the DB
-     * @param id
+     * @param conn our connection to the DB
+     * @param id the id of the desired base
      */
-    public BaseDataGateways(Connection conn, long id) {
+    public BaseDataGateways(Connection conn, long id) throws GatewayNotFoundException {
         super();
         this.id = id;
+        this.conn = conn;
         try {
             CallableStatement statement = conn.prepareCall("SELECT * from Base WHERE id = ?");
             statement.setLong(1, id);
@@ -28,25 +35,36 @@ public class BaseDataGateways extends Gateway {
                 this.id = -1;
                 this.name = null;
                 this.solute = -1;
-                System.out.println("No base was found with the given id.");
+                throw new GatewayNotFoundException("No base was found with the given id.");
             }
-        } catch(Exception ex) {
+        } catch(SQLException ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
     }
 
     /**
      * Constructor for adding the new base into the DB and creating a row data gateway for it as well
+     * @param conn connection for the DB
+     * @param name the name of the base we want
+     * @param solute the solute of the base we want
      */
-    public BaseDataGateways(Connection conn, String name, long solute) {
+    public BaseDataGateways(Connection conn, String name, long solute) throws SoluteDoesNotExist {
         super();
         this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
         this.solute = solute;
+        this.conn = conn;
+
+        if (!ValidationUtils.doesSoluteExist(conn, solute)) {
+            this.id = -1;
+            this.name = null;
+            this.solute = -1;
+            throw new SoluteDoesNotExist("The solute does not exist in the database, in violation of the foreign key constraint.");
+        }
 
         // store the new base in the DB
         try {
-            Statement statement = conn.createStatement();
+            Statement statement = this.conn.createStatement();
             String addBase = "INSERT INTO Base" +
                     "(id, name, solute) VALUES ('" +
                     id + "','" + name + "','" + solute + "')";
@@ -63,42 +81,67 @@ public class BaseDataGateways extends Gateway {
      */
     private boolean validate() { return this.id > 0 && this.name != null && this.solute > 0; }
 
-    public String getName() {
+    /**
+     * Getter for the name of the base
+     * @return the name of the base
+     */
+    public String getName() throws GatewayDeletedException {
         if (!deleted) {
             return name;
         }
         else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This base has been deleted.");
         }
-        return null;
     }
 
-    public void updateName(Connection conn, String name) {
+    /**
+     * Updates the name of the current base in our gateway and the DB
+     * @param name the new name of the base
+     */
+    public void updateName(String name) throws GatewayDeletedException {
         if (!deleted) {
-            if (persist(conn, this.id, name, solute)) this.name = name;
+            if (persist(this.id, name, solute)) this.name = name;
         } else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This base has been deleted.");
         }
     }
 
-    public long getSolute() {
+    /**
+     * Gets the name of the base
+     * @return the solute of the base
+     */
+    public long getSolute() throws GatewayDeletedException {
         if (!deleted) {
             return solute;
         } else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This base has been deleted.");
         }
-        return -1;
     }
 
-    public void updateSolute(Connection conn, int solute) {
+    /**
+     * Updates the solute of the current base in our gateway and the DB
+     * @param solute the new solute of the base
+     */
+    public void updateSolute(int solute) throws GatewayDeletedException, SoluteDoesNotExist {
         if (!deleted) {
-            if (persist(conn, this.id, this.name, solute)) this.solute = solute;
+            if (ValidationUtils.doesSoluteExist(conn, solute)) {
+                if (persist(this.id, name, solute)) this.solute = solute;
+            } else {
+                throw new SoluteDoesNotExist("The solute does not exist in the database, in violation of the foreign key constraint.");
+            }
         } else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This base has been deleted.");
         }
     }
 
-    public boolean persist(Connection conn, long id, String name, long solute) {
+    /**
+     * Pushes whatever changes we give it to the DB
+     * @param id the id of the base we want to update
+     * @param name the name of the base we want to update
+     * @param solute the solute of the base we want to update
+     * @return True if the update was successful, false otherwise
+     */
+    private boolean persist(long id, String name, long solute) {
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Base SET name = '" + name + "', solute = '" + solute +

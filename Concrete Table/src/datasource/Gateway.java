@@ -1,10 +1,13 @@
 package datasource;
 
 import config.ProjectConfig;
+import enums.TableEnums;
+import exceptions.GatewayFailedToDelete;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * General gateway class that has the methods needed in all gateways
@@ -13,28 +16,24 @@ import java.sql.SQLException;
 public class Gateway {
     protected boolean deleted = false;
     protected long id;
+    protected Connection conn;
 
-    /**
-     * Returns the connection object so this method can be used in static contexts (Ex: table gateways)
-     * @return database connection
-     */
-    public static Connection setUpConnection() {
+    public void delete(TableEnums.Table table) throws GatewayFailedToDelete {
         try {
-            return DriverManager.getConnection(ProjectConfig.DatabaseURL, ProjectConfig.DatabaseUser, ProjectConfig.DatabasePassword);
+            Statement statement = conn.createStatement();
+            String delete = "DELETE FROM " + table + " WHERE id = '" + id + "'";
+            statement.executeUpdate(delete);
         } catch (Exception ex) {
-            System.out.println("Error connecting to database");
-        }
-        return null;
-    }
-
-    public void delete() throws SQLException {
-        try {
-            // delete code from DB
-
-        } catch (Exception e) {
-            //throw error about delete failure
-            return;
+            throw new GatewayFailedToDelete("Failed to delete " + table + " with id " + id, ex);
         }
         this.deleted = true;
+    }
+
+    /**
+     * Update the connection object
+     * @param conn the new connection object
+     */
+    public void updateConnection(Connection conn) {
+        this.conn = conn;
     }
 }

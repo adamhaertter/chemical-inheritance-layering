@@ -1,22 +1,30 @@
 package datasource;
 
 import dto.MetalDTO;
+import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
+import exceptions.SoluteDoesNotExist;
+import utils.ValidationUtils;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class AcidDataGateways extends Gateway {
     private String name;
     private long solute;
 
-    public AcidDataGateways(Connection conn, long id) {
+    /**
+     * Constructor that uses the id only to create a row gateway for an existing acid in the DB
+     *
+     * @param conn Connection to the database
+     * @param id   Unique identifier for the acid
+     */
+    public AcidDataGateways(Connection conn, long id) throws GatewayNotFoundException {
         super();
         this.id = id;
+        this.conn = conn;
         try {
-            CallableStatement statement = conn.prepareCall("SELECT * from AcidBase WHERE id = ?");
+            CallableStatement statement = conn.prepareCall("SELECT * from Acid WHERE id = ?");
             statement.setLong(1, id);
             ResultSet rs = statement.executeQuery();
             rs.next();
@@ -27,18 +35,32 @@ public class AcidDataGateways extends Gateway {
                 this.id = -1;
                 this.name = null;
                 this.solute = -1;
-                System.out.println("No acid or base was found with the given id.");
+                throw new GatewayNotFoundException("No acid was found with the given id.");
             }
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
     }
 
-    public AcidDataGateways(Connection conn, String name, long solute) {
+    /**
+     * Constructor for adding the new acid into the DB and creating a row data gateway for it as well
+     *
+     * @param conn   Connection to the database
+     * @param name   Name of the acid
+     * @param solute ID of the metal that is the solute of this acid
+     */
+    public AcidDataGateways(Connection conn, String name, long solute) throws SoluteDoesNotExist {
         super();
         this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
         this.solute = solute;
+
+        if (!ValidationUtils.doesSoluteExist(conn, solute)) {
+            this.id = -1;
+            this.name = null;
+            this.solute = -1;
+            throw new SoluteDoesNotExist("The solute does not exist in the database, in violation of the foreign key constraint.");
+        }
 
         // store the new acid or base in the DB
         try {
@@ -52,11 +74,24 @@ public class AcidDataGateways extends Gateway {
         }
     }
 
+    /**
+     * Validates that the data in the row gateway is valid
+     *
+     * @return True if the data is valid, false otherwise
+     */
     private boolean validate() {
         return (name != null && solute > 0);
     }
 
-    private boolean persist(Connection conn, long id, String name, long solute) {
+    /**
+     * Store the current state of the object in the DB
+     *
+     * @param id     ID of the acid to update
+     * @param name   Name of the acid
+     * @param solute ID of the metal that is the solute of this acid
+     * @return True if the update was successful, false otherwise
+     */
+    private boolean persist(long id, String name, long solute) {
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Acid SET name = '" + name + "', solute = '" + solute +
@@ -68,58 +103,81 @@ public class AcidDataGateways extends Gateway {
         }
     }
 
-    // Getters and setters
-    public String getName() {
+    /**
+     * Get the name of the acid
+     *
+     * @return Name of the acid
+     */
+    public String getName() throws GatewayDeletedException {
         if (!deleted) {
             return name;
         } else {
-            System.out.println("This acid has been deleted.");
+            throw new GatewayDeletedException("This acid has been deleted.");
         }
-        return null;
     }
 
-    public void updateName(Connection conn, String name) {
+    /**
+     * Update the name of the acid
+     *
+     * @param name New name of the acid
+     */
+    public void updateName(String name) throws GatewayDeletedException {
         if (!deleted) {
-            if (persist(conn, this.id, name, this.solute)) this.name = name;
+            if (persist(this.id, name, this.solute)) this.name = name;
         } else {
-            System.out.println("This acid has been deleted.");
+            throw new GatewayDeletedException("This acid has been deleted.");
         }
     }
 
-    public long getSolute() {
+    /**
+     * Get the solute of the acid
+     *
+     * @return ID of the metal that is the solute of this acid
+     */
+    public long getSolute() throws GatewayDeletedException {
         if (!deleted) {
             return solute;
         } else {
-            System.out.println("This acid has been deleted.");
+            throw new GatewayDeletedException("This acid has been deleted.");
         }
-        return 0;
     }
 
-    public void updateSolute(Connection conn, long solute) {
+    /**
+     * Update the solute of the acid
+     *
+     * @param solute ID of the metal that is the solute of this acid
+     */
+    public void updateSolute(long solute) throws GatewayDeletedException, SoluteDoesNotExist {
         if (!deleted) {
-            if (persist(conn, this.id, this.name, solute)) this.solute = solute;
+            if (ValidationUtils.doesSoluteExist(conn, solute)) {
+                if (persist(this.id, name, solute)) this.solute = solute;
+            } else {
+                throw new SoluteDoesNotExist("The solute does not exist in the database, in violation of the foreign key constraint.");
+            }
         } else {
-            System.out.println("This acid has been deleted.");
+            throw new GatewayDeletedException("This acid has been deleted.");
         }
     }
 
-
-
-    // Table gateway to get all metals dissolved by this acid and get the gateways for them
-    public ArrayList<MetalDTO> getDissolvedMetals(Connection conn) {
+    /**
+     * Get all the metals that this acid dissolves
+     *
+     * @return List of Metal DTOs that this acid dissolves
+     */
+    public static ArrayList<MetalDTO> getDissolvedMetals(Connection conn, long id) {
         ArrayList<MetalDTO> metals = new ArrayList<>();
 
         // Construct our Metal DTOs from the DB
         try {
-            CallableStatement statement = conn.prepareCall("SELECT * from Dissolves WHERE id = ?");
+            CallableStatement statement = conn.prepareCall("SELECT * from Metal WHERE dissolvedBy = ?");
             statement.setLong(1, id);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 metals.add(new MetalDTO(
                         rs.getLong("id"),
                         rs.getString("name"),
-                        rs.getLong("atomicNumber"),
-                        rs.getLong("atomicMass"),
+                        rs.getInt("atomicNumber"),
+                        rs.getDouble("atomicMass"),
                         rs.getLong("dissolvedBy")));
             }
         } catch (Exception ex) {

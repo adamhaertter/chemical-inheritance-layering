@@ -1,17 +1,15 @@
 package dto;
 
-public class MetalDTO {
+public class ElementDTO {
     public long id;
     public String name;
-    public int atomicNumber;
+    public double atomicNumber;
     public double atomicMass;
-    public long dissolvedBy;
 
-    public MetalDTO(long id, String name, int atomicNumber, double atomicMass, long dissolvedBy) {
+    public ElementDTO(long id, String name, double atomicNumber, double atomicMass) {
         this.id = id;
         this.name = name;
         this.atomicNumber = atomicNumber;
         this.atomicMass = atomicMass;
-        this.dissolvedBy = dissolvedBy;
     }
 }

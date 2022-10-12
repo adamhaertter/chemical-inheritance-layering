@@ -2,6 +2,7 @@ package datasource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -30,7 +31,7 @@ public class KeyTableGateways extends Gateway {
             // Increment the key in the DB
             String updateKey = "UPDATE KeyTable SET nextValidId = '" + (nextValidKey + 1) + "'";
             statement.executeUpdate(updateKey);
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             //key didn't insert because already in db?
         }
         return nextValidKey;
