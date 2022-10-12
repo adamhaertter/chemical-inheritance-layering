@@ -5,6 +5,8 @@ import datasource.AcidDataGateways;
 import dto.MetalDTO;
 import enums.TableEnums;
 import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
+import exceptions.SoluteDoesNotExist;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,8 +107,8 @@ public class AcidDataGatewaysTest {
     @Test
     public void updateSolute() throws Exception {
         AcidDataGateways acid = new AcidDataGateways(conn, 1);
-        acid.updateSolute(7);
-        assertEquals(7, acid.getSolute());
+        acid.updateSolute(2);
+        assertEquals(2, acid.getSolute());
 
         Statement stmnt = conn.createStatement();
 
@@ -114,7 +116,7 @@ public class AcidDataGatewaysTest {
         rs.next();
         // check to make sure they updated in the DB
         long soluteFromDB = rs.getLong("solute");
-        assertEquals(7, soluteFromDB);
+        assertEquals(2, soluteFromDB);
     }
 
     /**
@@ -154,5 +156,15 @@ public class AcidDataGatewaysTest {
         Statement stmnt = conn.createStatement();
         ResultSet rs = stmnt.executeQuery("SELECT * FROM Acid WHERE id = 1");
         assertFalse(rs.next());
+    }
+
+    /**
+     * Test that the proper error is thrown when given an invalid solute
+     * @throws GatewayNotFoundException if the acid is not found
+     */
+    @Test
+    public void testInvalidSolute() throws GatewayNotFoundException {
+        AcidDataGateways acid = new AcidDataGateways(conn, 1);
+        assertThrows(SoluteDoesNotExist.class, () -> acid.updateSolute(-1));
     }
 }

@@ -2,6 +2,8 @@ package datasource;
 
 import exceptions.GatewayDeletedException;
 import exceptions.GatewayNotFoundException;
+import exceptions.SoluteDoesNotExist;
+import utils.ValidationUtils;
 
 import java.sql.*;
 
@@ -46,12 +48,19 @@ public class BaseDataGateways extends Gateway {
      * @param name the name of the base we want
      * @param solute the solute of the base we want
      */
-    public BaseDataGateways(Connection conn, String name, long solute) {
+    public BaseDataGateways(Connection conn, String name, long solute) throws SoluteDoesNotExist {
         super();
         this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
         this.solute = solute;
         this.conn = conn;
+
+        if (!ValidationUtils.doesSoluteExist(conn, solute)) {
+            this.id = -1;
+            this.name = null;
+            this.solute = -1;
+            throw new SoluteDoesNotExist("The solute does not exist in the database, in violation of the foreign key constraint.");
+        }
 
         // store the new base in the DB
         try {
@@ -113,9 +122,13 @@ public class BaseDataGateways extends Gateway {
      * Updates the solute of the current base in our gateway and the DB
      * @param solute the new solute of the base
      */
-    public void updateSolute(int solute) throws GatewayDeletedException {
+    public void updateSolute(int solute) throws GatewayDeletedException, SoluteDoesNotExist {
         if (!deleted) {
-            if (persist(this.id, this.name, solute)) this.solute = solute;
+            if (ValidationUtils.doesSoluteExist(conn, solute)) {
+                if (persist(this.id, name, solute)) this.solute = solute;
+            } else {
+                throw new SoluteDoesNotExist("The solute does not exist in the database, in violation of the foreign key constraint.");
+            }
         } else {
             throw new GatewayDeletedException("This base has been deleted.");
         }

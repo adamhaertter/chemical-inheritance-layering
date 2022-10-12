@@ -3,6 +3,8 @@ package datasource;
 import dto.MetalDTO;
 import exceptions.GatewayDeletedException;
 import exceptions.GatewayNotFoundException;
+import exceptions.SoluteDoesNotExist;
+import utils.ValidationUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,10 +15,11 @@ public class AcidDataGateways extends Gateway {
 
     /**
      * Constructor that uses the id only to create a row gateway for an existing acid in the DB
+     *
      * @param conn Connection to the database
-     * @param id Unique identifier for the acid
+     * @param id   Unique identifier for the acid
      */
-    public AcidDataGateways(Connection conn, long id) throws GatewayNotFoundException  {
+    public AcidDataGateways(Connection conn, long id) throws GatewayNotFoundException {
         super();
         this.id = id;
         this.conn = conn;
@@ -41,15 +44,23 @@ public class AcidDataGateways extends Gateway {
 
     /**
      * Constructor for adding the new acid into the DB and creating a row data gateway for it as well
-     * @param conn Connection to the database
-     * @param name Name of the acid
+     *
+     * @param conn   Connection to the database
+     * @param name   Name of the acid
      * @param solute ID of the metal that is the solute of this acid
      */
-    public AcidDataGateways(Connection conn, String name, long solute) {
+    public AcidDataGateways(Connection conn, String name, long solute) throws SoluteDoesNotExist {
         super();
         this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
         this.solute = solute;
+
+        if (!ValidationUtils.doesSoluteExist(conn, solute)) {
+            this.id = -1;
+            this.name = null;
+            this.solute = -1;
+            throw new SoluteDoesNotExist("The solute does not exist in the database, in violation of the foreign key constraint.");
+        }
 
         // store the new acid or base in the DB
         try {
@@ -65,6 +76,7 @@ public class AcidDataGateways extends Gateway {
 
     /**
      * Validates that the data in the row gateway is valid
+     *
      * @return True if the data is valid, false otherwise
      */
     private boolean validate() {
@@ -73,8 +85,9 @@ public class AcidDataGateways extends Gateway {
 
     /**
      * Store the current state of the object in the DB
-     * @param id ID of the acid to update
-     * @param name Name of the acid
+     *
+     * @param id     ID of the acid to update
+     * @param name   Name of the acid
      * @param solute ID of the metal that is the solute of this acid
      * @return True if the update was successful, false otherwise
      */
@@ -92,6 +105,7 @@ public class AcidDataGateways extends Gateway {
 
     /**
      * Get the name of the acid
+     *
      * @return Name of the acid
      */
     public String getName() throws GatewayDeletedException {
@@ -104,6 +118,7 @@ public class AcidDataGateways extends Gateway {
 
     /**
      * Update the name of the acid
+     *
      * @param name New name of the acid
      */
     public void updateName(String name) throws GatewayDeletedException {
@@ -116,6 +131,7 @@ public class AcidDataGateways extends Gateway {
 
     /**
      * Get the solute of the acid
+     *
      * @return ID of the metal that is the solute of this acid
      */
     public long getSolute() throws GatewayDeletedException {
@@ -128,11 +144,16 @@ public class AcidDataGateways extends Gateway {
 
     /**
      * Update the solute of the acid
+     *
      * @param solute ID of the metal that is the solute of this acid
      */
-    public void updateSolute(long solute) throws GatewayDeletedException {
+    public void updateSolute(long solute) throws GatewayDeletedException, SoluteDoesNotExist {
         if (!deleted) {
-            if (persist(this.id, this.name, solute)) this.solute = solute;
+            if (ValidationUtils.doesSoluteExist(conn, solute)) {
+                if (persist(this.id, name, solute)) this.solute = solute;
+            } else {
+                throw new SoluteDoesNotExist("The solute does not exist in the database, in violation of the foreign key constraint.");
+            }
         } else {
             throw new GatewayDeletedException("This acid has been deleted.");
         }
@@ -140,6 +161,7 @@ public class AcidDataGateways extends Gateway {
 
     /**
      * Get all the metals that this acid dissolves
+     *
      * @return List of Metal DTOs that this acid dissolves
      */
     public ArrayList<MetalDTO> getDissolvedMetals() {

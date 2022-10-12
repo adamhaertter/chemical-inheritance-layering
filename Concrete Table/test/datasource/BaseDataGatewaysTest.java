@@ -3,6 +3,8 @@ package datasource;
 import config.ProjectConfig;
 import enums.TableEnums;
 import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
+import exceptions.SoluteDoesNotExist;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,9 +29,11 @@ class BaseDataGatewaysTest {
         this.conn.setAutoCommit(false);
         // Insert Test Data
         Statement stmnt = this.conn.createStatement();
-        String insertTestBase = "INSERT into Base VALUES (1, 'TestBase', 2)";
-        String insertTestSolute = "INSERT into Base VALUES (2, 'TestBase', 1)";
-        stmnt.executeUpdate(insertTestSolute);
+        String insertTestBase = "INSERT INTO Base VALUES (1, 'TestBase', 2)";
+        String insertTestSolute1 = "INSERT INTO Base VALUES (2, 'TestSolute1', 1)";
+        String insertTestSolute2 = "INSERT INTO Compound VALUES (3, 'TestSolute2')";
+        stmnt.executeUpdate(insertTestSolute1);
+        stmnt.executeUpdate(insertTestSolute2);
         stmnt.executeUpdate(insertTestBase);
     }
 
@@ -116,5 +120,15 @@ class BaseDataGatewaysTest {
         Statement stmnt = conn.createStatement();
         ResultSet rs = stmnt.executeQuery("SELECT * FROM Base WHERE id = 1");
         assertFalse(rs.next());
+    }
+
+    /**
+     * Test that the proper error is thrown when given an invalid solute
+     * @throws GatewayNotFoundException if the base is not found
+     */
+    @Test
+    public void testInvalidSolute() throws GatewayNotFoundException {
+        BaseDataGateways base = new BaseDataGateways(conn, 1);
+        assertThrows(SoluteDoesNotExist.class, () -> base.updateSolute(-1));
     }
 }
