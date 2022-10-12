@@ -121,7 +121,10 @@ public class CompoundDataGatewaysTest {
         assertEquals(3, elements.get(1).elementId);
     }
 
-    // Test adding a new element to a compound
+    /**
+     * Test that we can properly add an element to compound relation to the DB
+     * @throws GatewayNotFoundException if the gateway is not found
+     */
     @Test
     public void testAddElementToCompound() throws GatewayNotFoundException {
         CompoundDataGateways compound = new CompoundDataGateways(conn, 1);
