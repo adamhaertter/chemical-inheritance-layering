@@ -1,3 +1,5 @@
+package datasource;
+
 import config.ProjectConfig;
 import datasource.BaseDataGateways;
 import org.junit.jupiter.api.AfterEach;
@@ -56,13 +58,21 @@ class BaseDataGatewaysTest {
     }
 
     /**
-     * Tests that we can use the gateway to update names properly in the gateway
+     * Tests that we can use the gateway to update names properly in the gateway and that they get updated in the DB too
      */
     @Test
-    void updateName() {
+    void updateName() throws SQLException {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
-        base.updateName(conn, "UpdatedName");
+        base.updateName("UpdatedName");
         assertEquals("UpdatedName", base.getName());
+
+        Statement stmnt = conn.createStatement();
+
+        ResultSet rs = stmnt.executeQuery("SELECT * FROM Base WHERE id = 1");
+        rs.next();
+        // check to make sure they updated in the DB
+        String nameFromDB = rs.getString("name");
+        assertEquals("UpdatedName", nameFromDB);
     }
 
     /**
@@ -82,9 +92,16 @@ class BaseDataGatewaysTest {
      * Tests that we can use the gateway to update solutes properly in the gateway
      */
     @Test
-    void updateSolute() {
+    void updateSolute() throws SQLException {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
-        base.updateSolute(conn, 3);
+        base.updateSolute(3);
         assertEquals(3, base.getSolute());
+
+        Statement stmnt = conn.createStatement();
+        ResultSet rs = stmnt.executeQuery("SELECT * FROM Base WHERE id = 1");
+        rs.next();
+        // check to make sure they updated in the DB
+        long soluteFromDB = rs.getLong("solute");
+        assertEquals(3, soluteFromDB);
     }
 }

@@ -11,11 +11,13 @@ public class BaseDataGateways extends Gateway {
 
     /**
      * Constructor that uses the id only to create a row gateway for an existing base in the DB
-     * @param id
+     * @param conn our connection to the DB
+     * @param id the id of the desired base
      */
     public BaseDataGateways(Connection conn, long id) {
         super();
         this.id = id;
+        this.conn = conn;
         try {
             CallableStatement statement = conn.prepareCall("SELECT * from Base WHERE id = ?");
             statement.setLong(1, id);
@@ -37,16 +39,20 @@ public class BaseDataGateways extends Gateway {
 
     /**
      * Constructor for adding the new base into the DB and creating a row data gateway for it as well
+     * @param conn connection for the DB
+     * @param name the name of the base we want
+     * @param solute the solute of the base we want
      */
     public BaseDataGateways(Connection conn, String name, long solute) {
         super();
         this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
         this.solute = solute;
+        this.conn = conn;
 
         // store the new base in the DB
         try {
-            Statement statement = conn.createStatement();
+            Statement statement = this.conn.createStatement();
             String addBase = "INSERT INTO Base" +
                     "(id, name, solute) VALUES ('" +
                     id + "','" + name + "','" + solute + "')";
@@ -63,6 +69,10 @@ public class BaseDataGateways extends Gateway {
      */
     private boolean validate() { return this.id > 0 && this.name != null && this.solute > 0; }
 
+    /**
+     * Getter for the name of the base
+     * @return the name of the base
+     */
     public String getName() {
         if (!deleted) {
             return name;
@@ -73,14 +83,22 @@ public class BaseDataGateways extends Gateway {
         return null;
     }
 
-    public void updateName(Connection conn, String name) {
+    /**
+     * Updates the name of the current base in our gateway and the DB
+     * @param name the new name of the base
+     */
+    public void updateName(String name) {
         if (!deleted) {
-            if (persist(conn, this.id, name, solute)) this.name = name;
+            if (persist(this.id, name, solute)) this.name = name;
         } else {
             System.out.println("This base has been deleted");
         }
     }
 
+    /**
+     * Gets the name of the base
+     * @return the solute of the base
+     */
     public long getSolute() {
         if (!deleted) {
             return solute;
@@ -90,15 +108,26 @@ public class BaseDataGateways extends Gateway {
         return -1;
     }
 
-    public void updateSolute(Connection conn, int solute) {
+    /**
+     * Updates the solute of the current base in our gateway and the DB
+     * @param solute the new solute of the base
+     */
+    public void updateSolute(int solute) {
         if (!deleted) {
-            if (persist(conn, this.id, this.name, solute)) this.solute = solute;
+            if (persist(this.id, this.name, solute)) this.solute = solute;
         } else {
             System.out.println("This base has been deleted");
         }
     }
 
-    private boolean persist(Connection conn, long id, String name, long solute) {
+    /**
+     * Pushes whatever changes we give it to the DB
+     * @param id the id of the base we want to update
+     * @param name the name of the base we want to update
+     * @param solute the solute of the base we want to update
+     * @return True if the update was successful, false otherwise
+     */
+    private boolean persist(long id, String name, long solute) {
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Base SET name = '" + name + "', solute = '" + solute +

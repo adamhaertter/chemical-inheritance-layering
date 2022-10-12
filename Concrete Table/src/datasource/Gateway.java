@@ -13,9 +13,11 @@ import java.sql.SQLException;
 public class Gateway {
     protected boolean deleted = false;
     protected long id;
+    protected Connection conn;
 
     /**
      * Returns the connection object so this method can be used in static contexts (Ex: table gateways)
+     *
      * @return database connection
      */
     public static Connection setUpConnection() {
@@ -36,5 +38,13 @@ public class Gateway {
             return;
         }
         this.deleted = true;
+    }
+
+    /**
+     * Update the connection object
+     * @param conn the new connection object
+     */
+    public void updateConnection(Connection conn) {
+        this.conn = conn;
     }
 }

@@ -94,7 +94,7 @@ public class AcidDataGateway extends ChemicalDataGateway {
             return -1;
     }
 
-    public void setSolute(long solute) {
+    public void updateSolute(long solute) {
         if( !verify() )
             return;
         this.solute = solute;
