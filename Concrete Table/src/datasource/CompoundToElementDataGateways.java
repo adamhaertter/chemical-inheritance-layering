@@ -1,5 +1,8 @@
 package datasource;
 
+import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
+
 import java.sql.*;
 
 public class CompoundToElementDataGateways extends Gateway {
@@ -13,7 +16,7 @@ public class CompoundToElementDataGateways extends Gateway {
      * @param compoundId ID of the compound
      * @param elementId ID of the element
      */
-    public CompoundToElementDataGateways(Connection conn, long compoundId, long elementId) {
+    public CompoundToElementDataGateways(Connection conn, long compoundId, long elementId) throws GatewayNotFoundException {
         super();
         this.compoundId = compoundId;
         this.elementId = elementId;
@@ -32,9 +35,9 @@ public class CompoundToElementDataGateways extends Gateway {
             if (!validate()) {
                 this.compoundId = -1;
                 this.elementId = -1;
-                System.out.println("No compound to element was found with the given compoundId and elementId.");
+                throw new GatewayNotFoundException("No compound to element was found with the given compoundId and elementId.");
             }
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
     }
@@ -51,26 +54,24 @@ public class CompoundToElementDataGateways extends Gateway {
      * Get the compoundId of this compound to element relation
      * @return id of the compound
      */
-    public long getCompoundId() {
+    public long getCompoundId() throws GatewayDeletedException {
         if (!deleted) {
             return this.compoundId;
         } else {
-            System.out.println("This compound to element relation has been deleted.");
+            throw new GatewayDeletedException("This compound to element relation has been deleted.");
         }
-        return -1;
     }
 
     /**
      * Get the elementId of this compound to element relation
      * @return id of the element
      */
-    public long getElementId() {
+    public long getElementId() throws GatewayDeletedException {
         if (!deleted) {
             return this.elementId;
         } else {
-            System.out.println("This compound to element relation has been deleted.");
+            throw new GatewayDeletedException("This compound to element relation has been deleted.");
         }
-        return -1;
     }
 
     /**

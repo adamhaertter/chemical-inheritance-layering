@@ -2,6 +2,8 @@ package datasource;
 
 import config.ProjectConfig;
 import enums.TableEnums;
+import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,11 +49,11 @@ public class MetalDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void getName() throws SQLException {
+    public void getName() throws Exception {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         assertEquals("TestMetal", metal.getName());
         metal.delete(TableEnums.Table.Metal);
-        assertNull(metal.getName());
+        assertThrows(GatewayDeletedException.class , metal::getName);
     }
 
     /**
@@ -59,7 +61,7 @@ public class MetalDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void updateName() throws SQLException {
+    public void updateName() throws Exception {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         metal.updateName("UpdatedName");
         assertEquals("UpdatedName", metal.getName());
@@ -79,11 +81,11 @@ public class MetalDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void getAtomicNumber() throws SQLException {
+    public void getAtomicNumber() throws Exception {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         assertEquals(10, metal.getAtomicNumber());
         metal.delete(TableEnums.Table.Metal);
-        assertEquals(-1, metal.getAtomicNumber());
+        assertThrows(GatewayDeletedException.class , metal::getAtomicNumber);
     }
 
     /**
@@ -91,7 +93,7 @@ public class MetalDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void updateAtomicNumber() throws SQLException {
+    public void updateAtomicNumber() throws Exception {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         metal.updateAtomicNumber(13);
         assertEquals(13, metal.getAtomicNumber());
@@ -110,11 +112,11 @@ public class MetalDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void getAtomicMass() throws SQLException {
+    public void getAtomicMass() throws Exception {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         assertEquals(12.5, metal.getAtomicMass(),0.01);
         metal.delete(TableEnums.Table.Metal);
-        assertEquals(-1, metal.getAtomicMass(), 0.01);
+        assertThrows(GatewayDeletedException.class , metal::getAtomicMass);
     }
 
     /**
@@ -122,7 +124,7 @@ public class MetalDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void updateAtomicMass() throws SQLException {
+    public void updateAtomicMass() throws Exception {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         metal.updateAtomicMass(13.7);
         assertEquals(13.7, metal.getAtomicMass(), 0.01);
@@ -142,11 +144,11 @@ public class MetalDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void getDissolvedBy() throws SQLException {
+    public void getDissolvedBy() throws Exception {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         assertEquals(2, metal.getDissolvedBy());
         metal.delete(TableEnums.Table.Metal);
-        assertEquals(-1, metal.getAtomicMass());
+        assertThrows(GatewayDeletedException.class , metal::getDissolvedBy);
     }
 
     /**
@@ -154,7 +156,7 @@ public class MetalDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void updateDissolvedBy() throws SQLException {
+    public void updateDissolvedBy() throws Exception {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         // We don't have the foreign key in here yet, so it shouldn't update the metal
         metal.updateDissolvedBy(4);
@@ -177,7 +179,7 @@ public class MetalDataGatewaysTest {
      * @throws SQLException if there is an error with the DB
      */
     @Test
-    public void testMetalDeletedFromDatabase() throws SQLException {
+    public void testMetalDeletedFromDatabase() throws Exception {
         MetalDataGateways element = new MetalDataGateways(conn, 1);
         element.delete(TableEnums.Table.Metal);
         Statement stmnt = conn.createStatement();

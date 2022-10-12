@@ -4,6 +4,7 @@ import config.ProjectConfig;
 import dto.CompoundToElementDTO;
 import dto.ElementDTO;
 import enums.TableEnums;
+import exceptions.GatewayDeletedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,11 +57,11 @@ public class CompoundDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void getName() throws SQLException {
+    public void getName() throws Exception {
         CompoundDataGateways compound = new CompoundDataGateways(conn, 1);
         assertEquals("TestCompound", compound.getName());
         compound.delete(TableEnums.Table.Compound);
-        assertNull(compound.getName());
+        assertThrows(GatewayDeletedException.class, compound::getName);
     }
 
     /**
@@ -68,7 +69,7 @@ public class CompoundDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void updateName() throws SQLException {
+    public void updateName() throws Exception {
         CompoundDataGateways compound = new CompoundDataGateways(conn, 1);
         compound.updateName("UpdatedName");
         assertEquals("UpdatedName", compound.getName());
@@ -87,7 +88,7 @@ public class CompoundDataGatewaysTest {
      * @throws SQLException if there is an error with the DB
      */
     @Test
-    public void testCompoundDeletedFromDatabase() throws SQLException {
+    public void testCompoundDeletedFromDatabase() throws Exception {
         CompoundDataGateways compound = new CompoundDataGateways(conn, 1);
         compound.delete(TableEnums.Table.Compound);
         Statement stmnt = conn.createStatement();
@@ -99,7 +100,7 @@ public class CompoundDataGatewaysTest {
      * Test that we can properly get all the elements from the DB for this compound
      */
     @Test
-    public void testGetElements() {
+    public void testGetElements() throws Exception {
         CompoundDataGateways compound = new CompoundDataGateways(conn, 1);
         ArrayList<CompoundToElementDTO> elements = compound.getAllElementsInCompound();
         assertEquals(2, elements.size());

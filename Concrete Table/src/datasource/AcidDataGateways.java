@@ -1,11 +1,10 @@
 package datasource;
 
 import dto.MetalDTO;
+import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class AcidDataGateways extends Gateway {
@@ -17,7 +16,7 @@ public class AcidDataGateways extends Gateway {
      * @param conn Connection to the database
      * @param id Unique identifier for the acid
      */
-    public AcidDataGateways(Connection conn, long id) {
+    public AcidDataGateways(Connection conn, long id) throws GatewayNotFoundException  {
         super();
         this.id = id;
         this.conn = conn;
@@ -33,9 +32,9 @@ public class AcidDataGateways extends Gateway {
                 this.id = -1;
                 this.name = null;
                 this.solute = -1;
-                System.out.println("No acid was found with the given id.");
+                throw new GatewayNotFoundException("No acid was found with the given id.");
             }
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
     }
@@ -95,24 +94,23 @@ public class AcidDataGateways extends Gateway {
      * Get the name of the acid
      * @return Name of the acid
      */
-    public String getName() {
+    public String getName() throws GatewayDeletedException {
         if (!deleted) {
             return name;
         } else {
-            System.out.println("This acid has been deleted.");
+            throw new GatewayDeletedException("This acid has been deleted.");
         }
-        return null;
     }
 
     /**
      * Update the name of the acid
      * @param name New name of the acid
      */
-    public void updateName(String name) {
+    public void updateName(String name) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, name, this.solute)) this.name = name;
         } else {
-            System.out.println("This acid has been deleted.");
+            throw new GatewayDeletedException("This acid has been deleted.");
         }
     }
 
@@ -120,24 +118,23 @@ public class AcidDataGateways extends Gateway {
      * Get the solute of the acid
      * @return ID of the metal that is the solute of this acid
      */
-    public long getSolute() {
+    public long getSolute() throws GatewayDeletedException {
         if (!deleted) {
             return solute;
         } else {
-            System.out.println("This acid has been deleted.");
+            throw new GatewayDeletedException("This acid has been deleted.");
         }
-        return -1;
     }
 
     /**
      * Update the solute of the acid
      * @param solute ID of the metal that is the solute of this acid
      */
-    public void updateSolute(long solute) {
+    public void updateSolute(long solute) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, this.name, solute)) this.solute = solute;
         } else {
-            System.out.println("This acid has been deleted.");
+            throw new GatewayDeletedException("This acid has been deleted.");
         }
     }
 

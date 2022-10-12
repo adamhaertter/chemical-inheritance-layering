@@ -1,5 +1,8 @@
 package datasource;
 
+import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
+
 import java.sql.*;
 
 /**
@@ -14,7 +17,7 @@ public class BaseDataGateways extends Gateway {
      * @param conn our connection to the DB
      * @param id the id of the desired base
      */
-    public BaseDataGateways(Connection conn, long id) {
+    public BaseDataGateways(Connection conn, long id) throws GatewayNotFoundException {
         super();
         this.id = id;
         this.conn = conn;
@@ -30,9 +33,9 @@ public class BaseDataGateways extends Gateway {
                 this.id = -1;
                 this.name = null;
                 this.solute = -1;
-                System.out.println("No base was found with the given id.");
+                throw new GatewayNotFoundException("No base was found with the given id.");
             }
-        } catch(Exception ex) {
+        } catch(SQLException ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
     }
@@ -73,25 +76,24 @@ public class BaseDataGateways extends Gateway {
      * Getter for the name of the base
      * @return the name of the base
      */
-    public String getName() {
+    public String getName() throws GatewayDeletedException {
         if (!deleted) {
             return name;
         }
         else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This base has been deleted.");
         }
-        return null;
     }
 
     /**
      * Updates the name of the current base in our gateway and the DB
      * @param name the new name of the base
      */
-    public void updateName(String name) {
+    public void updateName(String name) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, name, solute)) this.name = name;
         } else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This base has been deleted.");
         }
     }
 
@@ -99,24 +101,23 @@ public class BaseDataGateways extends Gateway {
      * Gets the name of the base
      * @return the solute of the base
      */
-    public long getSolute() {
+    public long getSolute() throws GatewayDeletedException {
         if (!deleted) {
             return solute;
         } else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This base has been deleted.");
         }
-        return -1;
     }
 
     /**
      * Updates the solute of the current base in our gateway and the DB
      * @param solute the new solute of the base
      */
-    public void updateSolute(int solute) {
+    public void updateSolute(int solute) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, this.name, solute)) this.solute = solute;
         } else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This base has been deleted.");
         }
     }
 

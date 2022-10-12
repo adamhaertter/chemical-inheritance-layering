@@ -3,6 +3,7 @@ package datasource;
 import config.ProjectConfig;
 import dto.CompoundToElementDTO;
 import enums.TableEnums;
+import exceptions.GatewayDeletedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,11 +56,11 @@ public class ElementDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void getName() throws SQLException {
+    public void getName() throws Exception {
         ElementDataGateways element = new ElementDataGateways(conn, 1);
         assertEquals("TestElement", element.getName());
         element.delete(TableEnums.Table.Element);
-        assertNull(element.getName());
+        assertThrows(GatewayDeletedException.class , element::getName);
     }
 
     /**
@@ -67,7 +68,7 @@ public class ElementDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void updateName() throws SQLException {
+    public void updateName() throws Exception {
         ElementDataGateways element = new ElementDataGateways(conn, 1);
         element.updateName("UpdatedName");
         assertEquals("UpdatedName", element.getName());
@@ -87,11 +88,11 @@ public class ElementDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void getAtomicNumber() throws SQLException {
+    public void getAtomicNumber() throws Exception {
         ElementDataGateways element = new ElementDataGateways(conn, 1);
         assertEquals(5, element.getAtomicNumber());
         element.delete(TableEnums.Table.Element);
-        assertEquals(-1, element.getAtomicNumber());
+        assertThrows(GatewayDeletedException.class , element::getAtomicNumber);
     }
 
     /**
@@ -99,7 +100,7 @@ public class ElementDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void updateAtomicNumber() throws SQLException {
+    public void updateAtomicNumber() throws Exception {
         ElementDataGateways element = new ElementDataGateways(conn, 1);
         element.updateAtomicNumber(9);
         assertEquals(9, element.getAtomicNumber());
@@ -118,11 +119,11 @@ public class ElementDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void getAtomicMass() throws SQLException {
+    public void getAtomicMass() throws Exception {
         ElementDataGateways element = new ElementDataGateways(conn, 1);
         assertEquals(7.5, element.getAtomicMass(),0.01);
         element.delete(TableEnums.Table.Element);
-        assertEquals(-1, element.getAtomicMass(), 0.01);
+        assertThrows(GatewayDeletedException.class , element::getAtomicMass);
     }
 
     /**
@@ -130,7 +131,7 @@ public class ElementDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void updateAtomicMass() throws SQLException {
+    public void updateAtomicMass() throws Exception {
         ElementDataGateways element = new ElementDataGateways(conn, 1);
         element.updateAtomicMass(10.1);
         assertEquals(10.1, element.getAtomicMass(), 0.01);
@@ -149,7 +150,7 @@ public class ElementDataGatewaysTest {
      * @throws SQLException if there is an error with the DB
      */
     @Test
-    public void testElementDeletedFromDatabase() throws SQLException {
+    public void testElementDeletedFromDatabase() throws Exception {
         ElementDataGateways element = new ElementDataGateways(conn, 1);
         element.delete(TableEnums.Table.Element);
         Statement stmnt = conn.createStatement();
@@ -161,7 +162,7 @@ public class ElementDataGatewaysTest {
      * Test that we can get all the compounds that contain this element
      */
     @Test
-    public void testGetCompounds() {
+    public void testGetCompounds() throws Exception {
         ElementDataGateways element = new ElementDataGateways(conn, 1);
         ArrayList<CompoundToElementDTO> compounds = element.getAllCompoundsWithThisElement();
         assertEquals(2, compounds.size());

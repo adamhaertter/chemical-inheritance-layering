@@ -2,6 +2,8 @@ package datasource;
 
 import dto.CompoundToElementDTO;
 import dto.ElementDTO;
+import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ public class CompoundDataGateways extends Gateway {
      * @param conn our connection to the DB
      * @param id the id of the desired compound
      */
-    public CompoundDataGateways(Connection conn, long id) {
+    public CompoundDataGateways(Connection conn, long id) throws GatewayNotFoundException {
         super();
         this.id = id;
         this.conn = conn;
@@ -32,9 +34,9 @@ public class CompoundDataGateways extends Gateway {
             if (!validate()) {
                 this.id = -1;
                 this.name = null;
-                System.out.println("No compound was found with the given id.");
+                throw new GatewayNotFoundException("No compound was found with the given id.");
             }
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
     }
@@ -74,24 +76,23 @@ public class CompoundDataGateways extends Gateway {
      * Getter for the name of the compound
      * @return the name of the compound
      */
-    public String getName() {
+    public String getName() throws GatewayDeletedException {
         if (!deleted) {
             return this.name;
         } else {
-            System.out.println("This compound has been deleted.");
+            throw new GatewayDeletedException("This compound has been deleted.");
         }
-        return null;
     }
 
     /**
      * Updates the name of the current compound in our gateway and the DB
      * @param name the new name of the compound
      */
-    public void updateName(String name) {
+    public void updateName(String name) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, name)) this.name = name;
         } else {
-            System.out.println("This compound has been deleted");
+            throw new GatewayDeletedException("This compound has been deleted.");
         }
     }
 
@@ -115,7 +116,7 @@ public class CompoundDataGateways extends Gateway {
      * Returns all the elements within this compound
      * @return an array list of the elements within this compound in the form of DTOs
      */
-    public ArrayList<CompoundToElementDTO> getAllElementsInCompound() {
+    public ArrayList<CompoundToElementDTO> getAllElementsInCompound() throws GatewayDeletedException {
         ArrayList<CompoundToElementDTO> elements = new ArrayList<>();
         if(!deleted) {
             try {
@@ -129,8 +130,7 @@ public class CompoundDataGateways extends Gateway {
             }
             return elements;
         } else {
-            System.out.println("Compound is deleted");
-            return null;
+            throw new GatewayDeletedException("This compound has been deleted.");
         }
     }
 }

@@ -4,6 +4,7 @@ import config.ProjectConfig;
 import datasource.AcidDataGateways;
 import dto.MetalDTO;
 import enums.TableEnums;
+import exceptions.GatewayDeletedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ public class AcidDataGatewaysTest {
      * This creates our connection and makes sure that we don't actually commit any changes to the DB
      * Also inserts our testing data
      * TODO: Create test DB
+     *
      * @throws SQLException
      */
     @BeforeEach
@@ -39,6 +41,7 @@ public class AcidDataGatewaysTest {
 
     /**
      * Rolls back any changes that we made. Also closes our current connection
+     *
      * @throws SQLException
      */
     @AfterEach
@@ -50,22 +53,24 @@ public class AcidDataGatewaysTest {
     /**
      * Checks that we can get the name properly after making a connection to the DB and that it returns the proper value
      * when deleted
+     *
      * @throws SQLException
      */
     @Test
-    public void getName() throws SQLException {
+    public void getName() throws Exception {
         AcidDataGateways acid = new AcidDataGateways(conn, 1);
         assertEquals("TestAcid", acid.getName());
         acid.delete(TableEnums.Table.Acid);
-        assertNull(acid.getName());
+        assertThrows(GatewayDeletedException.class, acid::getName);
     }
 
     /**
      * Tests that we can update the name field in both the gateway object and the DB
+     *
      * @throws SQLException
      */
     @Test
-    public void updateName() throws SQLException {
+    public void updateName() throws Exception {
         AcidDataGateways acid = new AcidDataGateways(conn, 1);
         acid.updateName("UpdatedName");
         assertEquals("UpdatedName", acid.getName());
@@ -81,22 +86,24 @@ public class AcidDataGatewaysTest {
 
     /**
      * Tests that we can get the solute value from the gateway and that it returns the proper value when deleted
+     *
      * @throws SQLException
      */
     @Test
-    public void getSolute() throws SQLException {
+    public void getSolute() throws Exception {
         AcidDataGateways acid = new AcidDataGateways(conn, 1);
         assertEquals(3, acid.getSolute());
         acid.delete(TableEnums.Table.Acid);
-        assertEquals(-1, acid.getSolute());
+        assertThrows(GatewayDeletedException.class, acid::getSolute);
     }
 
     /**
      * Tests that we can update a solute in our object and the DB
+     *
      * @throws SQLException
      */
     @Test
-    public void updateSolute() throws SQLException {
+    public void updateSolute() throws Exception {
         AcidDataGateways acid = new AcidDataGateways(conn, 1);
         acid.updateSolute(7);
         assertEquals(7, acid.getSolute());
@@ -112,10 +119,11 @@ public class AcidDataGatewaysTest {
 
     /**
      * Tests that we can properly get the metals that are dissolved by an acid
+     *
      * @throws SQLException
      */
     @Test
-    public void getDissolvedMetals() {
+    public void getDissolvedMetals() throws Exception {
         //Dissolved metals in the setup are ids 2 and 3
         AcidDataGateways acid = new AcidDataGateways(conn, 1);
         ArrayList<MetalDTO> metals = acid.getDissolvedMetals();
@@ -136,10 +144,11 @@ public class AcidDataGatewaysTest {
 
     /**
      * Tests that we can properly delete an acid from the DB
+     *
      * @throws SQLException if there is an error with the DB
      */
     @Test
-    public void testMetalDeletedFromDatabase() throws SQLException {
+    public void testMetalDeletedFromDatabase() throws Exception {
         AcidDataGateways acid = new AcidDataGateways(conn, 1);
         acid.delete(TableEnums.Table.Acid);
         Statement stmnt = conn.createStatement();

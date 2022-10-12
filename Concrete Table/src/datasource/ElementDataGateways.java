@@ -1,6 +1,8 @@
 package datasource;
 
 import dto.CompoundToElementDTO;
+import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ public class ElementDataGateways extends Gateway {
      * @param conn the connection to the DB
      * @param id the ID of the desired Element
      */
-    public ElementDataGateways(Connection conn, long id) {
+    public ElementDataGateways(Connection conn, long id) throws GatewayNotFoundException {
         super();
         this.id = id;
         this.conn = conn;
@@ -34,9 +36,9 @@ public class ElementDataGateways extends Gateway {
                 this.name = null;
                 this.atomicNumber = -1;
                 this.atomicMass = -1;
-                System.out.println("No element was found with the given id.");
+                throw new GatewayNotFoundException("This element was not found");
             }
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
     }
@@ -48,7 +50,7 @@ public class ElementDataGateways extends Gateway {
      * @param atomicNumber the atomic number of the element
      * @param atomicMass the atomic mass of the element
      */
-    public ElementDataGateways(Connection conn, String name, int atomicNumber, double atomicMass) {
+    public ElementDataGateways(Connection conn, String name, int atomicNumber, double atomicMass) throws GatewayNotFoundException {
         super();
         this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
@@ -62,7 +64,7 @@ public class ElementDataGateways extends Gateway {
             statement.executeUpdate("INSERT INTO Element" +
                     "(id, name, atomicNumber, atomicMass) VALUES ('" +
                     id + "','" + name + "','" + atomicNumber + "','" + atomicMass + "')");
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             //key didn't insert because already in db?
         }
     }
@@ -81,7 +83,7 @@ public class ElementDataGateways extends Gateway {
      * @param name the name of the element
      * @param atomicNumber the atomic number of the element
      * @param atomicMass the atomic mass of the element
-     * @return whether or not the sql query worked
+     * @return whether the sql query worked
      */
     private boolean persist(long id, String name, int atomicNumber, double atomicMass) {
         try {
@@ -99,24 +101,23 @@ public class ElementDataGateways extends Gateway {
      * Gets the name of the element and returns null if the element is deleted
      * @return the name of the element
      */
-    public String getName() {
+    public String getName() throws GatewayDeletedException{
         if (!deleted) {
             return this.name;
         } else {
-            System.out.println("This element has been deleted.");
+            throw new GatewayDeletedException("This element is deleted");
         }
-        return null;
     }
 
     /**
      * Update the name of this element
      * @param name the new name of this element
      */
-    public void updateName(String name) {
+    public void updateName(String name) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, name, this.atomicNumber, this.atomicMass)) this.name = name;
         } else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This element has been deleted.");
         }
     }
 
@@ -124,24 +125,23 @@ public class ElementDataGateways extends Gateway {
      * Get the atomic number of this element
      * @return the atomic number of this element
      */
-    public int getAtomicNumber() {
+    public int getAtomicNumber() throws GatewayDeletedException{
         if (!deleted) {
             return this.atomicNumber;
         } else {
-            System.out.println("This element has been deleted.");
+            throw new GatewayDeletedException("This element is deleted");
         }
-        return -1;
     }
 
     /**
      * Update the atomic number of this element
      * @param atomicNumber the new atomic number
      */
-    public void updateAtomicNumber(int atomicNumber) {
+    public void updateAtomicNumber(int atomicNumber) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, this.name, atomicNumber, this.atomicMass)) this.atomicNumber = atomicNumber;
         } else {
-            System.out.println("This base has been deleted");
+            throw new GatewayDeletedException("This element has been deleted.");
         }
     }
 
@@ -149,24 +149,23 @@ public class ElementDataGateways extends Gateway {
      * Get the atomic mass of this element
      * @return the atomic mass
      */
-    public double getAtomicMass() {
+    public double getAtomicMass() throws GatewayDeletedException{
         if (!deleted) {
             return this.atomicMass;
         } else {
-            System.out.println("This element has been deleted.");
+            throw new GatewayDeletedException("This element is deleted");
         }
-        return -1;
     }
 
     /**
      * Update the atomic mass of this element
      * @param atomicMass the new atomic mass
      */
-    public void updateAtomicMass(double atomicMass) {
+    public void updateAtomicMass(double atomicMass) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, this.name, this.atomicNumber, atomicMass)) this.atomicMass = atomicMass;
         } else {
-            System.out.println("This element has been deleted");
+            throw new GatewayDeletedException("This element has been deleted.");
         }
     }
 
@@ -174,7 +173,7 @@ public class ElementDataGateways extends Gateway {
      * Get all compounds this element is in
      * @return an array list of CompoundToElement DTOs which contain this element
      */
-    public ArrayList<CompoundToElementDTO> getAllCompoundsWithThisElement() {
+    public ArrayList<CompoundToElementDTO> getAllCompoundsWithThisElement() throws GatewayDeletedException{
         if (!deleted) {
             try {
                 CallableStatement statement = conn.prepareCall("SELECT * from CompoundToElement WHERE elementId = ?");
@@ -189,10 +188,9 @@ public class ElementDataGateways extends Gateway {
                 // Some other error (There is not an error if the entry doesn't exist)
             }
         } else {
-            System.out.println("This element has been deleted.");
+            throw new GatewayDeletedException("This element is deleted");
         }
         return null;
-
     }
 
 

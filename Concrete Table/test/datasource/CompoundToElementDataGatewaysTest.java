@@ -49,7 +49,7 @@ public class CompoundToElementDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void delete() throws SQLException {
+    public void delete() throws Exception {
         CompoundToElementDataGateways relation = new CompoundToElementDataGateways(conn, 1, 2);
         relation.delete();
         Statement stmnt = this.conn.createStatement();

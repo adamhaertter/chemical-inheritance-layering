@@ -1,9 +1,9 @@
 package datasource;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
+
+import java.sql.*;
 
 public class MetalDataGateways extends Gateway {
     private String name;
@@ -15,7 +15,7 @@ public class MetalDataGateways extends Gateway {
      * Constructor that uses the id only to create a row gateway for an existing base in the DB
      * @param id Unique identifier for the metal
      */
-    public MetalDataGateways(Connection conn, long id) {
+    public MetalDataGateways(Connection conn, long id) throws GatewayNotFoundException {
         super();
         this.id = id;
         this.conn = conn;
@@ -35,10 +35,10 @@ public class MetalDataGateways extends Gateway {
                 this.atomicNumber = -1;
                 this.atomicMass = -1;
                 this.dissolvedBy = -1;
-                System.out.println("No metal was found with the given id.");
+                throw new GatewayNotFoundException("This metal was not found");
             }
 
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
     }
@@ -67,7 +67,7 @@ public class MetalDataGateways extends Gateway {
                     "(id, name, atomicNumber, atomicMass, dissolvedBy) VALUES ('" +
                     id + "','" + name + "','" + atomicNumber + "','" + atomicMass + "','" + dissolvedBy + "')";
             statement.executeUpdate(addMetal);
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             //key didn't insert because already in db?
         }
     }
@@ -104,13 +104,12 @@ public class MetalDataGateways extends Gateway {
      * Get the name of the metal
      * @return Name of the metal
      */
-    public String getName() {
+    public String getName() throws GatewayDeletedException {
         if (!deleted) {
             return name;
         } else {
-            System.out.println("This metal has been deleted.");
+            throw new GatewayDeletedException("The metal has been deleted");
         }
-        return null;
     }
 
     /**
@@ -130,13 +129,12 @@ public class MetalDataGateways extends Gateway {
      * Get the atomic number of the metal
      * @return Atomic number of the metal
      */
-    public long getAtomicNumber() {
+    public long getAtomicNumber() throws GatewayDeletedException {
         if (!deleted) {
             return atomicNumber;
         } else {
-            System.out.println("This metal has been deleted.");
+            throw new GatewayDeletedException("The metal has been deleted");
         }
-        return -1;
     }
 
     /**
@@ -156,13 +154,12 @@ public class MetalDataGateways extends Gateway {
      * Get the atomic mass of the metal
      * @return Atomic mass of the metal
      */
-    public double getAtomicMass() {
+    public double getAtomicMass() throws GatewayDeletedException {
         if (!deleted) {
             return atomicMass;
         } else {
-            System.out.println("This metal has been deleted.");
+            throw new GatewayDeletedException("The metal has been deleted");
         }
-        return -1;
     }
 
     /**
@@ -182,13 +179,12 @@ public class MetalDataGateways extends Gateway {
      * Get the ID of the acid that dissolves this metal
      * @return ID of the acid that dissolves this metal
      */
-    public long getDissolvedBy() {
+    public long getDissolvedBy() throws GatewayDeletedException {
         if (!deleted) {
             return dissolvedBy;
         } else {
-            System.out.println("This metal has been deleted.");
+            throw new GatewayDeletedException("The metal has been deleted");
         }
-        return -1;
     }
 
     /**

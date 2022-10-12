@@ -2,6 +2,7 @@ package datasource;
 
 import config.ProjectConfig;
 import enums.TableEnums;
+import exceptions.GatewayDeletedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,18 +49,18 @@ class BaseDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    void getName() throws SQLException {
+    void getName() throws Exception {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
         assertEquals("TestBase", base.getName());
         base.delete(TableEnums.Table.Base);
-        assertNull(base.getName());
+        assertThrows(GatewayDeletedException.class, base::getName);
     }
 
     /**
      * Tests that we can use the gateway to update names properly in the gateway and that they get updated in the DB too
      */
     @Test
-    void updateName() throws SQLException {
+    void updateName() throws Exception {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
         base.updateName("UpdatedName");
         assertEquals("UpdatedName", base.getName());
@@ -79,18 +80,18 @@ class BaseDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    void getSolute() throws SQLException {
+    void getSolute() throws Exception {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
         assertEquals(2, base.getSolute());
         base.delete(TableEnums.Table.Base);
-        assertEquals(-1, base.getSolute());
+        assertThrows(GatewayDeletedException.class, base::getSolute);
     }
 
     /**
      * Tests that we can use the gateway to update solutes properly in the gateway
      */
     @Test
-    void updateSolute() throws SQLException {
+    void updateSolute() throws Exception {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
         base.updateSolute(3);
         assertEquals(3, base.getSolute());
@@ -109,7 +110,7 @@ class BaseDataGatewaysTest {
      * @throws SQLException if there is an error with the DB
      */
     @Test
-    public void testBaseDeletedFromDatabase() throws SQLException {
+    public void testBaseDeletedFromDatabase() throws Exception {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
         base.delete(TableEnums.Table.Base);
         Statement stmnt = conn.createStatement();

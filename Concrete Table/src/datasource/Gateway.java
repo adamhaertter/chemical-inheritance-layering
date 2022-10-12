@@ -17,20 +17,6 @@ public class Gateway {
     protected long id;
     protected Connection conn;
 
-    /**
-     * Returns the connection object so this method can be used in static contexts (Ex: table gateways)
-     *
-     * @return database connection
-     */
-    public static Connection setUpConnection() {
-        try {
-            return DriverManager.getConnection(ProjectConfig.DatabaseURL, ProjectConfig.DatabaseUser, ProjectConfig.DatabasePassword);
-        } catch (Exception ex) {
-            System.out.println("Error connecting to database");
-        }
-        return null;
-    }
-
     public void delete(TableEnums.Table table) throws SQLException {
         try {
             Statement statement = conn.createStatement();
