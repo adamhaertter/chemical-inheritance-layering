@@ -11,7 +11,6 @@ import java.util.ArrayList;
 public class CompoundDataGateway extends ChemicalDataGateway {
     long compoundID;
     long elementID;
-    protected static Connection m_dbConn = null;
 
     /**
      * Constructor that creates an entry based off of the compound ID
@@ -21,14 +20,31 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     public CompoundDataGateway(Connection conn, long compoundID) throws SQLException {
         super(conn, compoundID);
         this.compoundID = compoundID;
+        deleted = false;
+
+        // Read from DB
         try {
-            CallableStatement statement = conn.prepareCall("SELECT * FROM 'CompoundToElement'" +
-                                                                "WHERE CompoundId = '" + compoundID + "'");
+            CallableStatement statement = conn.prepareCall("SELECT * from CompoundToElement WHERE CompoundId = ?");
+            statement.setLong(1, compoundID);
             ResultSet rs = statement.executeQuery();
-            this.elementID = rs.getLong("ElementId");
-            this.deleted = false;
-        } catch(Exception ex) {
-            // Some other error (There is not an error if the entry doesn't exist)
+            rs.next();
+            this.elementID = rs.getLong("elementId");
+
+            if (!validate()) {
+                this.id = -1;
+                this.name = null;
+                this.atomicNumber = -1;
+                this.atomicMass = -1;
+                this.baseSolute = -1;
+                this.acidSolute = -1;
+                this.dissolvedBy = -1;
+                this.type = null;
+                this.compoundID = -1;
+                this.elementID = -1;
+                System.out.println("No compound was found with the given id: " + compoundID);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -105,7 +121,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     public ArrayList<CompoundToElementDTO> getAllCompounds() throws SQLException {
         verifyExistence();
         ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
-        Statement statement = m_dbConn.createStatement();
+        Statement statement = conn.createStatement();
         statement.execute("SELECT * FROM CompoundToElement");
 
         ResultSet rs = statement.getResultSet();
@@ -127,7 +143,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     public ArrayList<CompoundToElementDTO> getCompoundsContaining(long elemID) throws SQLException {
         verifyExistence();
         ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
-        Statement statement = m_dbConn.createStatement();
+        Statement statement = conn.createStatement();
         statement.execute("SELECT * FROM CompoundToElement WHERE ElementId=" + elemID);
 
         ResultSet rs = statement.getResultSet();
@@ -148,7 +164,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     public ArrayList<CompoundToElementDTO> getElementsInCompound(int compID) throws SQLException {
         verifyExistence();
         ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
-        Statement statement = m_dbConn.createStatement();
+        Statement statement = conn.createStatement();
         statement.execute("SELECT * FROM CompoundToElement WHERE CompoundId=" + compID);
 
         ResultSet getCompounds = statement.getResultSet();
@@ -179,25 +195,20 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     }
 
     /**
-     * Takes all the elements currently in the object and pushes them to the DB
-     *
-     * @return true or false
-     */
-    public boolean persist(CompoundToElementDTO dto) {
-        try {
-            Statement statement = m_dbConn.createStatement();
-            statement.executeUpdate("UPDATE CompoundToElement SET compoundID = '" + dto.compoundID + "'," +
-                    "elementID = '" + dto.elementID + "' WHERE compoundID = '" + dto.compoundID + "'");
-            return true;
-        } catch (SQLException ex) {
-            return false;
-        }
-    }
-
-    /**
      * Clarifies if the row has been deleted or not
      */
     private boolean verifyExistence() {
         return (compoundID > 0 && elementID > 0);
+    }
+
+    /**
+     * Checks the validity of the information in the row.
+     *
+     * @return Whether the current columns for this row have valid values
+     */
+    protected boolean validate() {
+        return this.id != -1 && this.name != null && this.atomicNumber != -1 && this.atomicMass != -1 &&
+                this.baseSolute != -1 && this.acidSolute != -1 && this.dissolvedBy != -1 && this.type != null &&
+                this.compoundID != -1 && this.elementID != -1;
     }
 }

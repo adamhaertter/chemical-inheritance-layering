@@ -9,7 +9,6 @@ import java.sql.DriverManager;
  * extend this class or a class that inherits these methods to inherit basic delete and connection functionality.
  */
 public class Gateway {
-
     protected long id;
     protected boolean deleted = false;
     protected Connection conn;

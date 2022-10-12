@@ -51,12 +51,11 @@ public class ChemicalDataGateway extends Gateway {
                 this.acidSolute = -1;
                 this.dissolvedBy = -1;
                 this.type = null;
-                System.out.println("No chemical was found with the given id " + id);
+                System.out.println("No chemical was found with the given id: " + id);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
     /**
@@ -67,7 +66,7 @@ public class ChemicalDataGateway extends Gateway {
      * @param bSolute - the base solute of the chemical
      * @param aSolute - the acid solute of the chemical
      * @param dissBy - the acid that a chemical is dissolved by
-     * @param type - Type of Chemical (i.e. Metal, Nonmetal, etc.)
+     * @param type - Type of Chemical (i.e. Metal, Acid, etc.)
      */
     public ChemicalDataGateway(Connection conn, String n, int number, double mass, long bSolute,
                                long aSolute, long dissBy, String type) {
@@ -79,8 +78,22 @@ public class ChemicalDataGateway extends Gateway {
         this.acidSolute = aSolute;
         this.dissolvedBy = dissBy;
         this.type = type;
-        persist(this.id, this.name, this.atomicNumber, atomicMass, this.baseSolute, this.acidSolute,
-                this.dissolvedBy, this.type);
+        deleted = false;
+
+        // Create in DB
+        try {
+            String addEntry = "INSERT INTO Chemical" + "(name, atomicNumber, atomicMass, baseSolute," +
+                    "acidSolute, dissolvedBy, type) VALUES ('" + name + "', '" +
+                    atomicNumber + "', '" + atomicMass + "', '" + baseSolute + "', '" +
+                    acidSolute + "', '" + dissolvedBy + "', '" + type + "')";
+            PreparedStatement ps = conn.prepareStatement(addEntry, Statement.RETURN_GENERATED_KEYS);
+            ps.execute();
+            ResultSet rs = ps.getGeneratedKeys();
+            rs.next();
+            id = rs.getInt(1);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 
@@ -436,8 +449,8 @@ public class ChemicalDataGateway extends Gateway {
      * @return Whether the current columns for this row have valid values
      */
     protected boolean validate() {
-        return this.id != 0 && this.name != null && this.atomicNumber != 0 && this.atomicMass != 0.0 &&
-                this.baseSolute != 0 && this. acidSolute != 0 && this.dissolvedBy != 0 && this.type != null;
+        return this.id != -1 && this.name != null && this.atomicNumber != -1 && this.atomicMass != -1 &&
+                this.baseSolute != -1 && this.acidSolute != -1 && this.dissolvedBy != -1 && this.type != null;
     }
 
 }
