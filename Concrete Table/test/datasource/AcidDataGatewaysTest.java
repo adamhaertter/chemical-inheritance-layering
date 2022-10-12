@@ -3,6 +3,7 @@ package datasource;
 import config.ProjectConfig;
 import datasource.AcidDataGateways;
 import dto.MetalDTO;
+import enums.TableEnums;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ public class AcidDataGatewaysTest {
     public void getName() throws SQLException {
         AcidDataGateways acid = new AcidDataGateways(conn, 1);
         assertEquals("TestAcid", acid.getName());
-        acid.delete();
+        acid.delete(TableEnums.Table.Acid);
         assertNull(acid.getName());
     }
 
@@ -86,7 +87,7 @@ public class AcidDataGatewaysTest {
     public void getSolute() throws SQLException {
         AcidDataGateways acid = new AcidDataGateways(conn, 1);
         assertEquals(3, acid.getSolute());
-        acid.delete();
+        acid.delete(TableEnums.Table.Acid);
         assertEquals(-1, acid.getSolute());
     }
 
@@ -130,5 +131,19 @@ public class AcidDataGatewaysTest {
         assertEquals(13, metals.get(1).atomicNumber);
         assertEquals(14.5, metals.get(1).atomicMass);
         assertEquals(1, metals.get(1).dissolvedBy);
+    }
+
+
+    /**
+     * Tests that we can properly delete an acid from the DB
+     * @throws SQLException if there is an error with the DB
+     */
+    @Test
+    public void testMetalDeletedFromDatabase() throws SQLException {
+        AcidDataGateways acid = new AcidDataGateways(conn, 1);
+        acid.delete(TableEnums.Table.Acid);
+        Statement stmnt = conn.createStatement();
+        ResultSet rs = stmnt.executeQuery("SELECT * FROM Acid WHERE id = 1");
+        assertFalse(rs.next());
     }
 }

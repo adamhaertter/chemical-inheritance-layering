@@ -1,13 +1,12 @@
 package datasource;
 
 import config.ProjectConfig;
-import datasource.BaseDataGateways;
+import enums.TableEnums;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.*;
-import java.sql.DriverManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +19,6 @@ class BaseDataGatewaysTest {
      * This also inserts test data into our DB directly
      * TODO: Create test DB
      * @throws SQLException
-     * @throws ClassNotFoundException
      */
     @BeforeEach
     public void setUp() throws SQLException {
@@ -53,7 +51,7 @@ class BaseDataGatewaysTest {
     void getName() throws SQLException {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
         assertEquals("TestBase", base.getName());
-        base.delete();
+        base.delete(TableEnums.Table.Base);
         assertNull(base.getName());
     }
 
@@ -84,7 +82,7 @@ class BaseDataGatewaysTest {
     void getSolute() throws SQLException {
         BaseDataGateways base = new BaseDataGateways(conn, 1);
         assertEquals(2, base.getSolute());
-        base.delete();
+        base.delete(TableEnums.Table.Base);
         assertEquals(-1, base.getSolute());
     }
 
@@ -103,5 +101,19 @@ class BaseDataGatewaysTest {
         // check to make sure they updated in the DB
         long soluteFromDB = rs.getLong("solute");
         assertEquals(3, soluteFromDB);
+    }
+
+
+    /**
+     * Tests that we can properly delete a base from the DB
+     * @throws SQLException if there is an error with the DB
+     */
+    @Test
+    public void testBaseDeletedFromDatabase() throws SQLException {
+        BaseDataGateways base = new BaseDataGateways(conn, 1);
+        base.delete(TableEnums.Table.Base);
+        Statement stmnt = conn.createStatement();
+        ResultSet rs = stmnt.executeQuery("SELECT * FROM Base WHERE id = 1");
+        assertFalse(rs.next());
     }
 }

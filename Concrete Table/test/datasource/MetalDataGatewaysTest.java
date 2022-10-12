@@ -1,13 +1,12 @@
 package datasource;
 
 import config.ProjectConfig;
-import datasource.MetalDataGateways;
+import enums.TableEnums;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.*;
-import java.sql.DriverManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,7 +50,7 @@ public class MetalDataGatewaysTest {
     public void getName() throws SQLException {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         assertEquals("TestMetal", metal.getName());
-        metal.delete();
+        metal.delete(TableEnums.Table.Metal);
         assertNull(metal.getName());
     }
 
@@ -83,7 +82,7 @@ public class MetalDataGatewaysTest {
     public void getAtomicNumber() throws SQLException {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         assertEquals(10, metal.getAtomicNumber());
-        metal.delete();
+        metal.delete(TableEnums.Table.Metal);
         assertEquals(-1, metal.getAtomicNumber());
     }
 
@@ -114,7 +113,7 @@ public class MetalDataGatewaysTest {
     public void getAtomicMass() throws SQLException {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         assertEquals(12.5, metal.getAtomicMass(),0.01);
-        metal.delete();
+        metal.delete(TableEnums.Table.Metal);
         assertEquals(-1, metal.getAtomicMass(), 0.01);
     }
 
@@ -146,7 +145,7 @@ public class MetalDataGatewaysTest {
     public void getDissolvedBy() throws SQLException {
         MetalDataGateways metal = new MetalDataGateways(conn, 1);
         assertEquals(2, metal.getDissolvedBy());
-        metal.delete();
+        metal.delete(TableEnums.Table.Metal);
         assertEquals(-1, metal.getAtomicMass());
     }
 
@@ -171,5 +170,18 @@ public class MetalDataGatewaysTest {
         // check to make sure they updated in the DB
         long dissolvedByFromDB = rs.getLong("dissolvedBy");
         assertEquals(4, dissolvedByFromDB);
+    }
+
+    /**
+     * Tests that we can properly delete a metal from the DB
+     * @throws SQLException if there is an error with the DB
+     */
+    @Test
+    public void testMetalDeletedFromDatabase() throws SQLException {
+        MetalDataGateways element = new MetalDataGateways(conn, 1);
+        element.delete(TableEnums.Table.Metal);
+        Statement stmnt = conn.createStatement();
+        ResultSet rs = stmnt.executeQuery("SELECT * FROM Metal WHERE id = 1");
+        assertFalse(rs.next());
     }
 }
