@@ -156,6 +156,11 @@ public class TestChemical {
         Assertions.assertEquals(listTester, listMethodIDs);
     }
 
+    /**
+     * Tests the use of Table Data Gateway Functions based on getting
+     * Chemicals of a Certain Type
+     * @throws SQLException
+     */
     @Test
     public void testGetAllOfAType() throws SQLException {
         //GetAllMetals

@@ -404,7 +404,7 @@ public class ChemicalDataGateway extends Gateway {
                     rs.getLong("id"), rs.getString("name"),
                     rs.getInt("atomicNumber"), rs.getInt("atomicMass"),
                     rs.getLong("baseSolute"), rs.getLong("acidSolute"),
-                    rs.getInt("dissolvedBy"), "Acid");
+                    rs.getInt("dissolvedBy"), rs.getString("type"));
             chemicalList.add(chem);
         }
 
