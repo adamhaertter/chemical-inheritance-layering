@@ -3,7 +3,6 @@ package datasource;
 import config.ProjectConfig;
 import enums.TableEnums;
 import exceptions.GatewayDeletedException;
-import exceptions.GatewayNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

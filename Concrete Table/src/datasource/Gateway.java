@@ -2,6 +2,7 @@ package datasource;
 
 import config.ProjectConfig;
 import enums.TableEnums;
+import exceptions.GatewayFailedToDelete;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,14 +18,13 @@ public class Gateway {
     protected long id;
     protected Connection conn;
 
-    public void delete(TableEnums.Table table) throws SQLException {
+    public void delete(TableEnums.Table table) throws GatewayFailedToDelete {
         try {
             Statement statement = conn.createStatement();
             String delete = "DELETE FROM " + table + " WHERE id = '" + id + "'";
             statement.executeUpdate(delete);
         } catch (Exception ex) {
-            System.out.println("Error deleting from database");
-
+            throw new GatewayFailedToDelete("Failed to delete " + table + " with id " + id, ex);
         }
         this.deleted = true;
     }

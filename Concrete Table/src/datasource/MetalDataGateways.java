@@ -116,12 +116,12 @@ public class MetalDataGateways extends Gateway {
      * Update the name of the metal
      * @param name New name of the metal
      */
-    public void updateName(String name) {
+    public void updateName(String name) throws GatewayDeletedException {
         if (!deleted) {
             boolean test = persist(this.id, name, this.atomicNumber, this.atomicMass, this.dissolvedBy);
             if (test) this.name = name;
         } else {
-            System.out.println("This metal has been deleted.");
+            throw new GatewayDeletedException("The metal has been deleted");
         }
     }
 
@@ -141,12 +141,12 @@ public class MetalDataGateways extends Gateway {
      * Update the atomic number of the metal
      * @param atomicNumber New atomic number of the metal
      */
-    public void updateAtomicNumber(int atomicNumber) {
+    public void updateAtomicNumber(int atomicNumber) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, this.name, atomicNumber, this.atomicMass, this.dissolvedBy))
                 this.atomicNumber = atomicNumber;
         } else {
-            System.out.println("This metal has been deleted.");
+            throw new GatewayDeletedException("The metal has been deleted");
         }
     }
 
@@ -166,12 +166,12 @@ public class MetalDataGateways extends Gateway {
      * Update the atomic mass of the metal
      * @param atomicMass New atomic mass of the metal
      */
-    public void updateAtomicMass(double atomicMass) {
+    public void updateAtomicMass(double atomicMass) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, this.name, this.atomicNumber, atomicMass, this.dissolvedBy))
                 this.atomicMass = atomicMass;
         } else {
-            System.out.println("This metal has been deleted.");
+            throw new GatewayDeletedException("The metal has been deleted");
         }
     }
 
@@ -191,12 +191,12 @@ public class MetalDataGateways extends Gateway {
      * Update the acid that dissolves this metal
      * @param dissolvedBy New ID of the acid that dissolves this metal
      */
-    public void updateDissolvedBy(long dissolvedBy) {
+    public void updateDissolvedBy(long dissolvedBy) throws GatewayDeletedException {
         if (!deleted) {
             if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, dissolvedBy))
                 this.dissolvedBy = dissolvedBy;
         } else {
-            System.out.println("This metal has been deleted.");
+            throw new GatewayDeletedException("The metal has been deleted");
         }
     }
 
