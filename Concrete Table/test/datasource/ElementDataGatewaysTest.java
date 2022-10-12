@@ -4,6 +4,7 @@ import config.ProjectConfig;
 import dto.CompoundToElementDTO;
 import enums.TableEnums;
 import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,18 @@ public class ElementDataGatewaysTest {
     public void tearDown() throws SQLException {
         this.conn.rollback();
         this.conn.close();
+    }
+
+    /**
+     * Create a new element and check that it is created properly
+     * @throws GatewayDeletedException if the gateway is deleted
+     */
+    @Test
+    public void createNewElement() throws GatewayDeletedException {
+        ElementDataGateways element = new ElementDataGateways(conn, "NewElement", 30, 30.5);
+        assertEquals("NewElement", element.getName());
+        assertEquals(30, element.getAtomicNumber());
+        assertEquals(30.5, element.getAtomicMass());
     }
 
     /**

@@ -3,6 +3,7 @@ package datasource;
 import config.ProjectConfig;
 import enums.TableEnums;
 import exceptions.GatewayDeletedException;
+import exceptions.SoluteDoesNotExist;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,19 @@ public class MetalDataGatewaysTest {
     public void tearDown() throws SQLException {
         this.conn.rollback();
         this.conn.close();
+    }
+
+    /**
+     * Create a new acid and check that it is created properly
+     * @throws GatewayDeletedException if the gateway is deleted
+     */
+    @Test
+    public void createNewMetal() throws GatewayDeletedException {
+        MetalDataGateways metal = new MetalDataGateways(conn, "NewMetal", 15, 20.3, 2);
+        assertEquals("NewMetal", metal.getName());
+        assertEquals(15, metal.getAtomicNumber());
+        assertEquals(20.3, metal.getAtomicMass(), 0.01);
+        assertEquals(2, metal.getDissolvedBy());
     }
 
     /**

@@ -48,6 +48,18 @@ class BaseDataGatewaysTest {
     }
 
     /**
+     * Create a new base and check that it is created properly
+     * @throws SoluteDoesNotExist if the solute does not exist
+     * @throws GatewayDeletedException if the gateway is deleted
+     */
+    @Test
+    public void createNewBase() throws SoluteDoesNotExist, GatewayDeletedException {
+        BaseDataGateways base = new BaseDataGateways(conn, "NewBase", 3);
+        assertEquals("NewBase", base.getName());
+        assertEquals(3, base.getSolute());
+    }
+
+    /**
      * Tests that we can properly retrieve the name from the class and that it returns the proper value when deleted
      * This uses the data from the setup
      * @throws SQLException

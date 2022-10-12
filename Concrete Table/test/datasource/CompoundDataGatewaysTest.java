@@ -5,6 +5,7 @@ import dto.CompoundToElementDTO;
 import dto.ElementDTO;
 import enums.TableEnums;
 import exceptions.GatewayDeletedException;
+import exceptions.SoluteDoesNotExist;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,16 @@ public class CompoundDataGatewaysTest {
     public void tearDown() throws SQLException {
         this.conn.rollback();
         this.conn.close();
+    }
+
+    /**
+     * Create a new compound and check that it is created properly
+     * @throws GatewayDeletedException if the gateway is deleted
+     */
+    @Test
+    public void createNewCompound() throws GatewayDeletedException {
+        CompoundDataGateways compound = new CompoundDataGateways(conn, "NewCompound");
+        assertEquals("NewCompound", compound.getName());
     }
 
     /**

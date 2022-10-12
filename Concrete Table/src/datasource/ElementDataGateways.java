@@ -50,7 +50,7 @@ public class ElementDataGateways extends Gateway {
      * @param atomicNumber the atomic number of the element
      * @param atomicMass the atomic mass of the element
      */
-    public ElementDataGateways(Connection conn, String name, int atomicNumber, double atomicMass) throws GatewayNotFoundException {
+    public ElementDataGateways(Connection conn, String name, int atomicNumber, double atomicMass) {
         super();
         this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;

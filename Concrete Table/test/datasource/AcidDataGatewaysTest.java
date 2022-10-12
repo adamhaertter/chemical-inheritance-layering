@@ -53,6 +53,18 @@ public class AcidDataGatewaysTest {
     }
 
     /**
+     * Create a new acid and check that it is created properly
+     * @throws SoluteDoesNotExist if the solute does not exist
+     * @throws GatewayDeletedException if the gateway is deleted
+     */
+    @Test
+    public void createNewAcid() throws SoluteDoesNotExist, GatewayDeletedException {
+        AcidDataGateways acid = new AcidDataGateways(conn, "NewAcid", 3);
+        assertEquals("NewAcid", acid.getName());
+        assertEquals(3, acid.getSolute());
+    }
+
+    /**
      * Checks that we can get the name properly after making a connection to the DB and that it returns the proper value
      * when deleted
      *
