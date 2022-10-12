@@ -2,3 +2,5 @@
 */bin/
 /.idea/
 */src/config/ProjectConfig.java
+production/
+test/
