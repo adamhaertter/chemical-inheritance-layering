@@ -173,24 +173,19 @@ public class ElementDataGateways extends Gateway {
      * Get all compounds this element is in
      * @return an array list of CompoundToElement DTOs which contain this element
      */
-    public ArrayList<CompoundToElementDTO> getAllCompoundsWithThisElement() throws GatewayDeletedException{
-        if (!deleted) {
-            try {
-                CallableStatement statement = conn.prepareCall("SELECT * from CompoundToElement WHERE elementId = ?");
-                statement.setLong(1, id);
-                ResultSet rs = statement.executeQuery();
-                ArrayList<CompoundToElementDTO> compounds = new ArrayList<>();
-                while (rs.next()) {
-                    compounds.add(new CompoundToElementDTO(rs.getLong("compoundId"), rs.getLong("elementId")));
-                }
-                return compounds;
-            } catch (Exception ex) {
-                // Some other error (There is not an error if the entry doesn't exist)
+    public static ArrayList<CompoundToElementDTO> getAllCompoundsWithThisElement(Connection conn, long elementId) throws GatewayDeletedException{
+        ArrayList<CompoundToElementDTO> compounds = new ArrayList<>();
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from CompoundToElement WHERE elementId = ?");
+            statement.setLong(1, elementId);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                compounds.add(new CompoundToElementDTO(rs.getLong("compoundId"), rs.getLong("elementId")));
             }
-        } else {
-            throw new GatewayDeletedException("This element is deleted");
+        } catch (Exception ex) {
+            // Some other error (There is not an error if the entry doesn't exist)
         }
-        return null;
+        return compounds;
     }
 
 

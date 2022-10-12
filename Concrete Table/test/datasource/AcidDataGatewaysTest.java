@@ -137,10 +137,9 @@ public class AcidDataGatewaysTest {
      * @throws SQLException
      */
     @Test
-    public void getDissolvedMetals() throws Exception {
+    public void getDissolvedMetals() {
         //Dissolved metals in the setup are ids 2 and 3
-        AcidDataGateways acid = new AcidDataGateways(conn, 1);
-        ArrayList<MetalDTO> metals = acid.getDissolvedMetals();
+        ArrayList<MetalDTO> metals = AcidDataGateways.getDissolvedMetals(conn, 1);
         assertEquals(2, metals.size());
         // make sure that the DTOs were made properly with the right things
         assertEquals(2, metals.get(0).id);

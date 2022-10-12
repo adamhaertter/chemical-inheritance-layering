@@ -1,7 +1,6 @@
 package datasource;
 
 import dto.CompoundToElementDTO;
-import dto.ElementDTO;
 import exceptions.GatewayDeletedException;
 import exceptions.GatewayNotFoundException;
 
@@ -17,8 +16,9 @@ public class CompoundDataGateways extends Gateway {
 
     /**
      * Constructor that uses the id only to create a row gateway for an existing compound in the DB
+     *
      * @param conn our connection to the DB
-     * @param id the id of the desired compound
+     * @param id   the id of the desired compound
      */
     public CompoundDataGateways(Connection conn, long id) throws GatewayNotFoundException {
         super();
@@ -43,6 +43,7 @@ public class CompoundDataGateways extends Gateway {
 
     /**
      * Constructor for adding the new compound into the DB and creating a row data gateway for it as well
+     *
      * @param conn connection for the DB
      * @param name the name of the compound we want
      */
@@ -66,6 +67,7 @@ public class CompoundDataGateways extends Gateway {
 
     /**
      * Validates that the data in the row gateway is valid
+     *
      * @return true if the data is valid, false otherwise
      */
     public boolean validate() {
@@ -74,6 +76,7 @@ public class CompoundDataGateways extends Gateway {
 
     /**
      * Getter for the name of the compound
+     *
      * @return the name of the compound
      */
     public String getName() throws GatewayDeletedException {
@@ -86,6 +89,7 @@ public class CompoundDataGateways extends Gateway {
 
     /**
      * Updates the name of the current compound in our gateway and the DB
+     *
      * @param name the new name of the compound
      */
     public void updateName(String name) throws GatewayDeletedException {
@@ -98,7 +102,8 @@ public class CompoundDataGateways extends Gateway {
 
     /**
      * Pushes whatever changes we give to the DB
-     * @param id the id of the compound we want to update
+     *
+     * @param id   the id of the compound we want to update
      * @param name the new name of the compound
      * @return True if the update was successful, false otherwise
      */
@@ -113,24 +118,38 @@ public class CompoundDataGateways extends Gateway {
     }
 
     /**
+     * Add a new CompoundToElement relationship to the DB
+     *
+     * @param elementId the id of the element we want to add to this compound
+     */
+    public void addElement(long elementId) {
+        try {
+            Statement statement = this.conn.createStatement();
+            String addElement = "INSERT INTO CompoundToElement" +
+                    "(compoundId, elementId) VALUES ('" +
+                    this.id + "','" + elementId + "')";
+            statement.executeUpdate(addElement);
+        } catch (Exception ex) {
+            // Some other error (There is not an error if the entry doesn't exist)
+        }
+    }
+
+    /**
      * Returns all the elements within this compound
+     *
      * @return an array list of the elements within this compound in the form of DTOs
      */
-    public ArrayList<CompoundToElementDTO> getAllElementsInCompound() throws GatewayDeletedException {
+    public static ArrayList<CompoundToElementDTO> getAllElementsInCompound(Connection conn, long compoundId) {
         ArrayList<CompoundToElementDTO> elements = new ArrayList<>();
-        if(!deleted) {
-            try {
-                Statement statement = this.conn.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT * FROM CompoundToElement WHERE compoundId = '" + this.id + "'");
-                while (rs.next()) {
-                    elements.add(new CompoundToElementDTO(rs.getLong("compoundId"), rs.getLong("elementId")));
-                }
-            } catch (Exception ex) {
-                // Some other error (There is not an error if the entry doesn't exist)
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM CompoundToElement WHERE compoundId = '" + compoundId + "'");
+            while (rs.next()) {
+                elements.add(new CompoundToElementDTO(rs.getLong("compoundId"), rs.getLong("elementId")));
             }
-            return elements;
-        } else {
-            throw new GatewayDeletedException("This compound has been deleted.");
+        } catch (Exception ex) {
+            // Some other error (There is not an error if the entry doesn't exist)
         }
+        return elements;
     }
 }

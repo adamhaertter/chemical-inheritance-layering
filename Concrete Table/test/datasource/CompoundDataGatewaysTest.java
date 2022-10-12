@@ -5,6 +5,7 @@ import dto.CompoundToElementDTO;
 import dto.ElementDTO;
 import enums.TableEnums;
 import exceptions.GatewayDeletedException;
+import exceptions.GatewayNotFoundException;
 import exceptions.SoluteDoesNotExist;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,11 +34,13 @@ public class CompoundDataGatewaysTest {
         String insertTestCompound = "INSERT INTO Compound VALUES (1, 'TestCompound')";
         String insertTestElement1 = "INSERT INTO Element VALUES (2, 'TestElement1', 10, 10.5)";
         String insertTestElement2 = "INSERT INTO Element VALUES (3, 'TestElement1', 20, 20.5)";
+        String insertTestElement3 = "INSERT INTO Element VALUES (6, 'NewElement', 10, 17.5)";
         String insertTestRelation1 = "INSERT INTO CompoundToElement VALUES (1, 2)";
         String insertTestRelation2 = "INSERT INTO CompoundToElement VALUES (1, 3)";
         stmnt.executeUpdate(insertTestCompound);
         stmnt.executeUpdate(insertTestElement1);
         stmnt.executeUpdate(insertTestElement2);
+        stmnt.executeUpdate(insertTestElement3);
         stmnt.executeUpdate(insertTestRelation1);
         stmnt.executeUpdate(insertTestRelation2);
     }
@@ -111,11 +114,20 @@ public class CompoundDataGatewaysTest {
      * Test that we can properly get all the elements from the DB for this compound
      */
     @Test
-    public void testGetElements() throws Exception {
-        CompoundDataGateways compound = new CompoundDataGateways(conn, 1);
-        ArrayList<CompoundToElementDTO> elements = compound.getAllElementsInCompound();
+    public void testGetElements() {
+        ArrayList<CompoundToElementDTO> elements = CompoundDataGateways.getAllElementsInCompound(conn, 1);
         assertEquals(2, elements.size());
         assertEquals(2, elements.get(0).elementId);
         assertEquals(3, elements.get(1).elementId);
+    }
+
+    // Test adding a new element to a compound
+    @Test
+    public void testAddElementToCompound() throws GatewayNotFoundException {
+        CompoundDataGateways compound = new CompoundDataGateways(conn, 1);
+        compound.addElement(6);
+        ArrayList<CompoundToElementDTO> compounds = CompoundDataGateways.getAllElementsInCompound(conn, 1);
+        assertEquals(3, compounds.size());
+        assertEquals(6, compounds.get(2).elementId);
     }
 }

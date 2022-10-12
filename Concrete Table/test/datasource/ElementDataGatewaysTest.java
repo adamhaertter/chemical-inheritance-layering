@@ -175,9 +175,8 @@ public class ElementDataGatewaysTest {
      * Test that we can get all the compounds that contain this element
      */
     @Test
-    public void testGetCompounds() throws Exception {
-        ElementDataGateways element = new ElementDataGateways(conn, 1);
-        ArrayList<CompoundToElementDTO> compounds = element.getAllCompoundsWithThisElement();
+    public void testGetCompounds() throws GatewayDeletedException {
+        ArrayList<CompoundToElementDTO> compounds = ElementDataGateways.getAllCompoundsWithThisElement(conn, 1);
         assertEquals(2, compounds.size());
         assertEquals(2, compounds.get(0).compoundId);
         assertEquals(3, compounds.get(1).compoundId);

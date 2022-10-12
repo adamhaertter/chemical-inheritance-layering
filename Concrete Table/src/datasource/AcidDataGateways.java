@@ -164,7 +164,7 @@ public class AcidDataGateways extends Gateway {
      *
      * @return List of Metal DTOs that this acid dissolves
      */
-    public ArrayList<MetalDTO> getDissolvedMetals() {
+    public static ArrayList<MetalDTO> getDissolvedMetals(Connection conn, long id) {
         ArrayList<MetalDTO> metals = new ArrayList<>();
 
         // Construct our Metal DTOs from the DB
