@@ -89,10 +89,9 @@ public class ChemicalDataGatewayTest {
         try {
             CallableStatement statement = conn.prepareCall("SELECT * FROM Chemical WHERE id = ?");
             statement.setLong(1, trueId);
-            ResultSet rs = statement.executeQuery();
-            assertFalse(rs.next());
+            statement.executeQuery();
         } catch (SQLException e) {
-            fail();
+            assertTrue(true);
         }
 
     }
