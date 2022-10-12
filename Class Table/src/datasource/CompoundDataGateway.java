@@ -32,7 +32,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
             ResultSet rs = statement.executeQuery();
             rs.next();
 
-            if (!validate()) {
+            if (!validateChemical()) {
                 this.id = -1;
                 this.name = null;
                 System.out.println("No compound was found with the given id " + id);

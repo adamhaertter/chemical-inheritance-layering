@@ -48,8 +48,6 @@ public class Gateway {
             // We only delete from Chemical because the Foreign Keys cascade on delete, removing it from all tables
             statement.setLong(1, id);
             statement.execute();
-            // close db connection if successful
-            conn.close();
         } catch (Exception e) {
             // throw error about failing to delete
             e.printStackTrace();

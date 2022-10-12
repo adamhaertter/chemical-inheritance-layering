@@ -36,7 +36,7 @@ public class ElementDataGateway extends ChemicalDataGateway {
             this.atomicNumber = rs.getInt("atomicNumber");
             this.atomicMass = rs.getDouble("atomicMass");
 
-            if (!validate()) {
+            if (!validateElement()) {
                 this.id = -1;
                 this.name = null;
                 this.atomicMass = -1.0;
@@ -78,8 +78,8 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * Makes sure the variables of atomicNumber and atomicMass have valid numbers given to them.
      * @return True if the row is valid, false otherwise
      */
-    protected boolean validate() {
-        return super.validate() && this.atomicNumber > 0 && this.atomicMass > 0.0;
+    protected boolean validateElement() {
+        return validateChemical() && this.atomicNumber > 0 && this.atomicMass > 0.0;
     }
 
     /**
@@ -118,12 +118,11 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * Updates the atomic number in the database. A message will be printed if this does not occur.
      *
      * @param atomicNumber the atomic number value with which to update the DB
-     * @see ChemicalDataGateway#setName(String) for line-by-line comments on structure
+     * @see ChemicalDataGateway#updateName(String) for line-by-line comments on structure
      */
     public void updateAtomicNumber(int atomicNumber) {
-        if( !verify() && !persist(this.id, this.name, this.atomicMass, atomicNumber) )
-            return;
-        this.atomicNumber = atomicNumber;
+        if( verify() && persist(this.id, this.name, this.atomicMass, atomicNumber) )
+            this.atomicNumber = atomicNumber;
     }
 
     /**
@@ -141,11 +140,10 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * Updates the atomic mass in the database. A message will be printed if this does not occur.
      *
      * @param atomicMass the atomic mass value with which to update the DB
-     * @see ChemicalDataGateway#setName(String) for line-by-line comments
+     * @see ChemicalDataGateway#updateName(String) for line-by-line comments
      */
     public void updateAtomicMass(double atomicMass) {
-        if( !verify() && !persist(this.id, this.name, atomicMass, this.atomicNumber) )
-            return;
-        this.atomicMass = atomicMass;
+        if( verify() && persist(this.id, this.name, atomicMass, this.atomicNumber) )
+            this.atomicMass = atomicMass;
     }
 }

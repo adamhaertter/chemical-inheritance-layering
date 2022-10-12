@@ -36,7 +36,7 @@ public class AcidDataGateway extends ChemicalDataGateway {
             rs.next();
             this.solute = rs.getLong("solute");
 
-            if (!validate()) {
+            if (!validateAcid()) {
                 this.id = -1;
                 this.name = null;
                 this.solute = -1;
@@ -79,8 +79,8 @@ public class AcidDataGateway extends ChemicalDataGateway {
      *
      * @return Whether the current columns for this row have valid values
      */
-    protected boolean validate() {
-        return super.validate() && this.solute != 0;
+    protected boolean validateAcid() {
+        return validateChemical() && this.solute != 0;
     }
 
     /**
@@ -118,14 +118,13 @@ public class AcidDataGateway extends ChemicalDataGateway {
      * Updates the solute id in the database. A message will be printed if this does not occur.
      *
      * @param solute the solute id with which to update the DB
-     * @see ChemicalDataGateway#setName(String) for line-by-line comments
+     * @see ChemicalDataGateway#updateName(String) for line-by-line comments
      */
     public void updateSolute(long solute) {
         // If the row exists AND we can update the values in the DB...
-        if( !verify() && !persist(this.id, this.name, solute) )
-            return;
+        if( verify() && persist(this.id, this.name, solute) )
+            this.solute = solute;
         // Set the instance variable to match
-        this.solute = solute;
     }
 
     /**

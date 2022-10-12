@@ -30,7 +30,7 @@ public class MetalDataGateway extends ElementDataGateway {
             rs.next();
             this.dissolvedBy = rs.getInt("dissolvedBy");
 
-            if (!validate()) {
+            if (!validateMetal()) {
                 this.id = -1;
                 this.name = null;
                 this.dissolvedBy = -1;
@@ -71,8 +71,8 @@ public class MetalDataGateway extends ElementDataGateway {
      * Verifies that the dissolvedBy variable is a valid number.
      * @return true if the row is full of valid values, false otherwise
      */
-    protected boolean validate() {
-        return super.validate() && this.dissolvedBy > 0;
+    protected boolean validateMetal() {
+        return validateElement() && this.dissolvedBy > 0;
     }
 
     /**
@@ -88,7 +88,6 @@ public class MetalDataGateway extends ElementDataGateway {
                     "' WHERE id = '" + id + "'");
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
             return false;
         }
     }
@@ -139,8 +138,7 @@ public class MetalDataGateway extends ElementDataGateway {
      * @see ChemicalDataGateway#updateName(String) for line-by-line comments
      */
     public void updateDissolvedBy(long dissolvedBy) {
-        if( !verify() && !persist(this.id, this.name, this.atomicMass, this.atomicNumber, dissolvedBy))
-            return;
-        this.dissolvedBy = dissolvedBy;
+        if( verify() && persist(this.id, this.name, this.atomicMass, this.atomicNumber, dissolvedBy))
+            this.dissolvedBy = dissolvedBy;
     }
 }

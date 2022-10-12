@@ -14,7 +14,7 @@ import java.sql.Statement;
  */
 public class ChemicalDataGateway extends Gateway {
 
-    protected String name;
+    protected String name = null;
 
     /**
      * Creates a row data gateway on the Chemical table of the database using an existing id
@@ -34,7 +34,7 @@ public class ChemicalDataGateway extends Gateway {
             rs.next();
             this.name = rs.getString("name");
 
-            if (!validate()) {
+            if (!this.validateChemical()) {
                 this.id = -1;
                 this.name = null;
                 System.out.println("No chemical was found with the given id " + id);
@@ -75,8 +75,11 @@ public class ChemicalDataGateway extends Gateway {
      *
      * @return Whether the current columns for this row have valid values
      */
-    protected boolean validate() {
-        return this.id != 0 && this.name != null;
+    protected boolean validateChemical() {
+        boolean test1 = this.id != 0;
+        boolean test2 = this.name != null;
+        boolean test3 = test1 && test2;
+        return  test3;
     }
 
     /**
@@ -128,9 +131,8 @@ public class ChemicalDataGateway extends Gateway {
     public void updateName(String name) {
         // This basic format should be used for all lower setters:
         // If the row exists AND we can update the values in the DB...
-        if( !verify() && !persist(this.id, name) )
-            return;
+        if( verify() && persist(this.id, name) )
+            this.name = name;
         // Set the instance variable to match
-        this.name = name;
     }
 }

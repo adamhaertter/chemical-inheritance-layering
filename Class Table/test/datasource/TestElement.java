@@ -1,19 +1,44 @@
-package test;
+package datasource;
 
-import datasource.ElementDataGateway;
-import datasource.Gateway;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import static org.junit.Assert.*;
 
 public class TestElement {
 
-    private final Connection conn = Gateway.setUpConnection();
+    private Connection conn;
+
+    /**
+     * This creates our connection and makes sure that we don't actually commit any changes to the DB
+     * Also inserts our testing data
+     * @throws SQLException
+     */
+    @BeforeEach
+    public void setUp() throws SQLException {
+        this.conn = DriverManager.getConnection(config.ProjectConfig.DatabaseURL, config.ProjectConfig.DatabaseUser, config.ProjectConfig.DatabasePassword);
+        this.conn.setAutoCommit(false);
+        // Insert Test Data
+        Statement stmnt = this.conn.createStatement();
+        String insertTestChemical = "INSERT INTO Chemical VALUES (1, 'TestElement')";
+        String insertTestElement = "INSERT INTO Element VALUES (1, 1, 1.0)";
+        stmnt.executeUpdate(insertTestChemical);
+        stmnt.executeUpdate(insertTestElement);
+    }
+
+    /**
+     * Rolls back any changes that we made. Also closes our current connection
+     * @throws SQLException
+     */
+    @AfterEach
+    public void tearDown() throws SQLException {
+        this.conn.rollback();
+        this.conn.close();
+    }
 
     /**
      * When initialized by id, an ElementDataGateway should be able to retrieve a row that exists in the database with the same id
@@ -22,34 +47,14 @@ public class TestElement {
     public void testInitById() {
         assertNotNull(conn);
 
-        long trueId = 100L;
-        String trueName = "Test";
+        long trueId = 1;
+        String trueName = "TestElement";
         int trueNumber = 1;
-        double trueMass = 5.0;
-
-
-        // Create row in table
-        try {
-            CallableStatement statement = conn.prepareCall("INSERT INTO Chemical (`id`, `name`) VALUES (?, ?)");
-            statement.setLong(1, trueId);
-            statement.setString(2, trueName);
-            int result = statement.executeUpdate();
-            // Was it inserted properly?
-            assertNotEquals(0, result);
-
-            statement = conn.prepareCall("INSERT INTO Element (`id`, `atomicNumber`, `atomicMass`) VALUES (?, ?, ?)");
-            statement.setLong(1, trueId);
-            statement.setInt(2, trueNumber);
-            statement.setDouble(3, trueMass);
-            result = statement.executeUpdate();
-            assertNotEquals(0, result);
-        } catch (SQLException e) {
-            fail();
-        }
+        double trueMass = 1.0;
 
         ElementDataGateway elem = new ElementDataGateway(conn, trueId);
         // Does it correspond to the right row?
-        assertEquals(elem.getName(), trueName);
+        Assertions.assertEquals(elem.getName(), trueName);
         assertEquals(elem.getAtomicNumber(), trueNumber);
         assertTrue(elem.getAtomicMass() == trueMass);
     }
@@ -63,7 +68,7 @@ public class TestElement {
 
         String trueName = "Ex";
         int trueNumber = 1;
-        double trueMass = 5;
+        double trueMass = 5.0;
 
         ElementDataGateway elem = new ElementDataGateway(conn, trueName, trueNumber, trueMass);
         // Test that the value is set properly for the Object
@@ -98,29 +103,7 @@ public class TestElement {
     public void testDelete() {
         assertNotNull(conn);
 
-        long trueId = 100L;
-        String trueName = "Test";
-        int trueNumber = 1;
-        double trueMass = 5.0;
-
-        // Create rows in table
-        try {
-            CallableStatement statement = conn.prepareCall("INSERT INTO Chemical (`id`, `name`) VALUES (?, ?)");
-            statement.setLong(1, trueId);
-            statement.setString(2, trueName);
-            int result = statement.executeUpdate();
-            // Was it inserted properly?
-            assertNotEquals(0, result);
-
-            statement = conn.prepareCall("INSERT INTO Element (`id`, `atomicNumber`, `atomicMass`) VALUES (?, ?, ?)");
-            statement.setLong(1, trueId);
-            statement.setInt(2, trueNumber);
-            statement.setDouble(3, trueMass);
-            result = statement.executeUpdate();
-            assertNotEquals(0, result);
-        } catch (SQLException e) {
-            fail();
-        }
+        long trueId = 1L;
 
         ElementDataGateway elem = new ElementDataGateway(conn, trueId);
 
@@ -129,19 +112,22 @@ public class TestElement {
         elem.delete();
         assertFalse(elem.verify());
 
+        // Check removed from one table
         try {
-            CallableStatement statement = conn.prepareCall("SELECT * FROM Acid WHERE id = ?");
+            CallableStatement statement = conn.prepareCall("SELECT * FROM Chemical WHERE id = ?");
             statement.setLong(1, trueId);
-            ResultSet rs = statement.executeQuery();
-            assertFalse(rs.next());
-
-            // Must be removed from both tables
-            statement = conn.prepareCall("SELECT * FROM Element WHERE id = ?");
-            statement.setLong(1, trueId);
-            rs = statement.executeQuery();
-            assertFalse(rs.next());
+            statement.executeQuery();
         } catch (SQLException e) {
-            fail();
+            assertTrue(true);
+        }
+
+        // Must be removed from both tables
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * FROM Element WHERE id = ?");
+            statement.setLong(1, trueId);
+            statement.executeQuery();
+        } catch (SQLException e) {
+            assertTrue(true);
         }
     }
 
@@ -154,8 +140,8 @@ public class TestElement {
         assertNotNull(conn);
 
         String trueName = "TestElement";
-        int trueNumber = 5;
-        double trueMass = 10.0;
+        int trueNumber = 1;
+        double trueMass = 1.0;
         double tempMass = 12.0;
 
         ElementDataGateway myElement = new ElementDataGateway(conn, trueName, trueNumber, trueMass);
@@ -205,10 +191,10 @@ public class TestElement {
     public void testUpdateAtomicNumber() {
         assertNotNull(conn);
 
-        String trueName = "TestElement";
+        String trueName = "TestElementTwo";
         int trueNumber = 5;
-        double trueMass = 10.0;
-        int tempNumber = 12;
+        double trueMass = 5.0;
+        int tempNumber = 6;
 
         ElementDataGateway myElement = new ElementDataGateway(conn, trueName, trueNumber, trueMass);
 
@@ -220,8 +206,8 @@ public class TestElement {
             rs.next();
             assertEquals(rs.getString("name"), trueName);
 
-            statement = conn.prepareCall("SELECT * from Element WHERE atomicNumber = ?");
-            statement.setInt(1, trueNumber);
+            statement = conn.prepareCall("SELECT * from Element WHERE atomicMass = ?");
+            statement.setDouble(1, trueMass);
             rs = statement.executeQuery();
             rs.next();
             assertTrue(rs.getDouble("atomicMass") == trueMass);
@@ -240,7 +226,6 @@ public class TestElement {
             ResultSet rs = statement.executeQuery();
             rs.next();
             assertTrue(rs.getDouble("atomicNumber") == tempNumber);
-
         } catch (SQLException e) {
             fail();
         }

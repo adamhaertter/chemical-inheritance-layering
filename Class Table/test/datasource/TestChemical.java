@@ -1,13 +1,10 @@
-package test;
+package datasource;
 
-import datasource.ChemicalDataGateway;
-import datasource.Gateway;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import static org.junit.Assert.*;
 
@@ -16,30 +13,40 @@ public class TestChemical {
     private Connection conn = Gateway.setUpConnection();
 
     /**
+     * This creates our connection and makes sure that we don't actually commit any changes to the DB
+     * Also inserts our testing data
+     * @throws SQLException
+     */
+    @BeforeEach
+    public void setUp() throws SQLException {
+        this.conn = DriverManager.getConnection(config.ProjectConfig.DatabaseURL, config.ProjectConfig.DatabaseUser, config.ProjectConfig.DatabasePassword);
+        this.conn.setAutoCommit(false);
+        // Insert Test Data
+        Statement stmnt = this.conn.createStatement();
+        String insertTestChemical = "INSERT INTO Chemical VALUES (1, 'TestChemical')";
+        stmnt.executeUpdate(insertTestChemical);
+    }
+
+    /**
+     * Rolls back any changes that we made. Also closes our current connection
+     * @throws SQLException
+     */
+    @AfterEach
+    public void tearDown() throws SQLException {
+        this.conn.rollback();
+        this.conn.close();
+    }
+
+    /**
      * When initialized by id, a ChemicalDataGateway should be able to retrieve a row that exists in the database with the same id
      */
     @Test
     public void testInitById() {
         assertNotNull(conn);
 
-        long trueId = 100L;
-        String trueName = "Test";
-
-        // Create row in table
-        try {
-            CallableStatement statement = conn.prepareCall("INSERT INTO Chemical (`id`, `name`) VALUES (?, ?)");
-            statement.setLong(1, trueId);
-            statement.setString(2, trueName);
-            int result = statement.executeUpdate();
-            // Was it inserted properly?
-            assertNotEquals(0, result);
-        } catch (SQLException e) {
-            fail();
-        }
-
-        ChemicalDataGateway chem = new ChemicalDataGateway(conn, trueId);
+        ChemicalDataGateway chem = new ChemicalDataGateway(conn, 1);
         // Does it correspond to the right row?
-        assertTrue(chem.getName().equals(trueName));
+        assertTrue(chem.getName().equals("TestChemical"));
     }
 
     /**
@@ -73,20 +80,8 @@ public class TestChemical {
     public void testDelete() {
         assertNotNull(conn);
 
-        long trueId = 100L;
-        String trueName = "Test";
-
-        // Create row in table
-        try {
-            CallableStatement statement = conn.prepareCall("INSERT INTO Chemical (`id`, `name`) VALUES (?, ?)");
-            statement.setLong(1, trueId);
-            statement.setString(2, trueName);
-            int result = statement.executeUpdate();
-            // Was it inserted properly?
-            assertNotEquals(0, result);
-        } catch (SQLException e) {
-            fail();
-        }
+        long trueId = 1;
+        String trueName = "TestChemical";
 
         ChemicalDataGateway chem = new ChemicalDataGateway(conn, trueId);
 
@@ -98,10 +93,9 @@ public class TestChemical {
         try {
             CallableStatement statement = conn.prepareCall("SELECT * FROM Chemical WHERE id = ?");
             statement.setLong(1, trueId);
-            ResultSet rs = statement.executeQuery();
-            assertFalse(rs.next());
+            statement.executeQuery();
         } catch (SQLException e) {
-            fail();
+            assertTrue(true);
         }
     }
 
@@ -113,18 +107,17 @@ public class TestChemical {
     public void testUpdateName() {
         assertNotNull(conn);
 
-        String trueName = "MyTestName";
+        String trueName = "TestChemical";
         String tempName = "MyTempName";
 
-        ChemicalDataGateway myChemical = new ChemicalDataGateway(conn, trueName);
+        ChemicalDataGateway myChemical = new ChemicalDataGateway(conn, 1);
 
         // test that the value is set properly for the object
         assertTrue(myChemical.getName().equals(trueName));
 
         // test that the value exists in the database
         try {
-            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
-            statement.setString(1, trueName);
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE id = 1");
             ResultSet rs = statement.executeQuery();
             rs.next();
             assertTrue(rs.getString("name").equals(trueName));
@@ -134,17 +127,16 @@ public class TestChemical {
 
         // set name to new name
         myChemical.updateName(tempName);
+        assertEquals(tempName, myChemical.getName());
 
         // test that the changes have been made in the database
         try {
-            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
-            statement.setString(1, tempName);
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE id = 1");
             ResultSet rs = statement.executeQuery();
-            rs = statement.executeQuery();
             rs.next();
             assertEquals(rs.getString("name"), tempName);
-
         } catch (SQLException e) {
+            e.printStackTrace();
             fail();
         }
 
