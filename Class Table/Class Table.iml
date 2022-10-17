@@ -34,9 +34,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="mysql-connector-j-8.0.31" level="project" />
-<<<<<<< HEAD
-=======
     <orderEntry type="module-library">
       <library name="testng">
         <CLASSES>
@@ -62,6 +59,6 @@
         <SOURCES />
       </library>
     </orderEntry>
->>>>>>> 59dfbb2c4b0eddd60ff65c1e5e03ff222502fe5b
+    <orderEntry type="library" name="mysql-connector-j-8.0.31" level="project" />
   </component>
 </module>
