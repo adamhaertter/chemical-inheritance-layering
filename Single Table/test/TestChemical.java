@@ -44,7 +44,6 @@ public class TestChemical {
         assertNotNull(conn);
 
         ChemicalDataGateway chem = new ChemicalDataGateway(conn, 1);
-        // Does it correspond to the right row?
         assertEquals("TestMetal", chem.getName());
     }
 
