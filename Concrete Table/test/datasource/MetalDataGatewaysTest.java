@@ -1,9 +1,8 @@
 package datasource;
 
 import config.ProjectConfig;
-import enums.TableEnums;
-import exceptions.GatewayDeletedException;
-import exceptions.SoluteDoesNotExist;
+import datasource.enums.TableEnums;
+import datasource.exceptions.GatewayDeletedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

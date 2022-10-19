@@ -1,4 +1,4 @@
-package exceptions;
+package datasource.exceptions;
 
 public class GatewayFailedToDelete extends Exception {
     public GatewayFailedToDelete(String message, Exception e) {

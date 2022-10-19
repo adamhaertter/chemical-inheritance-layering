@@ -1,10 +1,10 @@
 package datasource;
 
-import dto.MetalDTO;
-import exceptions.GatewayDeletedException;
-import exceptions.GatewayNotFoundException;
-import exceptions.SoluteDoesNotExist;
-import utils.ValidationUtils;
+import datasource.dto.MetalDTO;
+import datasource.exceptions.GatewayDeletedException;
+import datasource.exceptions.GatewayNotFoundException;
+import datasource.exceptions.SoluteDoesNotExist;
+import datasource.utils.ValidationUtils;
 
 import java.sql.*;
 import java.util.ArrayList;

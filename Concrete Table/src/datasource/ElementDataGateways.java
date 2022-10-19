@@ -1,8 +1,8 @@
 package datasource;
 
-import dto.CompoundToElementDTO;
-import exceptions.GatewayDeletedException;
-import exceptions.GatewayNotFoundException;
+import datasource.dto.CompoundToElementDTO;
+import datasource.exceptions.GatewayDeletedException;
+import datasource.exceptions.GatewayNotFoundException;
 
 import java.sql.*;
 import java.util.ArrayList;

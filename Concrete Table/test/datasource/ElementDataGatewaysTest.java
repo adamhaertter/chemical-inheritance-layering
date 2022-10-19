@@ -1,10 +1,9 @@
 package datasource;
 
 import config.ProjectConfig;
-import dto.CompoundToElementDTO;
-import enums.TableEnums;
-import exceptions.GatewayDeletedException;
-import exceptions.GatewayNotFoundException;
+import datasource.dto.CompoundToElementDTO;
+import datasource.enums.TableEnums;
+import datasource.exceptions.GatewayDeletedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

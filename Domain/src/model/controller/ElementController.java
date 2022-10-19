@@ -14,7 +14,7 @@ public class ElementController
     {
     }
 
-    public ElementController(String name, int atomicNumber, double atomicWeight)
+    public ElementController(String name, int atomicNumber, double atomicMass)
     {
 
     }

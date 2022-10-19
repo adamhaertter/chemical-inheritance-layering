@@ -22,13 +22,13 @@ public class ElementControllerTest
         Element controllerResult = controller.getMyElement();
         assertEquals("Oxygen", controllerResult.getName());
         assertEquals(8, controllerResult.getAtomicNumber());
-        assertEquals(15.999, controllerResult.getAtomicWeight(), 0.001);
+        assertEquals(15.999, controllerResult.getAtomicMass(), 0.001);
 
         // Make sure it got all the way to the database
         ElementMapper afterMapper = new ElementMapper("Oxygen");
         Element mapperResult = afterMapper.getMyElement();
         assertEquals("Oxygen", mapperResult.getName());
         assertEquals(8, mapperResult.getAtomicNumber());
-        assertEquals(15.999, mapperResult.getAtomicWeight(), 0.001);
+        assertEquals(15.999, mapperResult.getAtomicMass(), 0.001);
     }
 }

@@ -1,4 +1,4 @@
-package dto;
+package datasource.dto;
 
 public class MetalDTO {
     public long id;

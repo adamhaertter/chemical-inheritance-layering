@@ -1,4 +1,4 @@
-package utils;
+package datasource.utils;
 
 import datasource.Gateway;
 

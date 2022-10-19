@@ -1,4 +1,4 @@
-package dto;
+package datasource.dto;
 
 public class CompoundDTO {
     public long id;

@@ -1,7 +1,7 @@
 package datasource;
 
-import exceptions.GatewayDeletedException;
-import exceptions.GatewayNotFoundException;
+import datasource.exceptions.GatewayDeletedException;
+import datasource.exceptions.GatewayNotFoundException;
 
 import java.sql.*;
 

@@ -1,12 +1,9 @@
 package datasource;
 
-import config.ProjectConfig;
-import enums.TableEnums;
-import exceptions.GatewayFailedToDelete;
+import datasource.enums.TableEnums;
+import datasource.exceptions.GatewayFailedToDelete;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 /**

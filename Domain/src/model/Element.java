@@ -1,18 +1,13 @@
 package model;
 
-public class Element
+public class Element extends Chemical
 {
-    public String getName()
-    {
-        return null;
-    }
-
     public int getAtomicNumber()
     {
         return 0;
     }
 
-    public double getAtomicWeight()
+    public double getAtomicMass()
     {
         return 0;
     }

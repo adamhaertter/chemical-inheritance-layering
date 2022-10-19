@@ -1,4 +1,4 @@
-package enums;
+package datasource.enums;
 
 public class TableEnums {
     public enum Table {

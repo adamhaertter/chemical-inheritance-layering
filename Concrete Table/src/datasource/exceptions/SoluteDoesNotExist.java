@@ -1,4 +1,4 @@
-package exceptions;
+package datasource.exceptions;
 
 public class SoluteDoesNotExist extends Exception {
     public SoluteDoesNotExist(String message) {

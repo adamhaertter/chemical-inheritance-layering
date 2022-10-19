@@ -7,7 +7,7 @@ public class ElementMapper
      * Create a new element in the database, and store the resulting model object
      * into my instance variable
      */
-    public ElementMapper(String name, int atomicNumber, double atomicWeight)
+    public ElementMapper(String name, int atomicNumber, double atomicMass)
     {
     }
 

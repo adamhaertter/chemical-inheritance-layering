@@ -1,6 +1,6 @@
-package utils;
+package datasource.utils;
 
-import enums.TableEnums;
+import datasource.enums.TableEnums;
 
 import java.sql.*;
 

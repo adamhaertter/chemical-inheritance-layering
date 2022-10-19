@@ -1,6 +1,6 @@
 package datasource;
 
-import dto.*;
+import datasource.dto.*;
 
 import java.sql.*;
 import java.util.ArrayList;

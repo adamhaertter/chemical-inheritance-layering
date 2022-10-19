@@ -1,7 +1,6 @@
 import datasource.ChemicalDataGateway;
-import datasource.CompoundDataGateway;
 import datasource.Gateway;
-import dto.*;
+import datasource.dto.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -208,13 +207,11 @@ public class TestChemical {
         listAcidMethod.clear();
 
         //GetAllCompounds
-        ArrayList<CompoundDTO> listCompTester = new ArrayList<>();
-        CompoundDataGateway gw = new CompoundDataGateway(conn, 5);
+        ChemicalDataGateway gw = new ChemicalDataGateway(conn, 5);
         CompoundDTO comp = new CompoundDTO(5, "TestCompound");
-        listCompTester.add(comp);
         ArrayList<CompoundDTO> listCompMethod = gw.getAllCompounds();
 
-        testerID = listCompTester.get(0).id;
+        testerID = comp.id;
         methodID = listCompMethod.get(0).id;
 
         Assertions.assertEquals(testerID, methodID);

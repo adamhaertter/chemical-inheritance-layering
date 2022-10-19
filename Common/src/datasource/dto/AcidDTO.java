@@ -1,4 +1,4 @@
-package dto;
+package datasource.dto;
 
 public class AcidDTO {
     public long id;

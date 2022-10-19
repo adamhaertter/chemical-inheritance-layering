@@ -1,11 +1,11 @@
 package datasource;
 
 import config.ProjectConfig;
-import dto.MetalDTO;
-import enums.TableEnums;
-import exceptions.GatewayDeletedException;
-import exceptions.GatewayNotFoundException;
-import exceptions.SoluteDoesNotExist;
+import datasource.dto.MetalDTO;
+import datasource.enums.TableEnums;
+import datasource.exceptions.GatewayDeletedException;
+import datasource.exceptions.GatewayNotFoundException;
+import datasource.exceptions.SoluteDoesNotExist;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

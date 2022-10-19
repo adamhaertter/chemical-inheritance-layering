@@ -1,4 +1,4 @@
-package dto;
+package datasource.dto;
 
 public class CompoundToElementDTO {
     public long compoundId;
