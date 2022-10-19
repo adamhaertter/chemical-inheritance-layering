@@ -1,12 +1,14 @@
 import datasource.CompoundDataGateway;
 import datasource.Gateway;
-import dto.CompoundToElementDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -91,76 +93,47 @@ public class TestCompound {
 
     /**
      * Tests that getting all compounds will retrieve all the compounds
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
     @Test
     public void testGetAllCompounds() throws SQLException {
-        ArrayList<CompoundToElementDTO> listTester = new ArrayList<>();
-        CompoundDataGateway gw = new CompoundDataGateway(conn, 1);
-        CompoundToElementDTO compOne = new CompoundToElementDTO(1, 1234);
-        listTester.add(compOne);
-        CompoundToElementDTO compTwo = new CompoundToElementDTO(1, 5678);
-        listTester.add(compTwo);
-        CompoundToElementDTO compThree = new CompoundToElementDTO(2, 1234);
-        listTester.add(compThree);
-        ArrayList<CompoundToElementDTO> listMethod = gw.getAllCompounds();
 
-        ArrayList<Long> testerIDs = new ArrayList<>();
-        testerIDs.add((listTester.get(0)).compoundID);
-        testerIDs.add((listTester.get(1)).compoundID);
-        testerIDs.add((listTester.get(2)).compoundID);
-        ArrayList<Long> methodIDs = new ArrayList<>();
-        methodIDs.add((listMethod.get(0)).compoundID);
-        methodIDs.add((listMethod.get(1)).compoundID);
-        methodIDs.add((listMethod.get(2)).compoundID);
-
-        Assertions.assertEquals(testerIDs, methodIDs);
     }
 
     /**
      * Tests that getting compounds by element id will only return the correct compounds
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
     @Test
     public void testGetCompoundsByElementID() throws SQLException {
-        ArrayList<CompoundToElementDTO> listTester = new ArrayList<>();
         CompoundDataGateway gw = new CompoundDataGateway(conn, 1);
-        CompoundToElementDTO compOne = new CompoundToElementDTO(1, 1234);
-        listTester.add(compOne);
-        CompoundToElementDTO compTwo = new CompoundToElementDTO(2, 1234);
-        listTester.add(compTwo);
-        ArrayList<CompoundToElementDTO> listMethod = gw.getCompoundsContaining(1234);
+        ArrayList<Long> listMethod = gw.getCompoundsContaining(1234);
 
         ArrayList<Long> testerIDs = new ArrayList<>();
-        testerIDs.add((listTester.get(0)).compoundID);
-        testerIDs.add((listTester.get(1)).compoundID);
+        testerIDs.add((long)1);
+        testerIDs.add((long)2);
         ArrayList<Long> methodIDs = new ArrayList<>();
-        methodIDs.add((listMethod.get(0)).compoundID);
-        methodIDs.add((listMethod.get(1)).compoundID);
+        methodIDs.add(listMethod.get(0));
+        methodIDs.add(listMethod.get(1));
 
         Assertions.assertEquals(testerIDs, methodIDs);
     }
 
     /**
      * Tests that getting compound elements will return the correct compound elements
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
     @Test
     public void testGetElementsInCompound() throws SQLException {
-        ArrayList<CompoundToElementDTO> listTester = new ArrayList<>();
         CompoundDataGateway gw = new CompoundDataGateway(conn, 1);
-        CompoundToElementDTO compOne = new CompoundToElementDTO(1, 1234);
-        listTester.add(compOne);
-        CompoundToElementDTO compTwo = new CompoundToElementDTO(1, 5678);
-        listTester.add(compTwo);
-        ArrayList<CompoundToElementDTO> listMethod = gw.getElementsInCompound(1);
+        ArrayList<Long> listMethod = gw.getElementsInCompound(1);
 
         ArrayList<Long> testerIDs = new ArrayList<>();
-        testerIDs.add((listTester.get(0)).elementID);
-        testerIDs.add((listTester.get(1)).elementID);
+        testerIDs.add((long)1234);
+        testerIDs.add((long)5678);
         ArrayList<Long> methodIDs = new ArrayList<>();
-        methodIDs.add((listMethod.get(0)).elementID);
-        methodIDs.add((listMethod.get(1)).elementID);
+        methodIDs.add(listMethod.get(0));
+        methodIDs.add(listMethod.get(1));
 
         Assertions.assertEquals(testerIDs, methodIDs);
     }

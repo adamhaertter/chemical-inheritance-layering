@@ -1,7 +1,5 @@
 package datasource;
 
-import dto.CompoundToElementDTO;
-
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -114,42 +112,20 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     }
 
     /**
-     * Getter for all the compounds in the table
-     * @return allCompoundsList - a list of all the compounds in the table
-     * @throws SQLException
-     */
-    public ArrayList<CompoundToElementDTO> getAllCompounds() throws SQLException {
-        verifyExistence();
-        ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
-        Statement statement = conn.createStatement();
-        statement.execute("SELECT * FROM CompoundToElement");
-
-        ResultSet rs = statement.getResultSet();
-        while(rs.next()) {
-            CompoundToElementDTO compound = new CompoundToElementDTO(rs.getLong("CompoundID"),
-                                                                    rs.getLong("ElementID"));
-            compoundList.add(compound);
-        }
-
-        return compoundList;
-    }
-
-    /**
      * Gets all the Compounds that contain that Element
      * @param elemID - the identification of the element
      * @return compoundList - a list of compounds
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<CompoundToElementDTO> getCompoundsContaining(long elemID) throws SQLException {
+    public ArrayList<Long> getCompoundsContaining(long elemID) throws SQLException {
         verifyExistence();
-        ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
+        ArrayList<Long> compoundList = new ArrayList<>();
         Statement statement = conn.createStatement();
         statement.execute("SELECT * FROM CompoundToElement WHERE ElementId=" + elemID);
 
         ResultSet rs = statement.getResultSet();
         while(rs.next()) {
-            CompoundToElementDTO compound = new CompoundToElementDTO(rs.getLong("CompoundID"), elemID);
-            compoundList.add(compound);
+            compoundList.add(rs.getLong("CompoundID"));
         }
 
         return compoundList;
@@ -159,19 +135,17 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * Retrieves all the Elements in a Compound
      * @param compID - the identification of the compound
      * @return compoundList - a list of compounds
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<CompoundToElementDTO> getElementsInCompound(int compID) throws SQLException {
+    public ArrayList<Long> getElementsInCompound(int compID) throws SQLException {
         verifyExistence();
-        ArrayList<CompoundToElementDTO> compoundList = new ArrayList<>();
+        ArrayList<Long> compoundList = new ArrayList<>();
         Statement statement = conn.createStatement();
         statement.execute("SELECT * FROM CompoundToElement WHERE CompoundId=" + compID);
 
-        ResultSet getCompounds = statement.getResultSet();
-        while(getCompounds.next()) {
-            CompoundToElementDTO compound = new CompoundToElementDTO(compID,
-                                                                    getCompounds.getLong("ElementID"));
-            compoundList.add(compound);
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            compoundList.add(rs.getLong("elementID"));
         }
 
         return compoundList;

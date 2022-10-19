@@ -1,6 +1,6 @@
 package datasource;
 
-import dto.ChemicalDTO;
+import dto.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class ChemicalDataGateway extends Gateway {
      * Constructor that uses the id to create a row data gateway
      *
      * @param id - the id for the chemical
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
     public ChemicalDataGateway(Connection conn, long id) throws SQLException {
         super(conn);
@@ -294,22 +294,21 @@ public class ChemicalDataGateway extends Gateway {
      * Getter for all the metals dissolved by a certain acid
      * @param acidID - the acid that a chemical is dissolved by
      * @return metalList - the list of metals dissolved by a specific acid
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<ChemicalDTO> getMetalsDissolvedBy(long acidID) throws SQLException {
-        ArrayList<ChemicalDTO> metalList = new ArrayList<>();
+    public ArrayList<MetalDTO> getMetalsDissolvedBy(long acidID) throws SQLException {
+        ArrayList<MetalDTO> metalList = new ArrayList<>();
         Statement statement = conn.createStatement();
         statement.executeQuery("SELECT * FROM Chemical WHERE dissolvedBy='"
-                + acidID + "' AND Type='Metal'");
+                + acidID + "' AND type='Metal'");
         ResultSet overallSet = statement.getResultSet();
 
         while(overallSet.next()) {
-            ChemicalDTO chem = new ChemicalDTO(
+            MetalDTO metal = new MetalDTO(
                     overallSet.getLong("id"), overallSet.getString("name"),
                     overallSet.getInt("atomicNumber"), overallSet.getLong("atomicMass"),
-                    overallSet.getLong("baseSolute"), overallSet.getInt("acidSolute"),
-                    acidID, overallSet.getString("type"));
-            metalList.add(chem);
+                    acidID);
+            metalList.add(metal);
         }
 
         return metalList;
@@ -319,21 +318,18 @@ public class ChemicalDataGateway extends Gateway {
      * Getter for all acids
      *
      * @return acidList - list of acids that dissolve a specified element
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<ChemicalDTO> getAllAcids() throws SQLException {
-        ArrayList<ChemicalDTO> acidList = new ArrayList<>();
+    public ArrayList<AcidDTO> getAllAcids() throws SQLException {
+        ArrayList<AcidDTO> acidList = new ArrayList<>();
         Statement statement = conn.createStatement();
-        statement.executeQuery("SELECT * FROM Chemical WHERE Type='Acid'");
+        statement.executeQuery("SELECT * FROM Chemical WHERE type='Acid'");
 
         ResultSet rs = statement.getResultSet();
         while(rs.next()) {
-            ChemicalDTO chem = new ChemicalDTO(
-                    rs.getLong("id"), rs.getString("name"),
-                    rs.getInt("atomicNumber"), rs.getInt("atomicMass"),
-                    rs.getLong("baseSolute"), rs.getLong("acidSolute"),
-                    0, "Acid");
-            acidList.add(chem);
+            AcidDTO acid = new AcidDTO(
+                    rs.getLong("id"), rs.getString("name"), rs.getLong("acidSolute"));
+            acidList.add(acid);
         }
 
         return acidList;
@@ -343,21 +339,19 @@ public class ChemicalDataGateway extends Gateway {
      * Getter for all metals
      *
      * @return metalList - list of acids that dissolve a specified element
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<ChemicalDTO> getAllMetals() throws SQLException {
-        ArrayList<ChemicalDTO> metalList = new ArrayList<>();
+    public ArrayList<MetalDTO> getAllMetals() throws SQLException {
+        ArrayList<MetalDTO> metalList = new ArrayList<>();
         Statement statement = conn.createStatement();
-        statement.executeQuery("SELECT * FROM Chemical WHERE Type='Metal'");
+        statement.executeQuery("SELECT * FROM Chemical WHERE type='Metal'");
 
         ResultSet rs = statement.getResultSet();
         while(rs.next()) {
-            ChemicalDTO chem = new ChemicalDTO(
+            MetalDTO metal = new MetalDTO(
                     rs.getLong("id"), rs.getString("name"),
-                    rs.getInt("atomicNumber"), rs.getInt("atomicMass"),
-                    rs.getLong("baseSolute"), rs.getLong("acidSolute"),
-                    0, "Metal");
-            metalList.add(chem);
+                    rs.getInt("atomicNumber"), rs.getInt("atomicMass"), 0);
+            metalList.add(metal);
         }
 
         return metalList;
@@ -367,20 +361,18 @@ public class ChemicalDataGateway extends Gateway {
      * Getter for all bases
      *
      * @return baseList - list of bases that dissolve a specified element
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<ChemicalDTO> getAllBases() throws SQLException {
-        ArrayList<ChemicalDTO> baseList = new ArrayList<>();
+    public ArrayList<BaseDTO> getAllBases() throws SQLException {
+        ArrayList<BaseDTO> baseList = new ArrayList<>();
         Statement statement = conn.createStatement();
-        statement.executeQuery("SELECT * FROM Chemical WHERE Type='Base'");
+        statement.executeQuery("SELECT * FROM Chemical WHERE type='Base'");
 
         ResultSet rs = statement.getResultSet();
         while(rs.next()) {
-            ChemicalDTO chem = new ChemicalDTO(
+            BaseDTO chem = new BaseDTO(
                     rs.getLong("id"), rs.getString("name"),
-                    rs.getInt("atomicNumber"), rs.getInt("atomicMass"),
-                    rs.getLong("baseSolute"), rs.getLong("acidSolute"),
-                    rs.getLong("dissolvedBy"), "Acid");
+                    rs.getDouble("baseSolute"));
             baseList.add(chem);
         }
 
@@ -388,27 +380,44 @@ public class ChemicalDataGateway extends Gateway {
     }
 
     /**
+     * Getter for all the compounds in the table
+     * @return allCompoundsList - a list of all the compounds in the table
+     * @throws SQLException - for problems that may occur in the database
+     */
+    public ArrayList<CompoundDTO> getAllCompounds() throws SQLException {
+        ArrayList<CompoundDTO> compoundList = new ArrayList<>();
+        Statement statement = conn.createStatement();
+        statement.execute("SELECT * FROM Chemical WHERE type='Compound'");
+
+        ResultSet rs = statement.getResultSet();
+        while(rs.next()) {
+            CompoundDTO compound = new CompoundDTO(rs.getLong("id"), rs.getString("name"));
+            compoundList.add(compound);
+        }
+
+        return compoundList;
+    }
+
+    /**
      * Getter for all chemicals
      *
      * @return chemicalList - list of chemicals
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<ChemicalDTO> getAllChemicals() throws SQLException {
-        ArrayList<ChemicalDTO> chemicalList = new ArrayList<>();
+    public ArrayList<ElementDTO> getAllElements() throws SQLException {
+        ArrayList<ElementDTO> elementList = new ArrayList<>();
         Statement statement = conn.createStatement();
         statement.executeQuery("SELECT * FROM Chemical");
 
         ResultSet rs = statement.getResultSet();
         while(rs.next()) {
-            ChemicalDTO chem = new ChemicalDTO(
+            ElementDTO elem = new ElementDTO(
                     rs.getLong("id"), rs.getString("name"),
-                    rs.getInt("atomicNumber"), rs.getInt("atomicMass"),
-                    rs.getLong("baseSolute"), rs.getLong("acidSolute"),
-                    rs.getInt("dissolvedBy"), rs.getString("type"));
-            chemicalList.add(chem);
+                    rs.getInt("atomicNumber"), rs.getInt("atomicMass"));
+            elementList.add(elem);
         }
 
-        return chemicalList;
+        return elementList;
     }
 
     /**

@@ -1,6 +1,7 @@
 import datasource.ChemicalDataGateway;
+import datasource.CompoundDataGateway;
 import datasource.Gateway;
-import dto.ChemicalDTO;
+import dto.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,8 @@ public class TestChemical {
                 "dissolvedBy, type) VALUES (3, 'TestAcid', 3, 0, 0, 0, 0, 'Acid')");
         stmt.executeUpdate("INSERT INTO Chemical (id, name, atomicNumber, atomicMass, baseSolute, acidSolute," +
                 "dissolvedBy, type) VALUES (4, 'TestChemical', 3, 3, 3, 3, 3, 'Chemical')");
+        stmt.executeUpdate("INSERT INTO Chemical (id, name, atomicNumber, atomicMass, baseSolute, acidSolute," +
+                "dissolvedBy, type) VALUES (5, 'TestCompound', 0, 0, 0, 0, 0, 'Compound')");
     }
 
     @AfterEach
@@ -135,18 +138,17 @@ public class TestChemical {
     /**
      * Tests the getDissolvedBy function and setDissolvedBy function
      * to ensure it is getting the correct array values
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
     @Test
     public void testGetMetalsDissolvedBy() throws SQLException {
         ArrayList<Long> listTester = new ArrayList<>();
         ChemicalDataGateway metalGW = new ChemicalDataGateway(conn, 1);
-        ChemicalDTO metal = new ChemicalDTO(1, metalGW.getName(), metalGW.getAtomicNumber(), metalGW.getAtomicMass(),
-                metalGW.getBaseSolute(), metalGW.getAcidSolute(), metalGW.getDissolvedBy(),
-                metalGW.getType());
+        MetalDTO metal = new MetalDTO(1, metalGW.getName(), metalGW.getAtomicNumber(),
+                metalGW.getAtomicMass(), metalGW.getDissolvedBy());
         listTester.add(metal.id);
 
-        ArrayList<ChemicalDTO> listMethod = metalGW.getMetalsDissolvedBy(3);
+        ArrayList<MetalDTO> listMethod = metalGW.getMetalsDissolvedBy(3);
         ArrayList<Long> listMethodIDs = new ArrayList<>();
         listMethodIDs.add(listMethod.get(0).id);
 
@@ -156,78 +158,86 @@ public class TestChemical {
     /**
      * Tests the use of Table Data Gateway Functions based on getting
      * Chemicals of a Certain Type
-     * @throws SQLException
+     * @throws SQLException - for problems that may occur in the database
      */
     @Test
     public void testGetAllOfAType() throws SQLException {
         //GetAllMetals
-        ArrayList<ChemicalDTO> listTester = new ArrayList<>();
+        ArrayList<MetalDTO> listMetalTester = new ArrayList<>();
         ChemicalDataGateway metalGW = new ChemicalDataGateway(conn, 1);
-        ChemicalDTO metal = new ChemicalDTO(1, metalGW.getName(), metalGW.getAtomicNumber(), metalGW.getAtomicMass(),
-                metalGW.getBaseSolute(), metalGW.getAcidSolute(), metalGW.getDissolvedBy(),
-                metalGW.getType());
-        ArrayList<ChemicalDTO> listMethod = metalGW.getAllMetals();
-        listTester.add(metal);
+        MetalDTO metal = new MetalDTO(1, metalGW.getName(), metalGW.getAtomicNumber(), metalGW.getAtomicMass(),
+                metalGW.getDissolvedBy());
+        ArrayList<MetalDTO> listMetalMethod = metalGW.getAllMetals();
+        listMetalTester.add(metal);
 
-        long testerID = (listTester.get(0)).id;
-        long methodID = (listMethod.get(0)).id;
+        long testerID = (listMetalTester.get(0)).id;
+        long methodID = (listMetalMethod.get(0)).id;
 
         Assertions.assertEquals(testerID, methodID);
-        listTester.clear();
-        listMethod.clear();
+        listMetalTester.clear();
+        listMetalMethod.clear();
 
         //GetAllBases
+        ArrayList<BaseDTO> listBaseTester = new ArrayList<>();
+        ArrayList<BaseDTO> listBaseMethod = new ArrayList<>();
         ChemicalDataGateway baseGW = new ChemicalDataGateway(conn, 2);
-        ChemicalDTO base = new ChemicalDTO(2, baseGW.getName(), baseGW.getAtomicNumber(), baseGW.getAtomicMass(),
-                baseGW.getBaseSolute(), baseGW.getAcidSolute(), baseGW.getDissolvedBy(),
-                baseGW.getType());
-        listTester.add(base);
-        listMethod = baseGW.getAllBases();
+        BaseDTO base = new BaseDTO(2, baseGW.getName(), baseGW.getBaseSolute());
+        listBaseTester.add(base);
+        listBaseMethod = baseGW.getAllBases();
 
-        testerID = (listTester.get(0)).id;
-        methodID = (listMethod.get(0)).id;
+        testerID = (listBaseTester.get(0)).id;
+        methodID = (listBaseMethod.get(0)).id;
 
         Assertions.assertEquals(testerID, methodID);
-        listTester.clear();
-        listMethod.clear();
+        listBaseTester.clear();
+        listBaseMethod.clear();
 
         //GetAllAcids
+        ArrayList<AcidDTO> listAcidTester = new ArrayList<>();
+        ArrayList<AcidDTO> listAcidMethod = new ArrayList<>();
         ChemicalDataGateway acidGW = new ChemicalDataGateway(conn, 3);
-        ChemicalDTO acid = new ChemicalDTO(3, acidGW.getName(), acidGW.getAtomicNumber(), acidGW.getAtomicMass(),
-                acidGW.getBaseSolute(), acidGW.getAcidSolute(), acidGW.getDissolvedBy(),
-                acidGW.getType());
-        listTester.add(acid);
-        listMethod = acidGW.getAllAcids();
+        AcidDTO acid = new AcidDTO(3, acidGW.getName(), acidGW.getAcidSolute());
+        listAcidTester.add(acid);
+        listAcidMethod = acidGW.getAllAcids();
 
-        testerID = (listTester.get(0)).id;
-        methodID = (listMethod.get(0)).id;
+        testerID = (listAcidTester.get(0)).id;
+        methodID = (listAcidMethod.get(0)).id;
 
         Assertions.assertEquals(testerID, methodID);
-        listTester.clear();
-        listMethod.clear();
+        listAcidTester.clear();
+        listAcidMethod.clear();
 
-        //GetAllChemicals
-        ChemicalDataGateway chemGW = new ChemicalDataGateway(conn, 4);
-        ChemicalDTO chem = new ChemicalDTO(4, chemGW.getName(), chemGW.getAtomicNumber(), chemGW.getAtomicMass(),
-                chemGW.getBaseSolute(), chemGW.getAcidSolute(), chemGW.getDissolvedBy(),
-                chemGW.getType());
-        listTester.add(metal);
-        listTester.add(base);
-        listTester.add(acid);
-        listTester.add(chem);
-        listMethod = chemGW.getAllChemicals();
+        //GetAllCompounds
+        ArrayList<CompoundDTO> listCompTester = new ArrayList<>();
+        CompoundDataGateway gw = new CompoundDataGateway(conn, 5);
+        CompoundDTO comp = new CompoundDTO(5, "TestCompound");
+        listCompTester.add(comp);
+        ArrayList<CompoundDTO> listCompMethod = gw.getAllCompounds();
+
+        testerID = listCompTester.get(0).id;
+        methodID = listCompMethod.get(0).id;
+
+        Assertions.assertEquals(testerID, methodID);
+
+        //GetAllElements
+        ArrayList<ElementDTO> listElementMethod = new ArrayList<>();
+        ChemicalDataGateway elemGW = new ChemicalDataGateway(conn, 4);
+        ElementDTO elem = new ElementDTO(4, elemGW.getName(), elemGW.getAtomicNumber(), elemGW.getAtomicMass());
+        listElementMethod = elemGW.getAllElements();
 
         ArrayList<Long> testerIDs = new ArrayList<>();
-        testerIDs.add((listTester.get(0)).id);
-        testerIDs.add((listTester.get(1)).id);
-        testerIDs.add((listTester.get(2)).id);
-        testerIDs.add((listTester.get(3)).id);
+        testerIDs.add(metal.id);
+        testerIDs.add(base.id);
+        testerIDs.add(acid.id);
+        testerIDs.add(elem.id);
+        testerIDs.add(comp.id);
 
         ArrayList<Long> methodIDs = new ArrayList<>();
-        methodIDs.add((listMethod.get(0)).id);
-        methodIDs.add((listMethod.get(1)).id);
-        methodIDs.add((listMethod.get(2)).id);
-        methodIDs.add((listMethod.get(3)).id);
+        methodIDs.add((listElementMethod.get(0)).id);
+        methodIDs.add((listElementMethod.get(1)).id);
+        methodIDs.add((listElementMethod.get(2)).id);
+        methodIDs.add((listElementMethod.get(3)).id);
+        methodIDs.add((listElementMethod.get(4)).id);
 
         Assertions.assertEquals(testerIDs, methodIDs);
     }
