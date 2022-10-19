@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Class Table/Class Table.iml" filepath="$PROJECT_DIR$/Class Table/Class Table.iml" />
       <module fileurl="file://$PROJECT_DIR$/Common/Common.iml" filepath="$PROJECT_DIR$/Common/Common.iml" />
       <module fileurl="file://$PROJECT_DIR$/Concrete Table/Concrete Table.iml" filepath="$PROJECT_DIR$/Concrete Table/Concrete Table.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Domain/Domain.iml" filepath="$PROJECT_DIR$/Domain/Domain.iml" />
       <module fileurl="file://$PROJECT_DIR$/Single Table/Single Table.iml" filepath="$PROJECT_DIR$/Single Table/Single Table.iml" />
     </modules>
   </component>
