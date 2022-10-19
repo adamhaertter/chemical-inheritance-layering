@@ -45,5 +45,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="mysql-connector-j-8.0.31" level="project" />
+    <orderEntry type="module" module-name="Common" />
   </component>
 </module>

@@ -1,7 +1,6 @@
 package datasource;
 
 import config.ProjectConfig;
-import datasource.AcidDataGateways;
 import dto.MetalDTO;
 import enums.TableEnums;
 import exceptions.GatewayDeletedException;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.*;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
