@@ -1,9 +1,6 @@
 package datasource;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Contains both the Row Data Gateway and Table Data Gateway functionality for the Chemical table. Row functions are done
@@ -134,5 +131,29 @@ public class ChemicalDataGateway extends Gateway {
         if( verify() && persist(this.id, name) )
             this.name = name;
         // Set the instance variable to match
+    }
+
+    /**
+     * Given a name, return the id that links all the subtables together. Queries the database based on name.
+     *
+     * @param name The unique name of the Chemical, stored in this table and no others by our implementation.
+     * @return the id shared by all instances of this Chemical in any subtables.
+     */
+    public static long getIdByName(String name) {
+        try{
+            Connection tempConn = setUpConnection();
+
+            CallableStatement statement = tempConn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, name);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            long id = rs.getLong("id");
+
+            tempConn.close();
+
+            return id;
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 }
