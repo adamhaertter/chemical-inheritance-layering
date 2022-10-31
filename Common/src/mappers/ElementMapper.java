@@ -1,6 +1,6 @@
-package datasource.mappers;
+package mappers;
 
-import datasource.exceptions.ElementNotFoundException;
+import exceptions.ElementNotFoundException;
 import model.Element;
 
 public abstract class ElementMapper
