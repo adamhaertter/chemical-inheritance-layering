@@ -58,7 +58,7 @@ public class CompoundDataGatewaysTest {
      * @throws GatewayDeletedException if the gateway is deleted
      */
     @Test
-    public void createNewCompound() throws GatewayDeletedException {
+    public void createNewCompound() throws GatewayDeletedException, GatewayNotFoundException {
         CompoundDataGateways compound = new CompoundDataGateways(conn, "NewCompound");
         assertEquals("NewCompound", compound.getName());
     }

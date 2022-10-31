@@ -13,7 +13,6 @@ import java.util.ArrayList;
  */
 public class CompoundDataGateways extends Gateway {
     private String name;
-
     /**
      * Constructor that uses the id only to create a row gateway for an existing compound in the DB
      *
@@ -42,27 +41,63 @@ public class CompoundDataGateways extends Gateway {
     }
 
     /**
-     * Constructor for adding the new compound into the DB and creating a row data gateway for it as well
+     * Constructor that uses the id only to create a row gateway for an existing compound in the DB
      *
-     * @param conn connection for the DB
-     * @param name the name of the compound we want
+     * @param conn our connection to the DB
+     * @param name the id of the desired compound
      */
-    public CompoundDataGateways(Connection conn, String name) {
+    public CompoundDataGateways(Connection conn, String name) throws GatewayNotFoundException {
         super();
-        this.id = KeyTableGateways.getNextValidKey(conn);
         this.name = name;
         this.conn = conn;
-
-        // store the new compound in the DB
         try {
-            Statement statement = this.conn.createStatement();
-            String addCompound = "INSERT INTO Compound" +
-                    "(id, name) VALUES ('" +
-                    id + "','" + name + "')";
-            statement.executeUpdate(addCompound);
-        } catch (Exception ex) {
+            CallableStatement statement = conn.prepareCall("SELECT * from Compound WHERE name = ?");
+            statement.setString(1, name);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            this.id = rs.getLong("id");
+
+            if (!validate()) {
+                this.id = -1;
+                this.name = null;
+                throw new GatewayNotFoundException("No compound was found with the given id.");
+            }
+        } catch (SQLException ex) {
             // Some other error (There is not an error if the entry doesn't exist)
         }
+    }
+
+    /**
+     * Constructor for the createCompound function so that we don't have to call the DB twice
+     * @param id of the compound
+     * @param name of the compound
+     */
+    public CompoundDataGateways(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    /**
+     * Create a compound, add it to the DB, and return a gateway for use
+     * @param conn the connection to the DB
+     * @param name The name of the compound
+     * @return a gateway linked to the newly created compound in the DB
+     */
+    public static CompoundDataGateways createCompound(Connection conn, String name) {
+        long id = KeyTableGateways.getNextValidKey(conn);
+        try {
+            Statement stmnt = conn.createStatement();
+            String addCompound = "INSERT INTO Compound" +
+            "(id, name) VALUES ('" +
+                    id + "','" + name + "')";
+            stmnt.executeUpdate(addCompound);
+
+            return new CompoundDataGateways(id, name);
+        } catch (Exception ex) {
+            // Some other error (There is not an error if the entry doesn't exist
+        }
+
+        return null;
     }
 
     /**
