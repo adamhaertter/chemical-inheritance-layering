@@ -44,6 +44,36 @@ public class ElementDataGateways extends Gateway {
     }
 
     /**
+     * Constructor for the gateways for existing entries using the id
+     * @param conn the connection to the DB
+     * @param name the name of the desired Element
+     */
+    public ElementDataGateways(Connection conn, String name) throws GatewayNotFoundException {
+        super();
+        this.name = name;
+        this.conn = conn;
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Element WHERE name = ?");
+            statement.setString(1, name);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            this.id = rs.getLong("id");
+            this.atomicNumber = rs.getInt("atomicNumber");
+            this.atomicMass = rs.getDouble("atomicMass");
+
+            if (!validate()) {
+                this.id = -1;
+                this.name = null;
+                this.atomicNumber = -1;
+                this.atomicMass = -1;
+                throw new GatewayNotFoundException("This element was not found");
+            }
+        } catch (SQLException ex) {
+            // Some other error (There is not an error if the entry doesn't exist)
+        }
+    }
+
+    /**
      * A constructor to make a row gateway object while also inserting the data into the DB
      * @param conn the connection to the DB
      * @param name the name of the element
