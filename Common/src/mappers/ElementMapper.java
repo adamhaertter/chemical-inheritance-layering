@@ -5,7 +5,7 @@ import model.Element;
 
 public abstract class ElementMapper
 {
-    private Element myElement;
+    protected Element myElement;
     /**
      * Create a new element in the database, and store the resulting model object
      * into my instance variable
