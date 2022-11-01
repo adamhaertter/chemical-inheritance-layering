@@ -1,4 +1,4 @@
-package datasource.mappers;
+package mappers;
 
 public class SingleCompoundMapper {
 }
