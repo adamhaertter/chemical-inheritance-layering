@@ -26,5 +26,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="Common" />
+    <orderEntry type="module" module-name="Domain" />
   </component>
 </module>

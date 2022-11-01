@@ -59,6 +59,47 @@ public class ChemicalDataGateway extends Gateway {
     }
 
     /**
+     * Constructor that uses the name to create a row data gateway
+     *
+     * @param name - the name for the chemical
+     * @throws SQLException - for problems that may occur in the database
+     */
+    public ChemicalDataGateway(Connection conn, String name) throws SQLException {
+        super(conn);
+        this.name = name;
+        deleted = false;
+
+        // Read from DB
+        try {
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, name);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            this.id = rs.getLong("id");
+            this.atomicNumber = rs.getInt("atomicNumber");
+            this.atomicMass = rs.getDouble("atomicMass");
+            this.baseSolute = rs.getLong("baseSolute");
+            this.acidSolute = rs.getLong("acidSolute");
+            this.dissolvedBy = rs.getLong("dissolvedBy");
+            this.type = rs.getString("type");
+
+            if (!validate()) {
+                this.id = -1;
+                this.name = null;
+                this.atomicNumber = -1;
+                this.atomicMass = -1;
+                this.baseSolute = -1;
+                this.acidSolute = -1;
+                this.dissolvedBy = -1;
+                this.type = null;
+                System.out.println("No chemical was found with the given name: " + name);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
      * Constructor used to assign values to a list of variables
      * @param n - the name of the chemical
      * @param number - the atomic number of the chemical
