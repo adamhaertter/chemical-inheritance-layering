@@ -21,7 +21,7 @@ public class SingleElementMapper extends ElementMapper {
         try {
             chemGW = new ChemicalDataGateway(conn, name, atomicNumber, atomicMass,
                     0, 0, 0, "");
-            myElement = new Element(name, atomicNumber, atomicMass);
+            myElement = new Element(this, name, atomicNumber, atomicMass);
             conn.close();
         } catch (SQLException e) {
         }
@@ -38,7 +38,7 @@ public class SingleElementMapper extends ElementMapper {
         ChemicalDataGateway chemGW;
         try {
             chemGW = new ChemicalDataGateway(conn, name);
-            myElement = new Element(name, chemGW.getAtomicNumber(), chemGW.getAtomicMass());
+            myElement = new Element(this, name, chemGW.getAtomicNumber(), chemGW.getAtomicMass());
             conn.close();
         } catch (SQLException e) {
         }

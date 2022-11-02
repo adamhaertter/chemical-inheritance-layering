@@ -1,9 +1,18 @@
 package model;
 
+import datasource.Gateway;
+import exceptions.ElementNotFoundException;
+import mappers.CompoundMapper;
+import mappers.ConcreteElementMapper;
+import mappers.ElementMapper;
+import model.controller.CompoundController;
+import model.controller.ElementController;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,16 +25,18 @@ public class ElementControllerTest
     public static final int FIRST_ATOMIC_NUMBER_IN_DB = 42;
 
     @AfterEach
-    public void rollback()
-    {
-        // make the database roll back the changes this test made
+    public void rollback() throws SQLException {
+        Connection conn = Gateway.setUpConnection();
+        // clear the element table
+        assert conn != null;
+        conn.prepareStatement("DELETE FROM Element").execute();
     }
 
+
     @Test
-    public void canGetExistingElement()
-    {
+    public void canGetExistingElement() throws ElementNotFoundException {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ConcreteElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -39,7 +50,7 @@ public class ElementControllerTest
     public void exceptionOnMissingElement()
     {
         assertThrows(ElementNotFoundException.class, () ->
-                new ElementMapper("NOTHING"));
+                new ConcreteElementMapper("NOTHING"));
     }
 
     @Test
@@ -56,7 +67,7 @@ public class ElementControllerTest
     public void canUpdateAtomicNumber() throws ElementNotFoundException
     {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ConcreteElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -68,14 +79,14 @@ public class ElementControllerTest
         checkElementDetails(controller.getMyElement(), "Oxygen", 42, 15.999);
 
         // Make sure it did not go all the way to the database
-        checkElementDetails(new ElementMapper("Oxygen").getMyElement(), "Oxygen", 8, 15.999);
+        checkElementDetails(new ConcreteElementMapper("Oxygen").getMyElement(), "Oxygen", 8, 15.999);
     }
 
     @Test
     public void canUpdateAtomicWeight() throws ElementNotFoundException
     {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ConcreteElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -87,14 +98,13 @@ public class ElementControllerTest
         checkElementDetails(controller.getMyElement(), "Oxygen", 8, 42.25);
 
         // Make sure it did not go all the way to the database
-        checkElementDetails(new ElementMapper("Oxygen").getMyElement(), "Oxygen", 8, 15.999);
+        checkElementDetails(new ConcreteElementMapper("Oxygen").getMyElement(), "Oxygen", 8, 15.999);
     }
 
     @Test
-    public void canUpdateName()
-    {
+    public void canUpdateName() throws ElementNotFoundException {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ConcreteElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -113,7 +123,7 @@ public class ElementControllerTest
     public void canUpdateAndPersistName() throws ElementNotFoundException
     {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ConcreteElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -127,13 +137,13 @@ public class ElementControllerTest
 
         // Make sure it got all the way to the database
         checkThatElementIsNotInDB("Oxygen");
-        checkElementDetails((new ElementMapper("Yucky Oxygen")).getMyElement(), "Yucky Oxygen", 8, 15.999);
+        checkElementDetails((new ConcreteElementMapper("Yucky Oxygen")).getMyElement(), "Yucky Oxygen", 8, 15.999);
     }
     @Test
     public void canPersistEverythingExceptName() throws ElementNotFoundException
     {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ConcreteElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -144,13 +154,13 @@ public class ElementControllerTest
 
         controller.persist();
 
-        checkElementDetails((new ElementMapper("Oxygen")).getMyElement(), "Oxygen", 42, 42.25);
+        checkElementDetails((new ConcreteElementMapper("Oxygen")).getMyElement(), "Oxygen", 42, 42.25);
     }
     @Test
-    public void canDelete()
+    public void canDelete() throws ElementNotFoundException
     {
         // put the object I'm deleting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ConcreteElementMapper("Oxygen", 8, 15.999);
         ElementController.delete("Oxygen");
 
         checkThatElementIsNotInDB("Oxygen");
@@ -200,11 +210,14 @@ public class ElementControllerTest
     public void canGetPeriod()
     {
         int[] periodStartPoint = {1, 3, 11, 19, 37, 55, 87};
-        for (int period = 1; period <= periodStartPoint.length; period++)
+        for (int period = 0; period < periodStartPoint.length; period++)
         {
-            checkPeriodForAtomicNumber(periodStartPoint[period], period);
-            checkPeriodForAtomicNumber(periodStartPoint[period + 1] - 1,
-                    period);
+            checkPeriodForAtomicNumber(periodStartPoint[period], period +1);
+            if (period + 1 < periodStartPoint.length)
+            {
+                checkPeriodForAtomicNumber(periodStartPoint[period + 1] - 1,
+                        period + 1);
+            }
         }
     }
 
@@ -212,9 +225,9 @@ public class ElementControllerTest
     public void canGetAllCompoundsContainingElement()
             throws ElementNotFoundException
     {
-        new ElementMapper("Hydrogen", 1, 2.1);
-        new ElementMapper("Oxygen", 8, 15.99);
-        new ElementMapper ("Sodium", 11, 22.990);
+        new ConcreteElementMapper("Hydrogen", 1, 2.1);
+        new ConcreteElementMapper("Oxygen", 8, 15.999);
+        new ConcreteElementMapper ("Sodium", 11, 22.990);
 
         CompoundMapper.createCompound("Water");
         CompoundController waterController = new CompoundController("Water");
@@ -265,7 +278,7 @@ public class ElementControllerTest
     private static void checkPeriodForAtomicNumber(int atomicNumber,
                                                    int expectedPeriod)
     {
-        ElementMapper mapper = new ElementMapper("Name" + atomicNumber,
+        ElementMapper mapper = new ConcreteElementMapper("Name" + atomicNumber,
                 atomicNumber, 42.2);
         assertEquals(expectedPeriod, mapper.getMyElement().getPeriod());
     }
@@ -283,7 +296,7 @@ public class ElementControllerTest
     {
         try
         {
-            new ElementMapper(name);
+            new ConcreteElementMapper(name);
             fail("It appears " + name + " is in the DB when the tests think " +
                     "it shouldn't be");
         }
@@ -303,7 +316,7 @@ public class ElementControllerTest
     {
         for (ElementForTest e : elements)
         {
-            new ElementMapper(e.name, e.atomicNumber, e.atomicMass);
+            new ConcreteElementMapper(e.name, e.atomicNumber, e.atomicMass);
         }
     }
 

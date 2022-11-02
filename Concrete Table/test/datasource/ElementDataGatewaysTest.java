@@ -82,11 +82,12 @@ public class ElementDataGatewaysTest {
     @Test
     public void updateName() throws Exception {
         ElementDataGateways element = new ElementDataGateways(conn, 1);
-        element.updateName("UpdatedName");
+        String newName = "UpdatedName";
+        element.updateName(newName);
         assertEquals("UpdatedName", element.getName());
 
         Statement stmnt = conn.createStatement();
-
+        element.persist(element.getId(), newName, element.getAtomicNumber(), element.getAtomicMass());
         ResultSet rs = stmnt.executeQuery("SELECT * FROM Element WHERE id = 1");
         rs.next();
         // check to make sure they updated in the DB

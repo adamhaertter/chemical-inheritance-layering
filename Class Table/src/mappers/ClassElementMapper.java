@@ -19,14 +19,14 @@ public class ClassElementMapper extends ElementMapper {
         super(name, atomicNumber, atomicMass);
 
         Connection conn = Gateway.setUpConnection();
-        ElementDataGateway gateway;
-        gateway = new ElementDataGateway(conn, name, atomicNumber, atomicMass);
+        new ElementDataGateway(conn, name, atomicNumber, atomicMass);
 
         myElement = new Element(name, atomicNumber, atomicMass);
 
         try {
+            assert conn != null;
             conn.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
     }
 

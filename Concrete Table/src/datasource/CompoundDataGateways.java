@@ -129,9 +129,7 @@ public class CompoundDataGateways extends Gateway {
      */
     public void updateName(String name) throws GatewayDeletedException {
         if (!deleted) {
-            if (persist(this.id, name)) this.name = name;
-        } else {
-            throw new GatewayDeletedException("This compound has been deleted.");
+            this.name = name;
         }
     }
 

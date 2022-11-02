@@ -69,7 +69,7 @@ public class ElementDataGateways extends Gateway {
                 throw new GatewayNotFoundException("This element was not found");
             }
         } catch (SQLException ex) {
-            // Some other error (There is not an error if the entry doesn't exist)
+            throw new GatewayNotFoundException("This element was not found");
         }
     }
 
@@ -115,7 +115,7 @@ public class ElementDataGateways extends Gateway {
      * @param atomicMass the atomic mass of the element
      * @return whether the sql query worked
      */
-    private boolean persist(long id, String name, int atomicNumber, double atomicMass) {
+    public boolean persist(long id, String name, int atomicNumber, double atomicMass) {
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Element SET name = '" + name + "', atomicNumber = '" + atomicNumber +
@@ -145,7 +145,7 @@ public class ElementDataGateways extends Gateway {
      */
     public void updateName(String name) throws GatewayDeletedException {
         if (!deleted) {
-            if (persist(this.id, name, this.atomicNumber, this.atomicMass)) this.name = name;
+            this.name = name;
         } else {
             throw new GatewayDeletedException("This element has been deleted.");
         }
@@ -169,7 +169,7 @@ public class ElementDataGateways extends Gateway {
      */
     public void updateAtomicNumber(int atomicNumber) throws GatewayDeletedException {
         if (!deleted) {
-            if (persist(this.id, this.name, atomicNumber, this.atomicMass)) this.atomicNumber = atomicNumber;
+            this.atomicNumber = atomicNumber;
         } else {
             throw new GatewayDeletedException("This element has been deleted.");
         }
@@ -193,9 +193,7 @@ public class ElementDataGateways extends Gateway {
      */
     public void updateAtomicMass(double atomicMass) throws GatewayDeletedException {
         if (!deleted) {
-            if (persist(this.id, this.name, this.atomicNumber, atomicMass)) this.atomicMass = atomicMass;
-        } else {
-            throw new GatewayDeletedException("This element has been deleted.");
+            this.atomicMass = atomicMass;
         }
     }
 
@@ -216,6 +214,10 @@ public class ElementDataGateways extends Gateway {
             // Some other error (There is not an error if the entry doesn't exist)
         }
         return compounds;
+    }
+
+    public long getId() {
+        return this.id;
     }
 
 

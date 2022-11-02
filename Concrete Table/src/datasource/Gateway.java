@@ -4,6 +4,7 @@ import datasource.enums.TableEnums;
 import datasource.exceptions.GatewayFailedToDelete;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.Statement;
 
 /**
@@ -32,5 +33,21 @@ public class Gateway {
      */
     public void updateConnection(Connection conn) {
         this.conn = conn;
+    }
+
+
+
+    /**
+     * Creates DB Connection and returns the connection object for use in static contexts
+     * @return database connection
+     */
+    public static Connection setUpConnection() {
+        try {
+            return DriverManager.getConnection(config.ProjectConfig.DatabaseURL, config.ProjectConfig.DatabaseUser, config.ProjectConfig.DatabasePassword);
+        } catch (Exception ex) {
+            System.out.println("Error connecting to database");
+            ex.printStackTrace();
+        }
+        return null;
     }
 }
