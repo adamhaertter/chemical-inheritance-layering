@@ -1,14 +1,13 @@
 package mappers;
 
-import datasource.ChemicalDataGateway;
-import datasource.CompoundDataGateway;
-import datasource.CompoundToElementDataGateway;
-import datasource.Gateway;
+import datasource.*;
 import exceptions.CompoundNotFoundException;
+import exceptions.ElementNotFoundException;
 import model.Compound;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class ClassCompoundMapper extends CompoundMapper {
 
@@ -65,7 +64,7 @@ public class ClassCompoundMapper extends CompoundMapper {
     }
 
     @Override
-    public void addElement(String name) {
+    public void addElement(String name) throws ElementNotFoundException {
         Connection conn = Gateway.setUpConnection();
         long toAdd = ChemicalDataGateway.getIdByName(conn, name);
         long compoundId = gateway.getId();
@@ -75,5 +74,21 @@ public class ClassCompoundMapper extends CompoundMapper {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ArrayList<String> getElementsInCompound() {
+        ArrayList elementNames = new ArrayList();
+        long id = gateway.getId();
+        ArrayList<Long> elementIds = CompoundToElementDataGateway.getElementsInCompound(id);
+        Connection conn2 = Gateway.setUpConnection();
+        for(long element : elementIds) {
+            elementNames.add((new ElementDataGateway(conn2, element)).getName());
+        }
+        try {
+            conn2.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return elementNames;
     }
 }
