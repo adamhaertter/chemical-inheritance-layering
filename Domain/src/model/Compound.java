@@ -14,6 +14,11 @@ public class Compound extends Chemical {
     public Compound(CompoundMapper mapper, String name) {
         super(name);
         this.mapper = mapper;
+
+    }
+
+    public ArrayList<Element> getMadeOf() {
+        madeOf.clear();
         for(String element : mapper.getElementsInCompound()) {
             try {
                 madeOf.add((new ClassElementMapper(element).getMyElement()));
@@ -21,9 +26,6 @@ public class Compound extends Chemical {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    public ArrayList<Element> getMadeOf() {
         return madeOf;
     }
 

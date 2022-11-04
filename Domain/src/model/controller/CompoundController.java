@@ -43,6 +43,7 @@ public class CompoundController {
     }
 
     public List<String> getElements() {
+        elements = myCompound.getMadeOf();
         ArrayList<String> names = new ArrayList<String>();
         for(Element e : elements) {
             names.add(e.getName());
