@@ -1,8 +1,9 @@
 package model;
 
 import datasource.Gateway;
+import exceptions.CompoundNotFoundException;
 import exceptions.ElementNotFoundException;
-import mappers.CompoundMapper;
+import mappers.ClassCompoundMapper;
 import mappers.ClassElementMapper;
 import model.controller.CompoundController;
 import model.controller.ElementController;
@@ -30,7 +31,8 @@ public class ElementControllerTest
         // For class table, we have to delete from Chemical every time
         conn.prepareStatement("DELETE FROM Chemical").execute();
         conn.prepareStatement("DELETE FROM Element").execute();
-        conn.close();
+        // Necessary for Class Table Implementation to avoid oversetting Connections
+        Gateway.closeAllConnections();
     }
 
     @Test
@@ -230,21 +232,19 @@ public class ElementControllerTest
 
     @Test
     public void canGetAllCompoundsContainingElement()
-            throws ElementNotFoundException
-    {
+            throws ElementNotFoundException, CompoundNotFoundException {
         new ClassElementMapper("Hydrogen", 1, 2.1);
         new ClassElementMapper("Oxygen", 8, 15.999);
         new ClassElementMapper("Sodium", 11, 22.990);
 
-        CompoundMapper.createCompound("Water");
+        ClassCompoundMapper.createCompound("Water");
         CompoundController waterController = new CompoundController("Water");
         waterController.addElement("Hydrogen");
         waterController.addElement("Hydrogen");
         waterController.addElement("Oxygen");
 
-        CompoundMapper.createCompound("Sodium Hydroxide");
-        CompoundController h2SController = new CompoundController("Hydrogen " +
-                "Sulfide");
+        ClassCompoundMapper.createCompound("Sodium Hydroxide");
+        CompoundController h2SController = new CompoundController("Sodium Hydroxide");
         h2SController.addElement("Hydrogen");
         h2SController.addElement("Oxygen");
         h2SController.addElement("Sodium");

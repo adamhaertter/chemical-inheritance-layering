@@ -22,7 +22,13 @@ public abstract class CompoundMapper {
 
     }
 
+    public abstract void addElement(String name);
+
     public Compound getMyCompound() {
         return myCompound;
     }
+
+    public abstract void persists(String name);
+
+    public abstract void delete();
 }
