@@ -1,21 +1,21 @@
 package model;
 
-import mappers.ConcreteElementMapper;
+import mappers.ElementMapper;
 
 public class Element extends Chemical
 {
-    public final ConcreteElementMapper mapper;
+    public final ElementMapper mapper;
     private int atomicNumber;
     private double atomicMass;
 
-    public Element(ConcreteElementMapper mapper, String name, int atomicNumber, double atomicMass) {
+    public Element(ElementMapper mapper, String name, int atomicNumber, double atomicMass) {
         super(name);
         this.mapper = mapper;
         this.atomicNumber = atomicNumber;
         this.atomicMass = atomicMass;
     }
 
-    public Element(ConcreteElementMapper mapper, String name) {
+    public Element(ElementMapper mapper, String name) {
         super(name);
         this.mapper = mapper;
     }

@@ -1,14 +1,17 @@
 package model;
 
+import datasource.Gateway;
 import exceptions.CompoundNotFoundException;
 import exceptions.ElementNotFoundException;
-import mappers.CompoundMapper;
-import mappers.ElementMapper;
+import mappers.ClassCompoundMapper;
+import mappers.ClassElementMapper;
 import model.controller.CompoundController;
 import model.controller.ElementController;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,16 +28,24 @@ public class CompoundControllerTest
     public static final double OXYGEN_ATOMIC_MASS = 15.9;
     private final String[] WATER_ELEMENT_NAMES={"Hydrogen","Hydrogen","Oxygen"};
     @AfterEach
-    public void rollback()
-    {
+    public void rollback() throws SQLException {
         // make the database roll back the changes this test made
+        // make the database roll back the changes this test made
+        Connection conn = Gateway.setUpConnection();
+        // clear the element table
+        assert conn != null;
+        // For class table, we have to delete from Chemical every time
+        conn.prepareStatement("DELETE FROM Chemical").execute();
+        conn.prepareStatement("DELETE FROM Element").execute();
+        // Necessary for Class Table Implementation to avoid oversetting Connections
+        Gateway.closeAllConnections();
     }
 
     @Test
     public void canGetExistingCompound() throws CompoundNotFoundException
     {
         // put the object I'm getting into the database
-        CompoundMapper.createCompound("Water");
+        ClassCompoundMapper.createCompound("Water");
 
         CompoundController controller = new CompoundController("Water");
 
@@ -43,8 +54,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canCreateCompound()
-    {
+    public void canCreateCompound() throws CompoundNotFoundException {
         CompoundController.createCompound ("Water");
 
         assertEquals("Water", new CompoundController("Water").getMyCompound().getName());
@@ -54,14 +64,13 @@ public class CompoundControllerTest
     public void exceptionOnMissingCompound()
     {
         assertThrows(CompoundNotFoundException.class, () ->
-                new CompoundMapper("NOTHING"));
+                new ClassCompoundMapper("NOTHING"));
     }
 
     @Test
-    public void canUpdateName()
-    {
+    public void canUpdateName() throws CompoundNotFoundException {
         // put the object I'm getting into the database
-        CompoundMapper.createCompound("Sulfuric Acid");
+        ClassCompoundMapper.createCompound("Sulfuric Acid");
 
         // Create an ElementController for the element
         CompoundController controller = new CompoundController("Sulfuric Acid");
@@ -80,7 +89,7 @@ public class CompoundControllerTest
     {
         try
         {
-            new CompoundMapper(name);
+            new ClassCompoundMapper(name);
             fail("It appears " + name + " is in the DB when the tests think " +
                     "it shouldn't be");
         }
@@ -91,10 +100,9 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canDelete()
-    {
+    public void canDelete() throws CompoundNotFoundException {
         // put the object I'm deleting into the database
-        CompoundMapper.createCompound("HCl");
+        ClassCompoundMapper.createCompound("HCl");
 
         CompoundController.delete("HCl");
 
@@ -102,10 +110,9 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canAddAndRetrieveOneElement() throws ElementNotFoundException
-    {
-        CompoundMapper.createCompound("Water");
-        new ElementMapper("Hydrogen",1, 2);
+    public void canAddAndRetrieveOneElement() throws ElementNotFoundException, CompoundNotFoundException {
+        ClassCompoundMapper.createCompound("Water");
+        new ClassElementMapper("Hydrogen",1, 2);
 
         CompoundController controller = new CompoundController("Water");
         controller.addElement("Hydrogen");
@@ -117,8 +124,7 @@ public class CompoundControllerTest
 
     @Test
     public void canAddAndRetrieveMultipleElement()
-            throws ElementNotFoundException
-    {
+            throws ElementNotFoundException, CompoundNotFoundException {
         buildWater();
 
         CompoundController controller = new CompoundController(WATER);
@@ -128,11 +134,10 @@ public class CompoundControllerTest
         checkElementListMatchesNames(elements, WATER_ELEMENT_NAMES);
     }
 
-    private void buildWater() throws ElementNotFoundException
-    {
-        CompoundMapper.createCompound(WATER);
-        new ElementMapper("Hydrogen",1, HYDROGEN_ATOMIC_MASS);
-        new ElementMapper("Oxygen",8, OXYGEN_ATOMIC_MASS);
+    private void buildWater() throws ElementNotFoundException, CompoundNotFoundException {
+        ClassCompoundMapper.createCompound(WATER);
+        new ClassElementMapper("Hydrogen",1, HYDROGEN_ATOMIC_MASS);
+        new ClassElementMapper("Oxygen",8, OXYGEN_ATOMIC_MASS);
 
         CompoundController controller = new CompoundController("Water");
 
@@ -144,9 +149,8 @@ public class CompoundControllerTest
 
     @Test
     public void exceptionOnAddNonexistingElement()
-            throws ElementNotFoundException
-    {
-        CompoundMapper.createCompound("Water");
+            throws ElementNotFoundException, CompoundNotFoundException {
+        ClassCompoundMapper.createCompound("Water");
 
         CompoundController controller = new CompoundController("Water");
         assertThrows(ElementNotFoundException.class,
@@ -154,11 +158,10 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void changeNameOfRelatedElementStillRelated() throws ElementNotFoundException
-    {
+    public void changeNameOfRelatedElementStillRelated() throws ElementNotFoundException, CompoundNotFoundException {
         // create the stuff we need
-        CompoundMapper.createCompound("Water");
-        new ElementMapper("Hydrogen",1, 2);
+        ClassCompoundMapper.createCompound("Water");
+        new ClassElementMapper("Hydrogen",1, 2);
 
         // make the compound be made of the element
         CompoundController controller = new CompoundController("Water");
@@ -176,8 +179,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void correctAtomicWeight() throws ElementNotFoundException
-    {
+    public void correctAtomicWeight() throws ElementNotFoundException, CompoundNotFoundException {
         buildWater();
 
         CompoundController controller = new CompoundController(WATER);

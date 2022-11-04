@@ -35,8 +35,13 @@ public class CompoundToElementDataGateway extends Gateway {
             this.elementId = rs.getLong("elementId");
             this.compoundId = rs.getLong("compoundId");
 
-            if (!validate()) {
-                // Unable to find that row, so we have to create it
+            if(!validateRelation()) {
+                this.elementId = -1;
+                this.compoundId = -1;
+            }
+        } catch(SQLException sqlex) {
+            // Unable to find that row, so we have to create it
+            try {
                 Statement create = conn.createStatement();
                 String addEntry = "INSERT INTO CompoundsInElement" +
                         "(elementId, compoundId) VALUES ('" +
@@ -46,9 +51,9 @@ public class CompoundToElementDataGateway extends Gateway {
                 // Reassign appropriate values to instance variables
                 this.elementId = elementId;
                 this.compoundId = compoundId;
+            } catch(SQLException sqlex2) {
+                sqlex2.printStackTrace();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -57,7 +62,7 @@ public class CompoundToElementDataGateway extends Gateway {
      *
      * @return Whether the current columns for this row have valid values
      */
-    private boolean validate() {
+    private boolean validateRelation() {
         return this.compoundId >= 0 && this.elementId >= 0;
     }
 

@@ -83,7 +83,7 @@ public class ChemicalDataGateway extends Gateway {
      * Updates the database with the values stored to the instance variables of the gateway.
      * @return Whether the update is passed correctly.
      */
-    protected boolean persist(long id, String name) {
+    public boolean persist(long id, String name) {
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Chemical SET name = '" + name +
@@ -139,18 +139,13 @@ public class ChemicalDataGateway extends Gateway {
      * @param name The unique name of the Chemical, stored in this table and no others by our implementation.
      * @return the id shared by all instances of this Chemical in any subtables.
      */
-    public static long getIdByName(String name) {
+    public static long getIdByName(Connection conn, String name) {
         try{
-            Connection tempConn = setUpConnection();
-
-            CallableStatement statement = tempConn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
             statement.setString(1, name);
             ResultSet rs = statement.executeQuery();
             rs.next();
             long id = rs.getLong("id");
-
-            tempConn.close();
-
             return id;
         } catch (SQLException e) {
             return -1;

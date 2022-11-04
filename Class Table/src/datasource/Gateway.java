@@ -3,6 +3,8 @@ package datasource;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Contains basic functionality to be used by all Gateways. All RowDataGateway/TableDataGateway combined classes should
@@ -13,6 +15,7 @@ public class Gateway {
     protected long id;
     protected boolean deleted = false;
     protected Connection conn;
+    private static ArrayList<Connection> openConnections = new ArrayList<>();
 
     /**
      * Basic Gateway constructor which calls to set up database connectivity for all child gateways. All children
@@ -30,7 +33,10 @@ public class Gateway {
      */
     public static Connection setUpConnection() {
         try {
-            return DriverManager.getConnection(config.ProjectConfig.DatabaseURL, config.ProjectConfig.DatabaseUser, config.ProjectConfig.DatabasePassword);
+            Connection c = DriverManager.getConnection(config.ProjectConfig.DatabaseURL,
+                    config.ProjectConfig.DatabaseUser, config.ProjectConfig.DatabasePassword);
+            openConnections.add(c);
+            return c;
         } catch (Exception ex) {
             System.out.println("Error connecting to database");
             ex.printStackTrace();
@@ -54,5 +60,38 @@ public class Gateway {
         }
         // does not hit unless sql delete is successful
         this.deleted = true;
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Returns the unique identifier of the object this gateway represents
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
+
+    public void closeConnection() {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        //openConnections.remove(conn);
+    }
+
+    public static void closeAllConnections() {
+        for(Connection c : openConnections){
+            try {
+                c.close();
+            } catch (SQLException e) {
+                // oh well
+            }
+        }
+        openConnections.removeAll(openConnections);
     }
 }

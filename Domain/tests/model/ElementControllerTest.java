@@ -1,9 +1,10 @@
 package model;
 
 import datasource.Gateway;
+import exceptions.CompoundNotFoundException;
 import exceptions.ElementNotFoundException;
-import mappers.CompoundMapper;
-import mappers.ElementMapper;
+import mappers.ClassCompoundMapper;
+import mappers.ClassElementMapper;
 import model.controller.CompoundController;
 import model.controller.ElementController;
 import org.jetbrains.annotations.NotNull;
@@ -27,20 +28,23 @@ public class ElementControllerTest
         Connection conn = Gateway.setUpConnection();
         // clear the element table
         assert conn != null;
+        // For class table, we have to delete from Chemical every time
+        conn.prepareStatement("DELETE FROM Chemical").execute();
         conn.prepareStatement("DELETE FROM Element").execute();
+        // Necessary for Class Table Implementation to avoid oversetting Connections
+        Gateway.closeAllConnections();
     }
 
     @Test
-    public void canGetExistingElement()
-    {
+    public void canGetExistingElement() throws ElementNotFoundException {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ClassElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
 
         // Make sure everything is in the controller
-        checkElementDetails(controller.getMyElement(), "Oxygen", 8, 15.99);
+        checkElementDetails(controller.getMyElement(), "Oxygen", 8, 15.999);
     }
 
 
@@ -48,7 +52,7 @@ public class ElementControllerTest
     public void exceptionOnMissingElement()
     {
         assertThrows(ElementNotFoundException.class, () ->
-                new ElementMapper("NOTHING"));
+                new ClassElementMapper("NOTHING"));
     }
 
     @Test
@@ -65,7 +69,7 @@ public class ElementControllerTest
     public void canUpdateAtomicNumber() throws ElementNotFoundException
     {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.999);
+        new ClassElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -77,7 +81,7 @@ public class ElementControllerTest
         checkElementDetails(controller.getMyElement(), "Oxygen", 42, 15.999);
 
         // Make sure it did not go all the way to the database
-        checkElementDetails(new ElementMapper("Oxygen").getMyElement(),
+        checkElementDetails(new ClassElementMapper("Oxygen").getMyElement(),
                 "Oxygen", 8, 15.999);
     }
 
@@ -85,7 +89,7 @@ public class ElementControllerTest
     public void canUpdateAtomicWeight() throws ElementNotFoundException
     {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.999);
+        new ClassElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -97,15 +101,14 @@ public class ElementControllerTest
         checkElementDetails(controller.getMyElement(), "Oxygen", 8, 42.25);
 
         // Make sure it did not go all the way to the database
-        checkElementDetails(new ElementMapper("Oxygen").getMyElement(),
+        checkElementDetails(new ClassElementMapper("Oxygen").getMyElement(),
                 "Oxygen", 8, 15.999);
     }
 
     @Test
-    public void canUpdateName()
-    {
+    public void canUpdateName() throws ElementNotFoundException {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ClassElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -125,7 +128,7 @@ public class ElementControllerTest
     public void canUpdateAndPersistName() throws ElementNotFoundException
     {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ClassElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -140,14 +143,14 @@ public class ElementControllerTest
 
         // Make sure it got all the way to the database
         checkThatElementIsNotInDB("Oxygen");
-        checkElementDetails((new ElementMapper("Yucky Oxygen")).getMyElement(), "Yucky Oxygen", 8, 15.999);
+        checkElementDetails((new ClassElementMapper("Yucky Oxygen")).getMyElement(), "Yucky Oxygen", 8, 15.999);
     }
 
     @Test
     public void canPersistEverythingExceptName() throws ElementNotFoundException
     {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ClassElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -158,15 +161,14 @@ public class ElementControllerTest
 
         controller.persist();
 
-        checkElementDetails((new ElementMapper("Oxygen")).getMyElement(),
+        checkElementDetails((new ClassElementMapper("Oxygen")).getMyElement(),
                 "Oxygen", 42, 42.25);
     }
 
     @Test
-    public void canDelete()
-    {
+    public void canDelete() throws ElementNotFoundException {
         // put the object I'm deleting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ClassElementMapper("Oxygen", 8, 15.999);
         ElementController.delete("Oxygen");
 
         checkThatElementIsNotInDB("Oxygen");
@@ -230,21 +232,19 @@ public class ElementControllerTest
 
     @Test
     public void canGetAllCompoundsContainingElement()
-            throws ElementNotFoundException
-    {
-        new ElementMapper("Hydrogen", 1, 2.1);
-        new ElementMapper("Oxygen", 8, 15.99);
-        new ElementMapper("Sodium", 11, 22.990);
+            throws ElementNotFoundException, CompoundNotFoundException {
+        new ClassElementMapper("Hydrogen", 1, 2.1);
+        new ClassElementMapper("Oxygen", 8, 15.999);
+        new ClassElementMapper("Sodium", 11, 22.990);
 
-        CompoundMapper.createCompound("Water");
+        ClassCompoundMapper.createCompound("Water");
         CompoundController waterController = new CompoundController("Water");
         waterController.addElement("Hydrogen");
         waterController.addElement("Hydrogen");
         waterController.addElement("Oxygen");
 
-        CompoundMapper.createCompound("Sodium Hydroxide");
-        CompoundController h2SController = new CompoundController("Hydrogen " +
-                "Sulfide");
+        ClassCompoundMapper.createCompound("Sodium Hydroxide");
+        CompoundController h2SController = new CompoundController("Sodium Hydroxide");
         h2SController.addElement("Hydrogen");
         h2SController.addElement("Oxygen");
         h2SController.addElement("Sodium");
@@ -289,7 +289,7 @@ public class ElementControllerTest
     private static void checkPeriodForAtomicNumber(int atomicNumber,
                                                    int expectedPeriod)
     {
-        ElementMapper mapper = new ElementMapper("Name" + atomicNumber,
+        ClassElementMapper mapper = new ClassElementMapper("Name" + atomicNumber,
                 atomicNumber, 42.2);
         assertEquals(expectedPeriod, mapper.getMyElement().getPeriod());
     }
@@ -307,7 +307,7 @@ public class ElementControllerTest
     {
         try
         {
-            new ElementMapper(name);
+            new ClassElementMapper(name);
             fail("It appears " + name + " is in the DB when the tests think " +
                     "it shouldn't be");
         }
@@ -328,7 +328,7 @@ public class ElementControllerTest
     {
         for (ElementForTest e : elements)
         {
-            new ElementMapper(e.name, e.atomicNumber, e.atomicMass);
+            new ClassElementMapper(e.name, e.atomicNumber, e.atomicMass);
         }
     }
 
