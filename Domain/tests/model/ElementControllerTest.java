@@ -1,5 +1,6 @@
 package model;
 
+import datasource.Gateway;
 import exceptions.ElementNotFoundException;
 import mappers.CompoundMapper;
 import mappers.ElementMapper;
@@ -9,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,9 +21,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ElementControllerTest
 {
     @AfterEach
-    public void rollback()
+    public void rollback() throws SQLException
     {
         // make the database roll back the changes this test made
+        Connection conn = Gateway.setUpConnection();
+        // clear the element table
+        assert conn != null;
+        conn.prepareStatement("DELETE FROM Element").execute();
     }
 
     @Test
