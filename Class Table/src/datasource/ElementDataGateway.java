@@ -87,7 +87,7 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * Cascades upward to all parent tables.
      * @return Whether the update is passed correctly.
      */
-    protected boolean persist(long id, String name, double atomicMass, int atomicNumber) {
+    public boolean persist(long id, String name, double atomicMass, int atomicNumber) {
         super.persist(id, name);
         try {
             Statement statement = conn.createStatement();

@@ -7,9 +7,10 @@ import exceptions.ElementNotFoundException;
 import model.Element;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public class ClassElementMapper extends ElementMapper {
+
+    private ElementDataGateway gateway;
 
     /**
      * Create a new element in the database, and store the resulting model object
@@ -19,15 +20,15 @@ public class ClassElementMapper extends ElementMapper {
         super(name, atomicNumber, atomicMass);
 
         Connection conn = Gateway.setUpConnection();
-        new ElementDataGateway(conn, name, atomicNumber, atomicMass);
+        this.gateway = new ElementDataGateway(conn, name, atomicNumber, atomicMass);
 
-        myElement = new Element(name, atomicNumber, atomicMass);
+        myElement = new Element(this, name, atomicNumber, atomicMass);
 
-        try {
-            assert conn != null;
-            conn.close();
-        } catch (SQLException ignored) {
-        }
+//        try {
+//            assert conn != null;
+//            conn.close();
+//        } catch (SQLException ignored) {
+//        }
     }
 
     /**
@@ -42,13 +43,32 @@ public class ClassElementMapper extends ElementMapper {
         if(myId == -1) {
             throw new ElementNotFoundException("No element found with name " + name);
         }
-        ElementDataGateway gateway = new ElementDataGateway(conn, myId);
+        this.gateway = new ElementDataGateway(conn, myId);
 
-        myElement = new Element(name, gateway.getAtomicNumber(), gateway.getAtomicMass());
+        myElement = new Element(this, name, gateway.getAtomicNumber(), gateway.getAtomicMass());
 
-        try {
-            conn.close();
-        } catch (SQLException e) {
-        }
+//        try {
+//            conn.close();
+//        } catch (SQLException e) {
+//        }
+    }
+
+    /**
+     * Updates the database with the given information by calling upon the Gateway
+     * @param name name of the element
+     * @param atomicNumber atomic number of the element
+     * @param atomicMass atomic mass of the element
+     */
+    @Override
+    public void persists(String name, int atomicNumber, double atomicMass) {
+        this.gateway.persist(gateway.getId(), name, atomicMass, atomicNumber);
+    }
+
+    /**
+     * Deletes the row from the database
+     */
+    @Override
+    public void delete() {
+        this.gateway.delete();
     }
 }

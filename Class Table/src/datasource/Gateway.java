@@ -55,4 +55,12 @@ public class Gateway {
         // does not hit unless sql delete is successful
         this.deleted = true;
     }
+
+    /**
+     * Returns the unique identifier of the object this gateway represents
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
 }

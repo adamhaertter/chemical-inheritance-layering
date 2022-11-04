@@ -24,7 +24,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="Concrete Table" />
     <orderEntry type="module" module-name="Common" />
     <orderEntry type="module-library" scope="TEST">
       <library>
@@ -44,5 +43,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="Class Table" />
   </component>
 </module>

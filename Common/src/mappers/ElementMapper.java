@@ -33,4 +33,6 @@ public abstract class ElementMapper
     }
 
     public abstract void persists(String name, int atomicNumber, double atomicMass);
+
+    public abstract void delete();
 }

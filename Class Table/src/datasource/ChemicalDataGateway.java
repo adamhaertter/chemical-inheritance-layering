@@ -83,7 +83,7 @@ public class ChemicalDataGateway extends Gateway {
      * Updates the database with the values stored to the instance variables of the gateway.
      * @return Whether the update is passed correctly.
      */
-    protected boolean persist(long id, String name) {
+    public boolean persist(long id, String name) {
         try {
             Statement statement = conn.createStatement();
             statement.executeUpdate("UPDATE Chemical SET name = '" + name +

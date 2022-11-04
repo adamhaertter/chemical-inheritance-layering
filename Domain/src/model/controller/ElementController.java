@@ -1,7 +1,7 @@
 package model.controller;
 
 import exceptions.ElementNotFoundException;
-import mappers.ConcreteElementMapper;
+import mappers.ClassElementMapper;
 import mappers.ElementMapper;
 import model.Element;
 
@@ -12,13 +12,13 @@ public class ElementController
     private Element myElement;
 
     public ElementController(String name) throws ElementNotFoundException {
-        ElementMapper mapper = new ConcreteElementMapper(name);
+        ElementMapper mapper = new ClassElementMapper(name);
         myElement = mapper.getMyElement();
     }
 
     public ElementController(String name, int atomicNumber, double atomicMass)
     {
-        ElementMapper mapper = new ConcreteElementMapper(name, atomicNumber, atomicMass);
+        ElementMapper mapper = new ClassElementMapper(name, atomicNumber, atomicMass);
         myElement = mapper.getMyElement();
     }
 
@@ -48,7 +48,7 @@ public class ElementController
 
     public static void delete(String name) throws ElementNotFoundException
     {
-        ConcreteElementMapper mapper = new ConcreteElementMapper(name);
+        ElementMapper mapper = new ClassElementMapper(name);
         mapper.delete();
     }
 
