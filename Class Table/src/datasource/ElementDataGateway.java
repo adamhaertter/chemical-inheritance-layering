@@ -149,18 +149,16 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * Returns a list of all element names in the Database
      * @return all Elements in the database, by name
      */
-    public static ArrayList<String> getElements() {
+    public static ArrayList<String> getElements(Connection conn) {
         ArrayList<String> elements = new ArrayList<String>();
         try {
-            Connection conn = setUpConnection();
-
-            CallableStatement st = conn.prepareCall("SELECT Element.*,Chemical.name FROM Element JOIN Chemical on Element.id = Chemical.id");
+            CallableStatement st = conn.prepareCall("SELECT Element.*,Chemical.name FROM Element JOIN Chemical on " +
+                    "Element.id = Chemical.id");
             ResultSet rs = st.executeQuery();
             //Go through all options in the ResultSet and save them
             while(rs.next()){
                 elements.add(rs.getString("name"));
             }
-            conn.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -171,12 +169,11 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * Returns a list of all element names between 2 atomic numbers
      * @return the specified Elements in the database, by name
      */
-    public static ArrayList<String> getElementsBetween(int first, int last) {
+    public static ArrayList<String> getElementsBetween(Connection conn, int first, int last) {
         ArrayList<String> elements = new ArrayList<String>();
         try {
-            Connection conn = setUpConnection();
-
-            CallableStatement st = conn.prepareCall("SELECT * FROM Element WHERE atomicNumber BETWEEN ? AND ?");
+            CallableStatement st = conn.prepareCall("SELECT Element.*,Chemical.name FROM Element JOIN Chemical on " +
+                    "Element.id = Chemical.id WHERE atomicNumber BETWEEN ? AND ?");
             st.setInt(1, first);
             st.setInt(2, last);
             ResultSet rs = st.executeQuery();
@@ -184,7 +181,6 @@ public class ElementDataGateway extends ChemicalDataGateway {
             while(rs.next()){
                 elements.add(rs.getString("name"));
             }
-            conn.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

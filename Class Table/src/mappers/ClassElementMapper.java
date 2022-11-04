@@ -5,6 +5,7 @@ import exceptions.ElementNotFoundException;
 import model.Element;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ClassElementMapper extends ElementMapper {
@@ -37,8 +38,8 @@ public class ClassElementMapper extends ElementMapper {
     public ClassElementMapper(String name) throws ElementNotFoundException {
         super(name);
 
-        long myId = ChemicalDataGateway.getIdByName(name);
         Connection conn = Gateway.setUpConnection();
+        long myId = ChemicalDataGateway.getIdByName(conn, name);
         if(myId == -1) {
             throw new ElementNotFoundException("No element found with name " + name);
         }
@@ -80,30 +81,51 @@ public class ClassElementMapper extends ElementMapper {
         for(long compound : compoundIds) {
             compoundNames.add((new CompoundDataGateway(conn2, compound)).getName());
         }
+        try {
+            conn2.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return compoundNames;
     }
 
     public static ArrayList<Element> getAllElements(){
         ArrayList<Element> elements = new ArrayList<>();
-        for(String element : ElementDataGateway.getElements()) {
+        Connection shared = Gateway.setUpConnection();
+        for(String element : ElementDataGateway.getElements(shared)) {
             try {
                 elements.add((new ClassElementMapper(element)).getMyElement());
             } catch (ElementNotFoundException e) {
                 // The database must have been updated while making the call.
             }
+        }
+        try {
+            shared.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return elements;
     }
 
     public static ArrayList<Element> getElementsBetween(int firstNum, int lastNum){
+        Connection shared = Gateway.setUpConnection();
         ArrayList<Element> elements = new ArrayList<Element>();
-        for(String element : ElementDataGateway.getElements()) {
+        for(String element : ElementDataGateway.getElementsBetween(shared, firstNum, lastNum)) {
             try {
                 elements.add((new ClassElementMapper(element)).getMyElement());
             } catch (ElementNotFoundException e) {
                 // The database must have been updated while making the call.
             }
         }
+        try {
+            shared.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return elements;
+    }
+
+    public void closeConnection() {
+        gateway.closeConnection();
     }
 }

@@ -46,7 +46,7 @@ public class ElementController
     public List<String> getCompoundsContaining() {
         try {
             ElementMapper mapper = new ClassElementMapper(myElement.getName());
-            return getCompoundsContaining();
+            return mapper.getCompoundsContaining();
         } catch (ElementNotFoundException e) {
             throw new RuntimeException(e);
         }

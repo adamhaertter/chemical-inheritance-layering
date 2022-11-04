@@ -3,6 +3,7 @@ package datasource;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * Contains basic functionality to be used by all Gateways. All RowDataGateway/TableDataGateway combined classes should
@@ -54,6 +55,11 @@ public class Gateway {
         }
         // does not hit unless sql delete is successful
         this.deleted = true;
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -62,5 +68,13 @@ public class Gateway {
      */
     public long getId() {
         return id;
+    }
+
+    public void closeConnection() {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

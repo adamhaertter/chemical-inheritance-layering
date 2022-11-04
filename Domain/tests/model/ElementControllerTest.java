@@ -30,6 +30,7 @@ public class ElementControllerTest
         // For class table, we have to delete from Chemical every time
         conn.prepareStatement("DELETE FROM Chemical").execute();
         conn.prepareStatement("DELETE FROM Element").execute();
+        conn.close();
     }
 
     @Test
