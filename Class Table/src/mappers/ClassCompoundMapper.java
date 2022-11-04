@@ -68,7 +68,7 @@ public class ClassCompoundMapper extends CompoundMapper {
         Connection conn = Gateway.setUpConnection();
         long toAdd = ChemicalDataGateway.getIdByName(conn, name);
         long compoundId = gateway.getId();
-        new CompoundToElementDataGateway(conn, compoundId, toAdd);
+        CompoundToElementDataGateway.createCompoundElementPair(conn, compoundId, toAdd);
         try {
             conn.close();
         } catch (SQLException e) {
