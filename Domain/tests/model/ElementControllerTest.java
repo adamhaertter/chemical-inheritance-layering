@@ -1,5 +1,10 @@
 package model;
 
+import exceptions.ElementNotFoundException;
+import mappers.CompoundMapper;
+import mappers.ElementMapper;
+import model.controller.CompoundController;
+import model.controller.ElementController;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
