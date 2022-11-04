@@ -5,6 +5,7 @@ import mappers.ClassElementMapper;
 import mappers.ElementMapper;
 import model.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ElementController
@@ -43,7 +44,12 @@ public class ElementController
     }
 
     public List<String> getCompoundsContaining() {
-        return null;
+        try {
+            ElementMapper mapper = new ClassElementMapper(myElement.getName());
+            return getCompoundsContaining();
+        } catch (ElementNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void delete(String name) throws ElementNotFoundException
@@ -55,12 +61,22 @@ public class ElementController
     public static Element[] getElementsBetween(int firstAtomicNumber,
                                                int lastAtomicNumber)
     {
-        return null;
+        ArrayList elementList = ClassElementMapper.getElementsBetween(firstAtomicNumber, lastAtomicNumber);
+        Element[] elementArray = new Element[elementList.size()];
+        for(int i = 0; i < elementList.size(); i++) {
+            elementArray[i] = (Element)elementList.get(i);
+        }
+        return elementArray;
     }
 
     public static Element[] getAllElements()
     {
-        return null;
+        ArrayList elementList = ClassElementMapper.getAllElements();
+        Element[] elementArray = new Element[elementList.size()];
+        for(int i = 0; i < elementList.size(); i++) {
+            elementArray[i] = (Element)elementList.get(i);
+        }
+        return elementArray;
     }
 
     public Element getMyElement()

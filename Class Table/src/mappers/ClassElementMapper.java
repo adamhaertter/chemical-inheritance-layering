@@ -1,12 +1,11 @@
 package mappers;
 
-import datasource.ChemicalDataGateway;
-import datasource.ElementDataGateway;
-import datasource.Gateway;
+import datasource.*;
 import exceptions.ElementNotFoundException;
 import model.Element;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 
 public class ClassElementMapper extends ElementMapper {
 
@@ -70,5 +69,41 @@ public class ClassElementMapper extends ElementMapper {
     @Override
     public void delete() {
         this.gateway.delete();
+    }
+
+    @Override
+    public ArrayList<String> getCompoundsContaining() {
+        ArrayList compoundNames = new ArrayList();
+        long id = gateway.getId();
+        ArrayList<Long> compoundIds = CompoundToElementDataGateway.getCompoundsContaining(id);
+        Connection conn2 = Gateway.setUpConnection();
+        for(long compound : compoundIds) {
+            compoundNames.add((new CompoundDataGateway(conn2, compound)).getName());
+        }
+        return compoundNames;
+    }
+
+    public static ArrayList<Element> getAllElements(){
+        ArrayList<Element> elements = new ArrayList<>();
+        for(String element : ElementDataGateway.getElements()) {
+            try {
+                elements.add((new ClassElementMapper(element)).getMyElement());
+            } catch (ElementNotFoundException e) {
+                // The database must have been updated while making the call.
+            }
+        }
+        return elements;
+    }
+
+    public static ArrayList<Element> getElementsBetween(int firstNum, int lastNum){
+        ArrayList<Element> elements = new ArrayList<Element>();
+        for(String element : ElementDataGateway.getElements()) {
+            try {
+                elements.add((new ClassElementMapper(element)).getMyElement());
+            } catch (ElementNotFoundException e) {
+                // The database must have been updated while making the call.
+            }
+        }
+        return elements;
     }
 }
