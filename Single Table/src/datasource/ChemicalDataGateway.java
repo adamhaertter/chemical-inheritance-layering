@@ -109,30 +109,15 @@ public class ChemicalDataGateway extends Gateway {
 
         // Read from DB
         try {
-            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
-            statement.setString(1, name);
-            ResultSet rs = statement.executeQuery();
-            if(rs.next()) {
-                this.id = rs.getLong("id");
-                this.atomicNumber = rs.getInt("atomicNumber");
-                this.atomicMass = rs.getDouble("atomicMass");
-                this.baseSolute = rs.getLong("baseSolute");
-                this.acidSolute = rs.getLong("acidSolute");
-                this.dissolvedBy = rs.getLong("dissolvedBy");
-                this.type = rs.getString("type");
-            }
-
-            if (!validate()) {
-                this.id = -1;
-                this.name = null;
-                this.atomicNumber = -1;
-                this.atomicMass = -1;
-                this.baseSolute = -1;
-                this.acidSolute = -1;
-                this.dissolvedBy = -1;
-                this.type = null;
-                System.out.println("No chemical was found with the given name: " + name);
-            }
+            String addEntry = "INSERT INTO Chemical" + "(name, atomicNumber, atomicMass, baseSolute," +
+                    "acidSolute, dissolvedBy, type) VALUES ('" + name + "', '" +
+                    atomicNumber + "', '" + atomicMass + "', '" + baseSolute + "', '" +
+                    acidSolute + "', '" + dissolvedBy + "', '" + type + "')";
+            PreparedStatement ps = conn.prepareStatement(addEntry, Statement.RETURN_GENERATED_KEYS);
+            ps.execute();
+            ResultSet rs = ps.getGeneratedKeys();
+            rs.next();
+            id = rs.getInt(1);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

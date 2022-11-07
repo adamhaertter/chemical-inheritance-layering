@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class SingleCompoundMapper extends CompoundMapper {
-    private CompoundDataGateway gateway;
+    private ChemicalDataGateway gateway;
 
     /**
      * Constructor for objects that exist in the database
@@ -23,8 +23,12 @@ public class SingleCompoundMapper extends CompoundMapper {
         super(name);
 
         Connection conn = Gateway.setUpConnection();
-
-        this.gateway = new CompoundDataGateway(conn, gateway.getId());
+        long myId = ChemicalDataGateway.getIdByName(conn, name);
+        if(myId == -1) {
+            throw new CompoundNotFoundException("No compound found with name " + name);
+        }
+        this.gateway = new ChemicalDataGateway(conn, myId);
+        this.gateway.updateType("Compound");
 
         myCompound = new Compound(this, name);
     }
@@ -36,7 +40,8 @@ public class SingleCompoundMapper extends CompoundMapper {
      */
     public static void createCompound(String name) {
         Connection conn = Gateway.setUpConnection();
-        ChemicalDataGateway chemGW = new ChemicalDataGateway(conn, name);
+        ChemicalDataGateway chemGW = new
+                ChemicalDataGateway(conn, name);
         try {
             conn.close();
         } catch (SQLException e) {
@@ -52,8 +57,7 @@ public class SingleCompoundMapper extends CompoundMapper {
     public void addElement(String name) throws ElementNotFoundException {
         Connection conn = Gateway.setUpConnection();
         long compoundID = gateway.getId();
-        ChemicalDataGateway chemGW = new ChemicalDataGateway(conn, name);
-        long elemID = chemGW.getId();
+        long elemID = gateway.getIdByName(conn, name);
         CompoundDataGateway compGW = new CompoundDataGateway(conn, compoundID, elemID);
         try {
             conn.close();
@@ -88,8 +92,7 @@ public class SingleCompoundMapper extends CompoundMapper {
         ArrayList elementNames = new ArrayList();
         long id = gateway.getId();
         Connection conn = Gateway.setUpConnection();
-        CompoundDataGateway compGW = new CompoundDataGateway(conn, id);
-        ArrayList<Long> elementIds = compGW.getElementsInCompound(id);
+        ArrayList<Long> elementIds = CompoundDataGateway.getElementsInCompound(id);
 
         for(long element : elementIds) {
             elementNames.add((new ChemicalDataGateway(conn, element)).getName());

@@ -1,3 +1,4 @@
+import datasource.ChemicalDataGateway;
 import datasource.CompoundDataGateway;
 import datasource.Gateway;
 import org.junit.jupiter.api.AfterEach;
@@ -5,19 +6,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestCompound {
-    private final Connection conn = Gateway.setUpConnection();
+    private Connection conn = Gateway.setUpConnection();
 
     @BeforeEach
     public void setUp() throws SQLException {
+        this.conn = DriverManager.getConnection(config.ProjectConfig.DatabaseURL, config.ProjectConfig.DatabaseUser, config.ProjectConfig.DatabasePassword);
         conn.setAutoCommit(false);
 
         // Insert Test Data
@@ -34,8 +33,8 @@ public class TestCompound {
 
     @AfterEach
     public void tearDown() throws SQLException {
-        conn.rollback();
-        conn.close();
+        this.conn.rollback();
+        this.conn.close();
     }
 
     /**
@@ -45,11 +44,9 @@ public class TestCompound {
     public void testInitById() throws SQLException {
         assertNotNull(conn);
 
-        CompoundDataGateway com = new CompoundDataGateway(conn, 1);
-        // Does it correspond to the right row?
-        assertEquals(com.getCompoundID(), 1);
-        assertEquals(com.getElementID(), 1234);
-        assertEquals(com.getName(), "TestCompound");
+        ChemicalDataGateway chemGW = new ChemicalDataGateway(conn, 1);
+
+        assertEquals(chemGW.getName(), "TestCompound");
     }
 
     /**
@@ -75,12 +72,12 @@ public class TestCompound {
             fail();
         }
 
-        CompoundDataGateway chem = new CompoundDataGateway(conn, trueCompoundId);
+        CompoundDataGateway comp = new CompoundDataGateway(conn, trueCompoundId, trueElementId);
 
         // Does the deleted boolean change?
-        assertTrue(chem.verify());
-        chem.delete();
-        assertFalse(chem.verify());
+        assertTrue(comp.verify());
+        comp.delete();
+        assertFalse(comp.verify());
 
         try {
             CallableStatement statement = conn.prepareCall("SELECT * FROM CompoundToElement WHERE compoundId = ?");
@@ -106,7 +103,7 @@ public class TestCompound {
      */
     @Test
     public void testGetCompoundsByElementID() throws SQLException {
-        CompoundDataGateway gw = new CompoundDataGateway(conn, 1);
+        CompoundDataGateway gw = new CompoundDataGateway(conn, 1, 1234);
         ArrayList<Long> listMethod = gw.getCompoundsContaining(1234);
 
         ArrayList<Long> testerIDs = new ArrayList<>();
@@ -125,7 +122,7 @@ public class TestCompound {
      */
     @Test
     public void testGetElementsInCompound() throws SQLException {
-        CompoundDataGateway gw = new CompoundDataGateway(conn, 1);
+        CompoundDataGateway gw = new CompoundDataGateway(conn, 1, 1234);
         ArrayList<Long> listMethod = gw.getElementsInCompound(1);
 
         ArrayList<Long> testerIDs = new ArrayList<>();

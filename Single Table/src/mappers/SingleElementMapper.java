@@ -69,7 +69,7 @@ public class SingleElementMapper extends ElementMapper {
         Connection conn2 = Gateway.setUpConnection();
 
         for(long compound : compoundIds) {
-            compoundNames.add((new CompoundDataGateway(conn2, compound)).getName());
+            compoundNames.add((new ChemicalDataGateway(conn2, compound)).getName());
         }
         try {
             conn2.close();

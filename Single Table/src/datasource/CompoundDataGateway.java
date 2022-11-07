@@ -11,47 +11,6 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     long elementID;
 
     /**
-     * Constructor that creates an entry based off of the compound ID
-     *
-     * @param compoundID - the compoundID
-     */
-    public CompoundDataGateway(Connection conn, long compoundID) {
-        super(conn, compoundID);
-        this.compoundID = compoundID;
-        deleted = false;
-
-        // Read from DB
-        try {
-            CallableStatement statement = conn.prepareCall("SELECT * from CompoundToElement WHERE CompoundId = ?");
-            statement.setLong(1, compoundID);
-            ResultSet rs = statement.executeQuery();
-            rs.next();
-            this.elementID = rs.getLong("elementId");
-
-            if (!validate()) {
-                this.compoundID = -1;
-                this.elementID = -1;
-                System.out.println("No compound was found with the given id: " + compoundID);
-            }
-        } catch(SQLException sqlex) {
-            // Unable to find that row, so we have to create it
-            try {
-                Statement create = conn.createStatement();
-                String addEntry = "INSERT INTO CompoundToElement" +
-                        "(CompoundId, ElementId) VALUES ('" +
-                        compoundID + "','" + elementID + "')";
-                create.executeUpdate(addEntry);
-
-                // Reassign appropriate values to instance variables
-                this.elementID = elementID;
-                this.compoundID = compoundID;
-            } catch(SQLException sqlex2) {
-                sqlex2.printStackTrace();
-            }
-        }
-    }
-
-    /**
      * Constructor that creates an entry based off of the compound ID and element ID
      *
      * @param compoundID - the compoundID
@@ -60,72 +19,20 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     public CompoundDataGateway(Connection conn, long compoundID, long elementID) {
         super(conn, compoundID);
         this.compoundID = compoundID;
-        this.elementID = elementID;
-        persist(compoundID, elementID);
 
+        // Unable to find that row, so we have to create it
         try {
-            CallableStatement read = conn.prepareCall("SELECT * from CompoundToElement WHERE elementId = ?" +
-                                                        "AND compoundId = ?");
-            read.setLong(1, elementID);
-            read.setLong(2, compoundID);
-            ResultSet rs = read.executeQuery();
-            rs.next();
-            this.elementID = rs.getLong("elementId");
-            this.compoundID = rs.getLong("compoundId");
-        } catch(SQLException sqlex) {
-            sqlex.printStackTrace();
-        }
-    }
+            Statement create = conn.createStatement();
+            String addEntry = "INSERT INTO CompoundToElement" +
+                    "(ElementID, CompoundID) VALUES ('" +
+                    elementID + "','" + compoundID + "')";
+            create.executeUpdate(addEntry);
 
-    /**
-     * Getter for compoundID
-     * @return compoundID - the identification of the compound
-     */
-    public long getCompoundID() {
-        if (!deleted) {
-            return compoundID;
-        } else {
-            System.out.println("This Compound has been deleted.");
-        }
-        return -1;
-    }
-
-    /**
-     * Setter for compoundID
-     * @param compoundID - the identification of the compound
-     */
-    public void updateCompoundID(long compoundID) {
-        if (!deleted) {
-            if (persist(compoundID, this.elementID))
-                this.compoundID = compoundID;
-        } else {
-            System.out.println("This Compound has been deleted.");
-        }
-    }
-
-    /**
-     * Getter for elementID
-     * @return elementID - the identification of the element
-     */
-    public long getElementID() {
-        if (!deleted) {
-            return elementID;
-        } else {
-            System.out.println("This Compound has been deleted.");
-        }
-        return -1;
-    }
-
-    /**
-     * Setter for elementID
-     * @param elementID - the identification of the element
-     */
-    public void updateElementID(long elementID) {
-        if (!deleted) {
-            if (persist(this.compoundID, elementID))
-                this.elementID = elementID;
-        } else {
-            System.out.println("This Chemical has been deleted.");
+            // Reassign appropriate values to instance variables
+            this.elementID = elementID;
+            this.compoundID = compoundID;
+        } catch(SQLException sqlex2) {
+            sqlex2.printStackTrace();
         }
     }
 
@@ -139,13 +46,23 @@ public class CompoundDataGateway extends ChemicalDataGateway {
         try {
             Connection conn = setUpConnection();
 
-            Statement statement = conn.createStatement();
-            statement.execute("SELECT * FROM CompoundToElement WHERE ElementId=" + elemID);
-
-            ResultSet rs = statement.getResultSet();
+            CallableStatement st = conn.prepareCall("SELECT * FROM CompoundToElement WHERE ElementId = ?");
+            st.setLong(1, elemID);
+            ResultSet rs = st.executeQuery();
             //Go through all options in the ResultSet and save them
+            //Multiple relations can exist for compounds that have multiple of the same element
+            //We must make sure that there aren't duplicates
             while(rs.next()){
-                compoundList.add(rs.getLong("CompoundId"));
+                long compID = rs.getLong("CompoundID");
+                boolean alreadyInList = false;
+                for(Long l: compoundList) {
+                    if(l == compID) {
+                        alreadyInList = true;
+                    }
+                }
+                if(!alreadyInList) {
+                    compoundList.add(compID);
+                }
             }
             conn.close();
         } catch (SQLException e) {
@@ -159,13 +76,13 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @param compID - the identification of the compound
      * @return compoundList - a list of compounds
      */
-    public ArrayList<Long> getElementsInCompound(long compID) {
+    public static ArrayList<Long> getElementsInCompound(long compID) {
         ArrayList<Long> compoundList = new ArrayList<>();
         try {
-            Statement statement = conn.createStatement();
-            statement.execute("SELECT * FROM CompoundToElement WHERE CompoundId=" + compID);
-
-            ResultSet rs = statement.getResultSet();
+            Connection conn = setUpConnection();
+            CallableStatement st = conn.prepareCall("SELECT * FROM CompoundToElement WHERE compoundId = ?");
+            st.setLong(1, compID);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 compoundList.add(rs.getLong("elementID"));
             }
@@ -177,37 +94,11 @@ public class CompoundDataGateway extends ChemicalDataGateway {
     }
 
     /**
-     * Takes all the elements currently in the object and pushes them to the DB
-     *
-     * @return true or false
-     */
-    public boolean persist(long compoundID, long elementID) {
-        try {
-            Statement statement = conn.createStatement();
-            statement.executeUpdate("UPDATE CompoundToElement SET CompoundId = '" + compoundID + "'," +
-                    "ElementId = '" + elementID + "' WHERE CompoundId = '" + compoundID + "'");
-        } catch (Exception ex) {
-            // Fails because already exists
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Clarifies if the row has been deleted or not
-     */
-    private boolean verifyExistence() {
-        return (compoundID > 0 && elementID > 0);
-    }
-
-    /**
      * Checks the validity of the information in the row.
      *
      * @return Whether the current columns for this row have valid values
      */
     protected boolean validate() {
-        return this.id != -1 && this.name != null && this.atomicNumber != -1 && this.atomicMass != -1 &&
-                this.baseSolute != -1 && this.acidSolute != -1 && this.dissolvedBy != -1 && this.type != null &&
-                this.compoundID != -1 && this.elementID != -1;
+         return this.compoundID >= 0 && this.elementID >= 0;
     }
 }
