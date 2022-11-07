@@ -1,9 +1,7 @@
 package datasource;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Contains both the Row Data Gateway and Table Data Gateway functionality for the Element table. Row functions are done
@@ -87,7 +85,7 @@ public class ElementDataGateway extends ChemicalDataGateway {
      * Cascades upward to all parent tables.
      * @return Whether the update is passed correctly.
      */
-    protected boolean persist(long id, String name, double atomicMass, int atomicNumber) {
+    public boolean persist(long id, String name, double atomicMass, int atomicNumber) {
         super.persist(id, name);
         try {
             Statement statement = conn.createStatement();
@@ -145,5 +143,47 @@ public class ElementDataGateway extends ChemicalDataGateway {
     public void updateAtomicMass(double atomicMass) {
         if( verify() && persist(this.id, this.name, atomicMass, this.atomicNumber) )
             this.atomicMass = atomicMass;
+    }
+
+    /**
+     * Returns a list of all element names in the Database
+     * @return all Elements in the database, by name
+     */
+    public static ArrayList<String> getElements(Connection conn) {
+        ArrayList<String> elements = new ArrayList<String>();
+        try {
+            CallableStatement st = conn.prepareCall("SELECT Element.*,Chemical.name FROM Element JOIN Chemical on " +
+                    "Element.id = Chemical.id");
+            ResultSet rs = st.executeQuery();
+            //Go through all options in the ResultSet and save them
+            while(rs.next()){
+                elements.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return elements;
+    }
+
+    /**
+     * Returns a list of all element names between 2 atomic numbers
+     * @return the specified Elements in the database, by name
+     */
+    public static ArrayList<String> getElementsBetween(Connection conn, int first, int last) {
+        ArrayList<String> elements = new ArrayList<String>();
+        try {
+            CallableStatement st = conn.prepareCall("SELECT Element.*,Chemical.name FROM Element JOIN Chemical on " +
+                    "Element.id = Chemical.id WHERE atomicNumber BETWEEN ? AND ?");
+            st.setInt(1, first);
+            st.setInt(2, last);
+            ResultSet rs = st.executeQuery();
+            //Go through all options in the ResultSet and save them
+            while(rs.next()){
+                elements.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return elements;
     }
 }
