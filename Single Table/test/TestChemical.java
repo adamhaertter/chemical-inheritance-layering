@@ -42,11 +42,11 @@ public class TestChemical {
      * When initialized by id, a ChemicalDataGateway should be able to retrieve a row that exists in the database with the same id
      */
     @Test
-    public void testInitById() throws SQLException {
+    public void testInitByName() throws SQLException {
         assertNotNull(conn);
 
-        ChemicalDataGateway chem = new ChemicalDataGateway(conn, 1);
-        assertEquals("TestMetal", chem.getName());
+        ChemicalDataGateway chem = new ChemicalDataGateway(conn, "TestMetal");
+        assertEquals("1", chem.getId());
     }
 
 
@@ -220,7 +220,7 @@ public class TestChemical {
         ArrayList<ElementDTO> listElementMethod = new ArrayList<>();
         ChemicalDataGateway elemGW = new ChemicalDataGateway(conn, 4);
         ElementDTO elem = new ElementDTO(4, elemGW.getName(), elemGW.getAtomicNumber(), elemGW.getAtomicMass());
-        listElementMethod = elemGW.getAllElements();
+        listElementMethod = elemGW.getAllElementIDs();
 
         ArrayList<Long> testerIDs = new ArrayList<>();
         testerIDs.add(metal.id);

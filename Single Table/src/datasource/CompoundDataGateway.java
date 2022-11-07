@@ -15,7 +15,7 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      *
      * @param compoundID - the compoundID
      */
-    public CompoundDataGateway(Connection conn, long compoundID) throws SQLException {
+    public CompoundDataGateway(Connection conn, long compoundID) {
         super(conn, compoundID);
         this.compoundID = compoundID;
         deleted = false;
@@ -29,20 +29,25 @@ public class CompoundDataGateway extends ChemicalDataGateway {
             this.elementID = rs.getLong("elementId");
 
             if (!validate()) {
-                this.id = -1;
-                this.name = null;
-                this.atomicNumber = -1;
-                this.atomicMass = -1;
-                this.baseSolute = -1;
-                this.acidSolute = -1;
-                this.dissolvedBy = -1;
-                this.type = null;
                 this.compoundID = -1;
                 this.elementID = -1;
                 System.out.println("No compound was found with the given id: " + compoundID);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch(SQLException sqlex) {
+            // Unable to find that row, so we have to create it
+            try {
+                Statement create = conn.createStatement();
+                String addEntry = "INSERT INTO CompoundToElement" +
+                        "(CompoundId, ElementId) VALUES ('" +
+                        compoundID + "','" + elementID + "')";
+                create.executeUpdate(addEntry);
+
+                // Reassign appropriate values to instance variables
+                this.elementID = elementID;
+                this.compoundID = compoundID;
+            } catch(SQLException sqlex2) {
+                sqlex2.printStackTrace();
+            }
         }
     }
 
@@ -52,11 +57,24 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * @param compoundID - the compoundID
      * @param elementID - the elementID
      */
-    public CompoundDataGateway(Connection conn, long compoundID, long elementID) throws SQLException {
+    public CompoundDataGateway(Connection conn, long compoundID, long elementID) {
         super(conn, compoundID);
         this.compoundID = compoundID;
         this.elementID = elementID;
         persist(compoundID, elementID);
+
+        try {
+            CallableStatement read = conn.prepareCall("SELECT * from CompoundToElement WHERE elementId = ?" +
+                                                        "AND compoundId = ?");
+            read.setLong(1, elementID);
+            read.setLong(2, compoundID);
+            ResultSet rs = read.executeQuery();
+            rs.next();
+            this.elementID = rs.getLong("elementId");
+            this.compoundID = rs.getLong("compoundId");
+        } catch(SQLException sqlex) {
+            sqlex.printStackTrace();
+        }
     }
 
     /**
@@ -115,19 +133,24 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * Gets all the Compounds that contain that Element
      * @param elemID - the identification of the element
      * @return compoundList - a list of compounds
-     * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<Long> getCompoundsContaining(long elemID) throws SQLException {
-        verifyExistence();
+    public static ArrayList<Long> getCompoundsContaining(long elemID) {
         ArrayList<Long> compoundList = new ArrayList<>();
-        Statement statement = conn.createStatement();
-        statement.execute("SELECT * FROM CompoundToElement WHERE ElementId=" + elemID);
+        try {
+            Connection conn = setUpConnection();
 
-        ResultSet rs = statement.getResultSet();
-        while(rs.next()) {
-            compoundList.add(rs.getLong("CompoundID"));
+            Statement statement = conn.createStatement();
+            statement.execute("SELECT * FROM CompoundToElement WHERE ElementId=" + elemID);
+
+            ResultSet rs = statement.getResultSet();
+            //Go through all options in the ResultSet and save them
+            while(rs.next()){
+                compoundList.add(rs.getLong("CompoundId"));
+            }
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
         return compoundList;
     }
 
@@ -135,17 +158,19 @@ public class CompoundDataGateway extends ChemicalDataGateway {
      * Retrieves all the Elements in a Compound
      * @param compID - the identification of the compound
      * @return compoundList - a list of compounds
-     * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<Long> getElementsInCompound(int compID) throws SQLException {
-        verifyExistence();
+    public ArrayList<Long> getElementsInCompound(long compID) {
         ArrayList<Long> compoundList = new ArrayList<>();
-        Statement statement = conn.createStatement();
-        statement.execute("SELECT * FROM CompoundToElement WHERE CompoundId=" + compID);
+        try {
+            Statement statement = conn.createStatement();
+            statement.execute("SELECT * FROM CompoundToElement WHERE CompoundId=" + compID);
 
-        ResultSet rs = statement.getResultSet();
-        while(rs.next()) {
-            compoundList.add(rs.getLong("elementID"));
+            ResultSet rs = statement.getResultSet();
+            while (rs.next()) {
+                compoundList.add(rs.getLong("elementID"));
+            }
+        } catch(SQLException sqlex) {
+            sqlex.printStackTrace();
         }
 
         return compoundList;

@@ -18,12 +18,50 @@ public class ChemicalDataGateway extends Gateway {
     String type = "";
 
     /**
+     * Constructor used to assign values to a list of variables
+     * @param n - the name of the chemical
+     * @param number - the atomic number of the chemical
+     * @param mass - the atomic mass of the chemical
+     * @param aSolute - the acid solute of the chemical
+     * @param bSolute - the base solute of the chemical
+     * @param dissBy - the acid that a chemical is dissolved by
+     * @param type - Type of Chemical (i.e. Metal, Acid, etc.)
+     */
+    public ChemicalDataGateway(Connection conn, String n, int number, double mass, long aSolute,
+                               long bSolute, long dissBy, String type) {
+        super(conn);
+        this.name = n;
+        this.atomicNumber = number;
+        this.atomicMass = mass;
+        this.acidSolute = aSolute;
+        this.baseSolute = bSolute;
+        this.dissolvedBy = dissBy;
+        this.type = type;
+        deleted = false;
+
+        // Create in DB
+        try {
+            String addEntry = "INSERT INTO Chemical" + "(name, atomicNumber, atomicMass, baseSolute," +
+                    "acidSolute, dissolvedBy, type) VALUES ('" + name + "', '" +
+                    atomicNumber + "', '" + atomicMass + "', '" + baseSolute + "', '" +
+                    acidSolute + "', '" + dissolvedBy + "', '" + type + "')";
+            PreparedStatement ps = conn.prepareStatement(addEntry, Statement.RETURN_GENERATED_KEYS);
+            ps.execute();
+            ResultSet rs = ps.getGeneratedKeys();
+            rs.next();
+            id = rs.getInt(1);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
      * Constructor that uses the id to create a row data gateway
      *
      * @param id - the id for the chemical
      * @throws SQLException - for problems that may occur in the database
      */
-    public ChemicalDataGateway(Connection conn, long id) throws SQLException {
+    public ChemicalDataGateway(Connection conn, long id) {
         super(conn);
         this.id = id;
         deleted = false;
@@ -64,7 +102,7 @@ public class ChemicalDataGateway extends Gateway {
      * @param name - the name for the chemical
      * @throws SQLException - for problems that may occur in the database
      */
-    public ChemicalDataGateway(Connection conn, String name) throws SQLException {
+    public ChemicalDataGateway(Connection conn, String name) {
         super(conn);
         this.name = name;
         deleted = false;
@@ -74,14 +112,15 @@ public class ChemicalDataGateway extends Gateway {
             CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
             statement.setString(1, name);
             ResultSet rs = statement.executeQuery();
-            rs.next();
-            this.id = rs.getLong("id");
-            this.atomicNumber = rs.getInt("atomicNumber");
-            this.atomicMass = rs.getDouble("atomicMass");
-            this.baseSolute = rs.getLong("baseSolute");
-            this.acidSolute = rs.getLong("acidSolute");
-            this.dissolvedBy = rs.getLong("dissolvedBy");
-            this.type = rs.getString("type");
+            if(rs.next()) {
+                this.id = rs.getLong("id");
+                this.atomicNumber = rs.getInt("atomicNumber");
+                this.atomicMass = rs.getDouble("atomicMass");
+                this.baseSolute = rs.getLong("baseSolute");
+                this.acidSolute = rs.getLong("acidSolute");
+                this.dissolvedBy = rs.getLong("dissolvedBy");
+                this.type = rs.getString("type");
+            }
 
             if (!validate()) {
                 this.id = -1;
@@ -94,52 +133,25 @@ public class ChemicalDataGateway extends Gateway {
                 this.type = null;
                 System.out.println("No chemical was found with the given name: " + name);
             }
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
-
-    /**
-     * Constructor used to assign values to a list of variables
-     * @param n - the name of the chemical
-     * @param number - the atomic number of the chemical
-     * @param mass - the atomic mass of the chemical
-     * @param bSolute - the base solute of the chemical
-     * @param aSolute - the acid solute of the chemical
-     * @param dissBy - the acid that a chemical is dissolved by
-     * @param type - Type of Chemical (i.e. Metal, Acid, etc.)
-     */
-    public ChemicalDataGateway(Connection conn, String n, int number, double mass, long bSolute,
-                               long aSolute, long dissBy, String type) {
-        super(conn);
-        this.name = n;
-        this.atomicNumber = number;
-        this.atomicMass = mass;
-        this.baseSolute = bSolute;
-        this.acidSolute = aSolute;
-        this.dissolvedBy = dissBy;
-        this.type = type;
-        deleted = false;
-
-        // Create in DB
-        try {
-            String addEntry = "INSERT INTO Chemical" + "(name, atomicNumber, atomicMass, baseSolute," +
-                    "acidSolute, dissolvedBy, type) VALUES ('" + name + "', '" +
-                    atomicNumber + "', '" + atomicMass + "', '" + baseSolute + "', '" +
-                    acidSolute + "', '" + dissolvedBy + "', '" + type + "')";
-            PreparedStatement ps = conn.prepareStatement(addEntry, Statement.RETURN_GENERATED_KEYS);
-            ps.execute();
-            ResultSet rs = ps.getGeneratedKeys();
-            rs.next();
-            id = rs.getInt(1);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-
 
     //Getters & Setters ----------------------------------------------------------------------
+    /**
+     * Getter for the id
+     * @return id - the id of the chemical
+     */
+    public long getId() {
+        if (!deleted) {
+            return id;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return -1;
+    }
+
     /**
      * Getter for the name
      * @return name - the name of the chemical
@@ -222,33 +234,6 @@ public class ChemicalDataGateway extends Gateway {
     }
 
     /**
-     * Getter for the base solute
-     * @return baseSolute - the base solute of the chemical
-     */
-    public long getBaseSolute() {
-        if (!deleted) {
-            return baseSolute;
-        } else {
-            System.out.println("This Chemical has been deleted.");
-        }
-        return -1;
-    }
-
-    /**
-     * Setter for the base solute
-     * @param baseSolute - the base solute of the chemical
-     */
-    public void updateBaseSolute(long baseSolute) {
-        if (!deleted) {
-            if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, baseSolute, this.acidSolute,
-                    this.dissolvedBy, this.type))
-                this.baseSolute = baseSolute;
-        } else {
-            System.out.println("This Chemical has been deleted.");
-        }
-    }
-
-    /**
      * Getter for the acid solute
      * @return acidSolute - the acid solute of the chemical
      */
@@ -270,6 +255,33 @@ public class ChemicalDataGateway extends Gateway {
             if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, this.baseSolute, acidSolute,
                     this.dissolvedBy, this.type))
                 this.acidSolute = acidSolute;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+    }
+
+    /**
+     * Getter for the base solute
+     * @return baseSolute - the base solute of the chemical
+     */
+    public long getBaseSolute() {
+        if (!deleted) {
+            return baseSolute;
+        } else {
+            System.out.println("This Chemical has been deleted.");
+        }
+        return -1;
+    }
+
+    /**
+     * Setter for the base solute
+     * @param baseSolute - the base solute of the chemical
+     */
+    public void updateBaseSolute(long baseSolute) {
+        if (!deleted) {
+            if (persist(this.id, this.name, this.atomicNumber, this.atomicMass, baseSolute, this.acidSolute,
+                    this.dissolvedBy, this.type))
+                this.baseSolute = baseSolute;
         } else {
             System.out.println("This Chemical has been deleted.");
         }
@@ -445,7 +457,7 @@ public class ChemicalDataGateway extends Gateway {
      * @return chemicalList - list of chemicals
      * @throws SQLException - for problems that may occur in the database
      */
-    public ArrayList<ElementDTO> getAllElements() throws SQLException {
+    public ArrayList<ElementDTO> getAllElementIDs() throws SQLException {
         ArrayList<ElementDTO> elementList = new ArrayList<>();
         Statement statement = conn.createStatement();
         statement.executeQuery("SELECT * FROM Chemical");
@@ -462,22 +474,81 @@ public class ChemicalDataGateway extends Gateway {
     }
 
     /**
+     * Returns a list of all element names in the Database
+     * @return all Elements in the database, by name
+     */
+    public static ArrayList<String> getElements(Connection conn) {
+        ArrayList<String> elements = new ArrayList<String>();
+        try {
+            CallableStatement st = conn.prepareCall("SELECT * FROM Chemical");
+            ResultSet rs = st.executeQuery();
+            //Go through all options in the ResultSet and save them
+            while(rs.next()){
+                elements.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return elements;
+    }
+
+    /**
+     * Returns a list of all element names between 2 atomic numbers
+     * @return the specified Elements in the database, by name
+     */
+    public static ArrayList<String> getElementsBetween(Connection conn, int first, int last) {
+        ArrayList<String> elements = new ArrayList<String>();
+        try {
+            CallableStatement st = conn.prepareCall("SELECT * FROM Chemical WHERE atomicNumber BETWEEN ? AND ?");
+            st.setInt(1, first);
+            st.setInt(2, last);
+            ResultSet rs = st.executeQuery();
+            //Go through all options in the ResultSet and save them
+            while(rs.next()){
+                elements.add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return elements;
+    }
+
+    /**
      * Takes all the elements currently in the object and pushes them to the DB
      *
      * @return true or false
      */
-    private boolean persist(long id, String name, int atomicNumber, double atomicMass, long baseSolute, long acidSolute,
-                           long dissolvedBy, String type) {
+    public boolean persist(long identity, String n, int number, double mass, long bSolute, long aSolute,
+                           long dissolved, String t) {
         try {
             Statement statement = conn.createStatement();
-            statement.executeUpdate("UPDATE Chemical SET name = '" + name + "', " +
-                    "atomicNumber = '" + atomicNumber + "', atomicMass = '" + atomicMass + "', baseSolute = '"
-                    + baseSolute + "', acidSolute = '" + acidSolute + "', dissolvedBy = '" + dissolvedBy +
-                    "', type = '" + type + "' WHERE id = '" + id + "'");
+            statement.executeUpdate("UPDATE Chemical SET name = '" + n + "', " +
+                    "atomicNumber = '" + number + "', atomicMass = '" + mass + "', baseSolute = '"
+                    + bSolute + "', acidSolute = '" + aSolute + "', dissolvedBy = '" + dissolved +
+                    "', type = '" + t + "' WHERE id = '" + identity + "'");
             return true;
         } catch (SQLException ex) {
 
             return false;
+        }
+    }
+
+    /**
+     * Given a name, return the id that links all the subtables together. Queries the database based on name.
+     *
+     * @param name The unique name of the Chemical, stored in this table and no others by our implementation.
+     * @return the id shared by all instances of this Chemical in any subtables.
+     */
+    public static long getIdByName(Connection conn, String name) {
+        try{
+            CallableStatement statement = conn.prepareCall("SELECT * from Chemical WHERE name = ?");
+            statement.setString(1, name);
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            long id = rs.getLong("id");
+            return id;
+        } catch (SQLException e) {
+            return -1;
         }
     }
 
