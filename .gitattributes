@@ -1,1 +1,7 @@
+videos/ClassTableDemo.mp4 filter=lfs diff=lfs merge=lfs -text
+videos/ClassTableMappersDemo.mp4 filter=lfs diff=lfs merge=lfs -text
+videos/ConcreteTableDemo.mp4 filter=lfs diff=lfs merge=lfs -text
+videos/ConcreteTableMappersDemo.mp4 filter=lfs diff=lfs merge=lfs -text
+videos/SingleTableDemo.mp4 filter=lfs diff=lfs merge=lfs -text
+videos/SingleTableMappersDemo.mp4 filter=lfs diff=lfs merge=lfs -text
 *.mp4 filter=lfs diff=lfs merge=lfs -text
