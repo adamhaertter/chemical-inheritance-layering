@@ -1,4 +1,4 @@
-# SWE 400 project 1
+# SWE 400 Project 1
 
 
 
